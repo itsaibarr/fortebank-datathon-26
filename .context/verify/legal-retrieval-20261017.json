@@ -1,0 +1,160 @@
+{
+  "release": "2026-10-17",
+  "retrieval": "lexical BM25, exact provision lookup, no stemming or embeddings",
+  "positive_queries": 14,
+  "top1_hits": 8,
+  "top3_hits": 10,
+  "negative_queries": 1,
+  "negative_passes": 1,
+  "results": [
+    {
+      "case_id": "departure_wording",
+      "retrieved": [
+        "22",
+        "84",
+        "128"
+      ],
+      "rank": 1,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "departure_paraphrase",
+      "retrieved": [
+        "126",
+        "125",
+        "127"
+      ],
+      "rank": null,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "acceptance_presence",
+      "retrieved": [
+        "20",
+        "35",
+        "31"
+      ],
+      "rank": 1,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "acceptance_absence",
+      "retrieved": [
+        "35",
+        "21",
+        "128"
+      ],
+      "rank": null,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "prior_storage",
+      "retrieved": [
+        "20",
+        "80",
+        "26"
+      ],
+      "rank": 1,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "payout_pack_exception",
+      "retrieved": [
+        "32",
+        "49",
+        "3"
+      ],
+      "rank": 1,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "payout_pack_paraphrase",
+      "retrieved": [
+        "49",
+        "50",
+        "112"
+      ],
+      "rank": null,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "controller_exception",
+      "retrieved": [
+        "56",
+        "44",
+        "29"
+      ],
+      "rank": null,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "acceptance_document",
+      "retrieved": [
+        "31",
+        "19",
+        "63-2"
+      ],
+      "rank": 2,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "payout_document",
+      "retrieved": [
+        "31",
+        "19",
+        "63-2"
+      ],
+      "rank": 1,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "exchange_access",
+      "retrieved": [
+        "41",
+        "49",
+        "69"
+      ],
+      "rank": 1,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "premises_door",
+      "retrieved": [
+        "16",
+        "13",
+        "12"
+      ],
+      "rank": 1,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "bag_check",
+      "retrieved": [
+        "107",
+        "24",
+        "113"
+      ],
+      "rank": 2,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "exact_provision",
+      "retrieved": [
+        "22"
+      ],
+      "rank": 1,
+      "no_match_correct": null
+    },
+    {
+      "case_id": "no_lexical_match",
+      "retrieved": [],
+      "rank": null,
+      "no_match_correct": true
+    }
+  ],
+  "limitations": [
+    "Small agent-prepared development queries, not independent legal QA.",
+    "Current-edition retrieval only; no as-of-date applicability.",
+    "Lexical overlap does not establish relevance, a visual fact or a legal finding."
+  ]
+}

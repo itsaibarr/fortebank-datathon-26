@@ -32,6 +32,9 @@ def main(argv: list[str] | None = None) -> int:
     legal.add_argument("--query", required=True)
     legal.add_argument("--act")
     legal.add_argument("--limit", type=int, default=5)
+    legal.add_argument("--dense-index", type=Path)
+    legal.add_argument("--embedding-model", type=Path)
+    legal.add_argument("--embedding-device", default="cpu", choices=["cpu", "cuda"])
     annotation = commands.add_parser(
         "annotations-check", help="Validate private visual/legal annotation structure"
     )
@@ -68,8 +71,25 @@ def main(argv: list[str] | None = None) -> int:
         from forte.legal import load_release
 
         try:
-            hits = load_release(args.release).search(args.query, act_id=args.act, limit=args.limit)
-        except (OSError, ValueError, KeyError, TypeError) as exc:
+            if bool(args.dense_index) != bool(args.embedding_model):
+                raise ValueError("Dense retrieval requires both local index and model")
+            corpus = load_release(args.release)
+            if args.dense_index:
+                from forte.retrieval import DenseIndex, LocalBGE, hybrid_search
+
+                index = DenseIndex.model_validate_json(args.dense_index.read_bytes())
+                encoder = LocalBGE(args.embedding_model, args.embedding_device)
+                hits = hybrid_search(
+                    corpus,
+                    index,
+                    args.query,
+                    encoder.encode([args.query])[0],
+                    act_id=args.act,
+                    limit=args.limit,
+                )
+            else:
+                hits = corpus.search(args.query, act_id=args.act, limit=args.limit)
+        except (OSError, ValueError, KeyError, TypeError, ImportError) as exc:
             print(f"legal-search: invalid release or query ({type(exc).__name__})", file=sys.stderr)
             return 1
         print(json.dumps(hits, ensure_ascii=False, indent=2, allow_nan=False))
