@@ -1,0 +1,43 @@
+{
+  "split_status": "requires_local_continuity_review_before_freeze",
+  "code_commit": "be6249e",
+  "evaluation_scope": "selected development regression; deliberately selected from earlier errors, not a population benchmark",
+  "counts": {
+    "videos": 6,
+    "positives": 2,
+    "negatives": 4,
+    "tp": 0,
+    "tn": 2,
+    "fp": 0,
+    "fn": 0,
+    "failed_positive": 2,
+    "failed_negative": 2
+  },
+  "reported_events": 0,
+  "completed_fraction": 0.3333333333333333,
+  "accuracy_including_failed": 0.3333333333333333,
+  "effective_recall": 0.0,
+  "false_negative_rate_including_failed": 1.0,
+  "false_positive_rate": 0.0,
+  "failure_codes": {
+    "insufficient_evidence": 3,
+    "analysis_failed": 1
+  },
+  "point_proximity": {
+    "eligible_positive_videos": 1,
+    "detected_videos_with_point_error": 0,
+    "median_error_sec": null,
+    "fraction_within_5_sec_including_misses": 0.0,
+    "limitation": "Approximate supplied points, no verified intervals or event categories. Closest prediction is a proximity diagnostic, not proof of the same action."
+  },
+  "client_latency_sec": {
+    "median": 54.112060020999934,
+    "p95": 64.22593112699997,
+    "max": 64.22593112699997,
+    "over_300_seconds": 0
+  },
+  "checked_at_utc": "2026-10-17T12:21:19.677363+00:00",
+  "selection": "Previous TP, both supplied-negative flags, one order failure, one truncation failure, one TN",
+  "quality_gate": "failed: previous TP unresolved; no positive output",
+  "no_holdout_or_jury_used": true
+}

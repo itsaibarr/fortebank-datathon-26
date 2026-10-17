@@ -1,0 +1,21 @@
+{
+  "admitted_http": [
+    202,
+    202
+  ],
+  "overflow_http": 429,
+  "jobs": [
+    {
+      "case": "clip004",
+      "status": "done",
+      "client_seconds": 12.274755726999956
+    },
+    {
+      "case": "clip005",
+      "status": "done",
+      "client_seconds": 12.27495259699981
+    }
+  ],
+  "network": "none",
+  "quality_claim": false
+}

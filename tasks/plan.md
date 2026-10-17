@@ -2,7 +2,11 @@
 
 ## Funded GPU setup completed on 17 October 2026
 
-The user subsequently delegated Hyperstack API management within $30 and confirmed funding. One A10080 passed the pinned BF16 model's offline, structured, 16-image synthetic check and was then deleted. The account snapshot showed approximately $0.23 used and $29.77 remaining. See `docs/gpu-runbook.md` and `.context/verify/gpu-setup.json`. This supersedes earlier statements below that the user must manually provision the instance or that GPU compatibility has never been checked. No competition data was transferred and no training ran. The user has since confirmed organizer permission for development footage on the dedicated Hyperstack VM in Canada. Backend contracts, decoding, inference adapter, temporal pipeline and asynchronous API now pass 26 local tests. Actual development-video GPU evaluation and UI remain pending.
+The user subsequently delegated Hyperstack API management within $30 and confirmed funding. One A10080 passed the pinned BF16 model's offline, structured, 16-image synthetic check and was then deleted. The account snapshot showed approximately $0.23 used and $29.77 remaining. See `docs/gpu-runbook.md` and `.context/verify/gpu-setup.json`. This supersedes earlier statements below that the user must manually provision the instance or that GPU compatibility has never been checked. No competition data was transferred and no training ran. The user has since confirmed organizer permission for development footage on the dedicated Hyperstack VM in Canada. The subsequent development-video rehearsal and current acceptance state are recorded below.
+
+## Current measured state
+
+The backend now passes 38 local tests. Real development videos have completed the offline GPU API with source-verified JPEGs. Two exploratory partial runs failed detection acceptance; see [development-rehearsal.md](../docs/development-rehearsal.md). Three private cases await local human semantic review. No training, UI or competition-ready deployment is claimed. Historical setup descriptions below do not supersede current permissions, measurements or the live task checklist.
 
 ## Approved setup slice on 17 October 2026
 

@@ -1,0 +1,52 @@
+{
+  "split_status": "requires_local_continuity_review_before_freeze",
+  "code_commit": "1a56beb",
+  "evaluation_scope": "exploratory development, not independent validation",
+  "counts": {
+    "videos": 28,
+    "positives": 15,
+    "negatives": 13,
+    "tp": 0,
+    "tn": 8,
+    "fp": 0,
+    "fn": 9,
+    "failed_positive": 6,
+    "failed_negative": 5
+  },
+  "reported_events": 0,
+  "completed_fraction": 0.6071428571428571,
+  "accuracy_including_failed": 0.2857142857142857,
+  "effective_recall": 0.0,
+  "false_negative_rate_including_failed": 1.0,
+  "false_positive_rate": 0.0,
+  "failure_codes": {
+    "insufficient_evidence": 8,
+    "analysis_failed": 3
+  },
+  "point_proximity": {
+    "eligible_positive_videos": 14,
+    "detected_videos_with_point_error": 0,
+    "median_error_sec": null,
+    "fraction_within_5_sec_including_misses": 0.0,
+    "limitation": "Approximate supplied points, no verified intervals or event categories. Closest prediction is a proximity diagnostic, not proof of the same action."
+  },
+  "client_latency_sec": {
+    "median": 6.659740441499935,
+    "p95": 29.52012125100009,
+    "max": 30.01740321500006,
+    "over_300_seconds": 0
+  },
+  "checked_at_utc": "2026-10-17T11:54:11.841533+00:00",
+  "planned_development_videos": 31,
+  "unprocessed_development_videos": 3,
+  "stop_reason": "three consecutive unsuccessful jobs",
+  "model": "Qwen/Qwen3-VL-8B-Instruct",
+  "model_revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+  "precision": "BF16",
+  "adapter": null,
+  "inference_container_network": "none",
+  "holdout_videos_used": 0,
+  "jury_videos_used": 0,
+  "evidence_provenance_status": "No positive event was returned; the real positive evidence path is not yet verified.",
+  "quality_gate": "failed; do not present this baseline as competition-ready"
+}

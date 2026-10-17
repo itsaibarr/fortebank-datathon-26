@@ -51,5 +51,5 @@
     "initial_max_updates": 30,
     "absolute_max_updates": 60
   },
-  "status": "Pinned BF16 model and 16-image offline synthetic calls verified on A10080; full-video quality, latency, concurrency and training remain unmeasured."
+  "status": "Actual offline MOV API and source-JPEG provenance exercised. Exploratory detection quality failed; local semantic review, final workload checks and training remain pending."
 }

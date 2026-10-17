@@ -1,0 +1,40 @@
+{
+  "checked_at_utc": "2026-10-17T12:18:48.411928+00:00",
+  "reviewer": "Primary agent manual code review; not an independent review",
+  "code_commit": "be6249e",
+  "scope": [
+    "contracts, video, inference, pipeline, rules",
+    "api, jobs, worker, evaluation",
+    "Dockerfile, runtime pins, check_api.py"
+  ],
+  "passed_mechanical_checks": [
+    "Strict public verdict/schema and source-frame identifiers",
+    "Loopback-only inference HTTP client with proxy inheritance disabled",
+    "Authentication and capacity before multipart buffering; one process owns filesystem state",
+    "Worker process isolation, bounded lifetime, sanitized failure types and private files",
+    "Original-source SHA and exact re-extracted JPEG checks in real API rehearsal",
+    "No model access to supplied labels/points; holdout and jury excluded",
+    "38 local tests, Ruff check/format and package build passed for this code"
+  ],
+  "quality_blockers": [
+    "Poor exploratory recall, false positives and high failed-job rate",
+    "Local human explanation/evidence/rule-applicability review pending",
+    "Provisional catalog needs acceptance-transaction scope review",
+    "No frozen session grouping or independent-angle evidence",
+    "Final immutable application image rebuild and final workload tests pending"
+  ],
+  "license_checks": {
+    "exact_model": "Apache-2.0, pinned checkpoint revision",
+    "direct_python_components": "PyAV BSD-3-Clause; FastAPI MIT; Starlette/HTTPX/Uvicorn BSD-3-Clause; Pydantic MIT; Pillow MIT-CMU; python-multipart Apache-2.0",
+    "gpu_pyav_linked_ffmpeg": "8.1.1, runtime license reports LGPL version 3 or later",
+    "gpu_apt_ffprobe": "6.1.1-3ubuntu5, --enable-gpl",
+    "limitation": "Partial direct-component/runtime audit. Final transitive image notices and source obligations are not complete. GPL does not prohibit commercial use.",
+    "source": "https://ffmpeg.org/legal.html"
+  },
+  "workflow_gap": "Harness definition-of-done references code-review-and-quality; that skill was not found. Manual scoped review used; Harness installation unchanged.",
+  "release_ready": false,
+  "runtime_source_comparison": {
+    "exception": "Runtime cli.py is from the earlier base build and lacks the new local evaluation command; its hash is recorded. API inference modules match HEAD. Rebuild final image before release.",
+    "api_inference_modules_match_local": true
+  }
+}

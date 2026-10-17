@@ -9,7 +9,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Create isolated Python 3.12 dependencies and a lockfile; no CUDA frameworks, model weights or UI packages installed.
 - [x] Add a tested read-only dataset provenance/integrity command and run it on the actual `open.zip`.
 - [x] Reread the complete attached case and write the Obsidian GPU, training and requirements guides.
-- [ ] Backend mechanics pass local tests; actual GPU integration, task quality and final UI remain pending. Setup success does not satisfy product acceptance.
+- [ ] Backend mechanics pass local tests and actual offline GPU API calls; semantic acceptance, task quality and final UI remain pending. Setup success does not satisfy product acceptance.
 
 ## Hyperstack delegation
 
@@ -32,22 +32,23 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 
 - [x] Task 3: Implement exact public/internal contracts and semantic invariants; strict verdict, JPEG and supplied-frame/rule checks are covered by tests.
 - [x] Task 4: Decode MOV video only, retain normalized source PTS, implement bounded coverage/fine samples and source JPEG re-extraction; VFR, rotation, source mutation and corrupt/duration checks pass.
-- [ ] Task 5: Wrap resident local Qwen/vLLM with structured outputs and adapter slot.
+- [x] Task 5: Wrap resident local Qwen/vLLM with structured outputs, pinned readiness and model-independent observation boundaries. Actual offline development API calls work; no adapter is enabled.
 - [ ] Task 6: Produce one real locally verified positive/negative result through the full temporal/rule/evidence pipeline.
-- [x] Task 7: Implement authenticated asynchronous POST/GET, two-slot admission, atomic private records, process deadlines/restart failures and bounded upload. Local contract/failure tests pass; actual GPU integration follows in Task 8.
+- [x] Task 7: Implement authenticated asynchronous POST/GET, two-slot admission, atomic private records, process deadlines/restart failures and bounded upload. Local contract/failure tests and real GPU calls pass mechanically; human review follows in Task 8.
 - [ ] Task 8: Verify upload/poll/result mechanics through the API and decode returned evidence locally. Do not build the UI yet.
+- [x] Task 8 mechanical portion: real POST/GET, two verdict shapes, source-timed JPEG decoding and exact source re-extraction exercised offline. This does not complete local semantic review.
 - [ ] **First backend milestone:** real positive/negative development videos complete POST/GET with valid schema, source JPEGs, times, rule references and no manual inference.
 
 ## Phase 2
 
-- [ ] Task 9: Evaluate all development recording groups with frozen run manifests and local semantic review.
+- [ ] Task 9: Evaluate all development recording groups with frozen run manifests and local semantic review. First exploratory baseline tested 28/31 before its three-failure stop: 0 TP, 8 TN, 9 FN, 11 failed. The second tested 24/31: 1 TP, 6 TN, 2 FP, 6 FN and 9 failed. Both quality gates failed; receipts `.context/verify/baseline-1a56beb.json` and `.context/verify/baseline-cce5a1d.json`.
 - [ ] Task 10: Keep measured sampling/predicate/evidence improvements; add a real different-angle smoke set if available.
 - [ ] Task 11: Either record why adapter training remains unjustified, or run only the budget follow-up's bounded LoRA experiment and promotion gate. No first-version QLoRA is required.
 - [ ] Checkpoint: quality improvements do not add negative false positives or violate time/memory constraints; no jury/holdout tuning.
 
 ## Phase 3
 
-- [ ] Task 12: Pass one/two-job timing, five-job rehearsal, offline operation and failure recovery; record actual costs and limits.
+- [ ] Task 12: Pass one/two-job timing, five-job rehearsal, offline operation and failure recovery; record actual costs and limits. Offline real API calls and a two-job check passed (both done in about 12.3 s, third HTTP 429); full workload and final image checks remain open.
 - [ ] Task 13: Freeze all selections, run the locked holdout once, report every error/limitation honestly.
 - [ ] Task 14: Ask the user for exact UI libraries once backend mechanics work; agree libraries and screen/state specification before building the Next.js App Router/TypeScript frontend. Verify the complete browser workflow.
 - [ ] Task 15: Deploy the exact working container, verify HTTPS/public port, privately hand off the jury key and document usage/categories/limitations.

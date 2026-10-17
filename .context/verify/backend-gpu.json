@@ -1,0 +1,51 @@
+{
+  "checked_at_utc": "2026-10-17T12:22:07.408046+00:00",
+  "status": "offline_backend_mechanics_exercised_quality_failed_vm_deleted",
+  "authorization": "User authorized Hyperstack management within $30 and confirmed organizer permission for open.zip development footage on the dedicated Canada VM.",
+  "provider": "Hyperstack",
+  "region": "CANADA-1",
+  "flavor": "n3-A100x1",
+  "gpu": "1x A100 PCIe 80GB",
+  "precision": "BF16",
+  "model": "Qwen/Qwen3-VL-8B-Instruct",
+  "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+  "adapter": null,
+  "training_performed": false,
+  "container_network": "none",
+  "source_hash_receipt": "backend-runtime-metadata.json",
+  "local_tests": "38 passed for be6249e; Ruff and package build passed",
+  "development_videos_transferred": 31,
+  "holdout_or_jury_videos_used": 0,
+  "runs": {
+    "1a56beb": "28/31, stopped after 3 consecutive failures; quality failed",
+    "cce5a1d": "24/31, stopped after 3 consecutive failures; quality failed",
+    "be6249e": "6 selected regression cases, 2 done and 4 failed; no positive event, quality failed"
+  },
+  "evidence": "Three emitted JPEGs in cce5a1d matched source re-extraction; semantic/legal review remains pending.",
+  "concurrency": "Two selected normal clips admitted and done in about 12.275 s; third received HTTP 429.",
+  "billing": {
+    "compute_usd_hour": 1.35,
+    "public_ip_usd_hour": 0.00672043,
+    "session_credit_before_usd": 29.773879928333322,
+    "credit_after_usd": 28.409622162611036,
+    "observed_session_credit_reduction_usd": 1.3642577657222859,
+    "observed_total_reduction_from_30_usd": 1.5903778373889637,
+    "qualification": "Account snapshots, not final invoice; settlement can lag."
+  },
+  "cleanup": {
+    "delete_deadline_utc": "2026-10-17T13:19:31.008608+00:00",
+    "actual_absent_confirmation_utc": "2026-10-17T12:22:07.408046+00:00",
+    "provider_vm_count": 0,
+    "provider_volume_count": 0,
+    "local_and_vm_cleanup_guards_were_armed": true
+  },
+  "private_backup": {
+    "path": "~/.local/share/forte26/development-rehearsal/backend-private-results.tgz",
+    "sha256": "142887cd9db22aaa9d01f28cd34ea2ba6e7d2123cc082e17c804161ceec805b4",
+    "bytes": 935661,
+    "verified": true,
+    "excludes": "source MOVs already on Mac, transient decoded frames and raw model log"
+  },
+  "next_step": "Local human review of three cases, recording-group review and missing-category/rule diagnosis before training or UI.",
+  "release_ready": false
+}

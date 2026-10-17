@@ -63,6 +63,6 @@ The case permits event types absent from the supplied training set. Candidate ob
 
 The case defines local inference as models running inside the team's deployed service, which fits our own model on a rented VM. Section 10 separately prohibits passing jury videos to third parties. It does not explicitly settle whether an infrastructure provider is allowed. The user confirmed organizer permission on 17 October 2026 for development footage on our dedicated Hyperstack VM in Canada. That development hosting gate is resolved. Jury videos remain excluded from training and model selection.
 
-The case gives a submission time of 12:00 but does not establish a date or timezone in the attached text. Record the organizer's actual event deadline before scheduling the final deployment. Neither GPU speed, cross-angle accuracy nor adapter improvement has been measured yet.
+The case gives a submission time of 12:00 but does not establish a date or timezone in the attached text. Record the organizer's actual event deadline before scheduling the final deployment. Actual offline GPU API timings and source-frame provenance have been measured; exploratory task quality failed. See `development-rehearsal.md`. Cross-angle accuracy and adapter improvement remain unmeasured.
 
 The product repository is `/Users/itsaibarr/conductor/repos/fortebank-datathon-26`. Its specification and implementation checklist carry these acceptance checks. See [[GPU rental and access guide]], [[Training process and expected results]] and [[Computer vision stack and a 30 dollar GPU budget]].

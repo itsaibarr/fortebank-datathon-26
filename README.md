@@ -4,7 +4,7 @@ Local video review service under development. The approved design uses Qwen3-VL-
 
 ## Current setup
 
-The backend implements authenticated asynchronous MOV jobs, source-timed decoding, local VLM calls, candidate refinement, evidence verification and public-rule mapping. Its 31 local tests pass. The first GPU check proved the pinned model on synthetic images; complete development-video API verification is still pending. There is no trained adapter or UI. Keep model weights and competition files outside this repository.
+The backend implements authenticated asynchronous MOV jobs, source-timed decoding, local VLM calls, candidate refinement, evidence verification and public-rule mapping. Its 38 local tests pass. Real development videos have traversed the offline GPU API, including source-verified JPEG evidence. Detection quality fails the acceptance gate: the second exploratory run tested 24 of 31 videos and returned 1 TP, 6 TN, 2 FP, 6 FN and 9 failed jobs. Human semantic review is pending. There is no trained adapter or UI. See `docs/development-rehearsal.md`; keep private content outside this repository.
 
 ```bash
 uv sync --frozen
@@ -33,4 +33,4 @@ Obsidian notes are in `/Users/itsaibarr/Documents/Obsidian Vault/Projects/ForteB
 - `Case requirements and implementation checks.md`
 - `Computer vision stack and a 30 dollar GPU budget.md`
 
-The GPU smoke scripts run on an already-authorized machine; they do not rent hardware or call a paid AI API. The observed account-credit reduction for the completed check was about $0.23, leaving about $29.77 at the post-deletion snapshot. Full-video quality and latency still need evaluation. User acceptance is a working end-to-end service, not the completion of training.
+The GPU smoke scripts run on an already-authorized machine; they do not rent hardware or call a paid AI API. The first synthetic check used about $0.23. The separate development rehearsal, its billing receipt and remaining quality work are recorded in `docs/development-rehearsal.md`. User acceptance is a working end-to-end service with reviewed evidence, not the completion of training.

@@ -1,9 +1,11 @@
-# Doc index - generated 2026-10-17, 10 files
+# Doc index — generated 2026-10-17, 12 files
 - AGENTS.md — # Agent instructions
 - CLAUDE.md — # ForteBank Datathon 26 orientation
 - README.md — # ForteBank Datathon 26
 - SPEC.md — # ForteBank Datathon 26 product specification
+- docs/backend.md — # Run the backend and verify a private result
 - docs/case-requirements.md — # The plan covers the case but the product still has to pass its checks
+- docs/development-rehearsal.md — # Development rehearsal: mechanics work, detection quality does not pass
 - docs/gpu-runbook.md — # Verified GPU setup and repeatable model check
 - docs/setup-sources.md — # Setup source checks on 17 October 2026
 - tasks/plan.md — # Implementation plan for ForteBank Datathon 26

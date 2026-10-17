@@ -1,7 +1,7 @@
 # ForteBank Datathon 26 orientation
 
 ## What this is
-Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 31 local tests pass. Full GPU-backed development-video verification is pending; no trained adapter or UI exists.
+Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 38 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. Local human semantic review is pending; no trained adapter or UI exists. Read `docs/development-rehearsal.md` before further experiments.
 
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
@@ -30,6 +30,7 @@ Local cash-operation video review service. Contracts, MOV decoding, loopback VLM
 - `tests/test_dataset.py` checks wrong inputs, integrity failures and CLI behavior.
 - `tasks/todo.md` records actual completed tasks; do not mark future GPU/UI work done.
 - `docs/case-requirements.md` maps the complete case to submission checks.
+- `docs/development-rehearsal.md` records actual development runs, quality blockers and the private human-review procedure.
 
 ## Settled decisions
 - Qwen/Qwen3-VL-8B-Instruct BF16, exact revision in configuration; InternVL3_5-8B fallback. Main VLM remains at least 8B.
@@ -48,7 +49,7 @@ Local cash-operation video review service. Contracts, MOV decoding, loopback VLM
 - Local humans review private semantics. Keep holdout and jury footage out of tuning/training.
 - User confirmed organizer permission for development footage on the dedicated Hyperstack VM in Canada. Private videos/results never enter Git or remote AI chat. Jury data remains excluded from training and model selection.
 - Hyperstack credential and SSH private key live outside Git under `~/.config/forte26`; never print/copy their contents into logs, Obsidian or memory. API request headers must come from the private header file, not command arguments.
-- Dedicated project environment and public keypair remain available. After the user funded the account, one VM passed the public/synthetic offline check and was deleted; the provider then reported zero VMs and volumes. Private provisioning state records its lifecycle and IDs outside Git. About $29.77 remained at the post-deletion snapshot. See `docs/gpu-runbook.md` before another rental.
+- Dedicated project environment and public keypair remain available. After the user funded the account, one VM passed the public/synthetic offline check and was deleted; the provider then reported zero VMs and volumes. Private provisioning state records its lifecycle and IDs outside Git. The later development rehearsal is also closed: zero VMs/volumes, $28.41 latest credit snapshot (settlement may lag). See `.context/verify/backend-gpu.json` and `docs/development-rehearsal.md` before another rental.
 - HTTP-reflection and SSH source IPs differed on the old connection; the modem connection matched. Use a current `/32` SSH rule, the dedicated known-host file and a project control socket. Initial host trust used TOFU because provider console-log retrieval failed; do not claim independent console verification.
 - Stopped Hyperstack VMs still bill. The user delegated lifecycle management; delete only this project's recorded resource IDs after preserving outputs or at its budget/time limit. Do not touch other account resources. Plan automatic cleanup and reserve before paid allocation.
 

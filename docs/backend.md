@@ -1,6 +1,6 @@
 # Run the backend and verify a private result
 
-The API and temporal pipeline are implemented. Local tests use synthetic MOV files and injected observations. A synthetic GPU check verified the exact Qwen checkpoint. Full development-video accuracy and latency still require a real API rehearsal.
+The API and temporal pipeline are implemented. Local tests use synthetic MOV files and injected observations. Real development videos have completed the offline GPU API with source-verified evidence. Detection quality has failed the exploratory acceptance gate; semantic correctness still needs local human review. See `development-rehearsal.md` for actual counts and limitations.
 
 ## A job follows one path
 
@@ -8,7 +8,7 @@ The API and temporal pipeline are implemented. Local tests use synthetic MOV fil
 2. Accept exactly one multipart field named `file`, with a `.mov` filename. Limit the entire body to 256 MiB and upload to 30 seconds. Probe one video stream, at most 180 seconds and 8.4 million pixels. Audio is ignored.
 3. Save the source privately and return HTTP 202 with `job_id`. GET `/api/v1/jobs/{job_id}` reads its atomic state.
 4. A separate worker decodes the clip and records each source presentation timestamp. It samples overlapping 16-second windows with a 12-second stride at roughly one frame per second, up to 16 images per call.
-5. The loopback Qwen3-VL-8B model returns candidate events as supplied frame IDs. An 8-second window around each candidate is inspected at two frames per second. A separate model call checks the proposed evidence and every public-rule prerequisite.
+5. The loopback Qwen3-VL-8B model proposes candidates as supplied frame IDs. An 8-second neighborhood is inspected at two frames per second. Separate verification checks the evidence and every public-rule prerequisite. Before reporting, an expanded context check includes the coarse candidate's source-frame envelope; counterevidence vetoes the event. Guessed bounds are normalized around the decisive source frame for context and deduplication; they are not verified action boundaries.
 6. Unsupported candidates are discarded. Unresolved visibility cannot silently become a clean negative. A supported event uses 1–3 JPEGs re-extracted from the unchanged original source, with actual normalized source timestamps.
 7. The application adds the exact catalog citation and cautious wording. It validates the final JSON and atomically changes the state to `done` or `failed`. The deadline is 270 seconds from upload start; terminal states cannot be overwritten.
 

@@ -1,0 +1,31 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "packages": {
+    "vllm": "0.31.0",
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "av": "17.1.0",
+    "fastapi": "0.143.3",
+    "starlette": "1.8.0",
+    "httpx": "0.28.1",
+    "pydantic": "2.14.1",
+    "pillow": "12.3.0"
+  },
+  "source_sha256": {
+    "rules.py": "7c4b4d06924fb46a8c436a667b02bdb02ffbad54520fe47c5f3a2084a7118e36",
+    "jobs.py": "55cf231cde71a77af4b13f0c3ede330a7e2ddc444ca91d5868a7e85aaf6376eb",
+    "cli.py": "31eafc77fc6f66318eb4b328f52fc4172425aceda0444bbfd3cdc5d70cfb70df",
+    "video.py": "1f4be94cd1680c28231542f8671cf89adb07274fa9dc8751e83c5a2b6c2f5110",
+    "__init__.py": "b01cfa5ab0f9a8b7c6034896e6034a1ee0d729cf91a9b15eb1acdfb1d6ac9e48",
+    "dataset.py": "ea7433fdf32b54502e3bc2e3c6beb3b299011635cdc3a0a0e6b926ba77999788",
+    "inference.py": "dc5ecabd77f591eb2e97fb5dc9ac263f1ec5a4a4c7374dca15c9dd54fbbd6351",
+    "settings.py": "e98f718d18be8d5797a0186522a65fa242e1dbc8af40a8644de6557206e6f0c2",
+    "contracts.py": "dd7604413df32ddaf11cf943869c1ebb8b1505798633890820519ec46e07c1a2",
+    "api.py": "3106192bfaeb43544e85cae459c9bc07eb51ad9ab9b5677e9b8187c210f68c95",
+    "pipeline.py": "35a7dea42a5131aae394ae001efb03ded2058253506926e3b688baf7589f1f8e",
+    "worker.py": "62633c648ba961ca0178aaa352a20066933a9eb499b89d2005a5346c2d70e3ad",
+    "data/rules.json": "17d675da12174379af40b1df49878b1150d5faec83aa51c644ddbee8a18e2077"
+  },
+  "model_snapshot": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+  "adapter": null
+}
