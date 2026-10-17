@@ -74,6 +74,6 @@ See `.context/DOC-INDEX.md`. Regenerate with `bash /Users/itsaibarr/harness/agen
   for `role_bindings`, `view_relations` and partial `view_observations`. Reflections
   share a canonical local person only when a human identifies the owner. Responses
   for all three pilots supply initial mappings and one independent same-person join;
-  one item remains unclear. Two segment ranges now have identity-only confirmation;
+  one item remains unclear. Four segment ranges across two pilots now have identity-only confirmation;
   nested revisions retain the exact inputs behind prior corrections. Full role/action intervals, boxes, areas and training
   gates remain pending. Do not place private role/scene corrections in Git or shared memory.
