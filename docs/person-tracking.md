@@ -3,9 +3,9 @@
 The steps 1–2 workflow is implemented. A CPU run processed all 31 allowlisted
 development recordings offline and prepared local review packets. **No complete
 person/role/action pilot is approved, and no training targets are released.**
-The three original review cases are priority items. One subsequent human response
-has supplied role/view mappings; full interval and geometry review remains open.
-Their narrative corrections
+The three original review cases are priority items. Human responses now supply
+role/view mappings for two recordings and one explicit same-person join; full
+interval and geometry review remains open. Their narrative corrections
 are preserved, with explicit pending bindings to outlined segments/source frames.
 A local human must finish those bindings and review the tracks, areas and actions.
 
@@ -256,16 +256,31 @@ not actor correctness. Aggregate measurements and remaining gates are in
 
 ## Human view-mapping follow-up
 
-The first received response is preserved privately with its verbatim wording,
-reviewer source and receipt time. Four named view mappings are associated with
-two canonical people, with two reviewed reflection relationships. This does not
-assert that only two people occur in the complete clip, nor approve a continuous
-track, work-area outline, action or full role interval. The canonical annotation
-still has no released role/action training target. The historical regression
-exclusion remains. The original review packet and baseline proposals are intact;
-the private index points to a new immutable reviewed revision.
+Responses for two recordings are preserved privately with verbatim wording,
+reviewer source and receipt time. Nine named view/role mappings are associated
+with four recording-local identity groups, with four reviewed reflection
+relationships and one independently confirmed same-person join. The groups are
+not a verified count of all physical people. Full segments, geometry, work areas,
+actions and role intervals remain unapproved, and no role/action training target
+is released. The historical regression exclusion remains. Original review packets
+and baseline proposals are intact; the private index points to immutable reviewed
+revisions. The aggregate separates proposed, confirmed and rejected joins.
 
 Review regeneration now retains all previously cited source-frame images,
 including diagnostic reference views, before adding new candidate views. The
 packet displays recorded mappings beside pending interval/geometry gates rather
 than treating mirror detections as additional physical people.
+
+The follow-up aggregate receipt is
+`.context/verify/person-view-review-followup-20261017.json`; the earlier receipt
+remains a historical checkpoint.
+
+These pilots check source binding and annotation errors. Recording-local IDs
+are annotation references, not employment classes or features to memorize.
+Generalization to other cameras remains untested. Before any later training,
+review camera/view and session groups without using filenames as evidence, keep
+related recordings and reflected views together, and evaluate on unseen camera
+views when the available development data supports that split. Compare against
+the unchanged model and the position/area baseline required by the steps 3–4
+proposal. If camera diversity is unavailable, report that limit explicitly;
+several windows from one recording do not supply independent evidence.

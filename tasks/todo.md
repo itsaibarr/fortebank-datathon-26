@@ -23,10 +23,10 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Add versioned source-bound tracks linked to the existing visual/legal annotations, independent geometry/identity/role review, explicit uncertainty and immutable correction revisions.
 - [x] Run the three priority proposal cases, then prepare drafts/local packets for all 31 development groups; preserve original reviews, templates and the regression exclusion. No holdout/jury media included.
 - [x] Re-decode all 29,546 source frames and verify both playback derivatives (59,092 frames); privately re-extract/check 122 source images and 286 crops. These are provenance checks, not semantic approval.
-- [x] Test CVAT XML person boxes/area polygons, mutable roles, occlusion/outside/keyframe flags, actual source bindings, crossing/gap uncertainty and rejection of unreviewed training targets. 97 tests, lint, format and build pass.
-- [x] Record a human role/view response in an immutable v2 revision: four view mappings, two canonical people, two reflection relationships; retain independent temporal, geometry and training gates.
+- [x] Test CVAT XML person boxes/area polygons, mutable roles, occlusion/outside/keyframe flags, actual source bindings, crossing/gap uncertainty and rejection of unreviewed training targets. 101 tests, lint, format and build pass.
+- [x] Record human role/view responses for two recordings in immutable v2 revisions: nine mappings, four local identity groups, four reflection relationships and one explicit same-person join; retain independent interval, geometry and training gates.
 - [ ] Finish native CVAT Community startup and a synthetic server round trip. Docker Hub TLS timeouts/stalled downloads prevented startup; no project containers were created.
-- [ ] Finish actual human bindings for the three cases, check people/segments, work areas and role/action intervals, and measure ID switches/fragments. One human role/view mapping response is recorded; complete interval/geometry review remains pending and no training target is released.
+- [ ] Finish actual human bindings for the three cases, check people/segments, work areas and role/action intervals, and measure ID switches/fragments. Two recordings have human role/view responses; complete interval/geometry review remains pending and no training target is released.
 - [ ] Resolve the role-reference/current-review receipt mismatch and freeze reviewed recording/session groups before later training. Do not infer sessions from filenames.
 
 Runbook: [person-tracking.md](../docs/person-tracking.md). Aggregate receipt:

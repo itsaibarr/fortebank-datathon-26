@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-10-17T17:52:49.337133+00:00",
+  "implementation_commit": "c3a4a4fd4eb6bed1087eaa8e715807e05838becf",
+  "human_review_progress": {
+    "recordings_with_role_view_mapping": 2,
+    "role_view_mappings_recorded": 9,
+    "canonical_identity_groups_with_role_mapping": 4,
+    "verified_distinct_people": null,
+    "reflection_relations_recorded": 4,
+    "identity_joins_confirmed": 1,
+    "full_role_intervals_approved": 0,
+    "action_intervals_approved": 0,
+    "full_segments_approved": 0,
+    "boxes_approved": 0,
+    "training_targets_released": 0
+  },
+  "aggregate_proposals": {
+    "recordings_processed": 31,
+    "proposed_segments": 3567,
+    "proposed_joins": 7745,
+    "confirmed_identity_joins": 1,
+    "rejected_joins": 0,
+    "source_frames": 29546,
+    "detection_frames": 4973,
+    "duration_sec": 987.1,
+    "runtime_sec": 548.7677207890665,
+    "undecodable_ranges": 0
+  },
+  "artifact_contract": {
+    "private_track_sidecar_version": 2,
+    "original_reviews_and_media_preserved": true,
+    "verbatim_human_feedback_preserved": true,
+    "geometry_unchanged": true,
+    "joins_confirmed_only_by_explicit_human_response": true,
+    "source_hash_and_frame_binding_verified": true,
+    "regression_exclusion_retained": true,
+    "session_split_frozen": false
+  },
+  "source_verification": {
+    "recordings_verified": 31,
+    "source_frames_verified": 29546,
+    "playback_frames_verified": 59092,
+    "source_images_reextracted": 122,
+    "source_crops_reextracted": 286,
+    "semantic_quality_established": false
+  },
+  "software_checks": {
+    "pytest_passed": 101,
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "package_build": "passed"
+  },
+  "quality_limits": {
+    "complete_pilot_approved": false,
+    "role_action_interval_quality_measured": false,
+    "observed_id_switches": null,
+    "observed_fragments": null,
+    "camera_generalization_evaluated": false,
+    "native_cvat_server_roundtrip": "pending_image_download_failure",
+    "regression_reference_review_receipt": "pending_mismatch_adjudication"
+  },
+  "new_paid_compute_spend_usd": 0,
+  "training_performed": false,
+  "reserved_or_jury_recordings_included": 0,
+  "public_api_changed": false,
+  "production_detector_changed": false,
+  "private_visual_inspection_by_remote_agent": false
+}
