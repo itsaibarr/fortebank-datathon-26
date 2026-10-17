@@ -56,11 +56,13 @@ def track_metrics(oracle, automatic):
         "reviewed_visible_boxes": visible,
         "matched_boxes": matched,
         "missing_boxes": visible - matched,
-        "false_boxes": false,
+        "false_boxes": None,
+        "unadjudicated_boxes": false,
         "id_switches": switches,
         "fragments": fragments,
         "geometry_recall": fraction(matched, visible),
-        "scope": "reviewed visible oracle ranges only; no role correctness inference",
+        "scope": "reviewed visible box anchors only; unmatched proposals are unadjudicated, "
+        "not false positives; no role correctness inference or complete tracking score",
     }
 
 
