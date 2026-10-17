@@ -1,0 +1,33 @@
+{
+  "status": "complete",
+  "scope": "Documentation/research only; runtime, model and reviewed dataset unchanged",
+  "sources_cited": true,
+  "recommendation_not_options": true,
+  "ev_keys_present": [
+    "ev-pattern-01",
+    "ev-pattern-02",
+    "ev-pattern-03",
+    "ev-pattern-04",
+    "ev-pattern-05",
+    "ev-pattern-06"
+  ],
+  "report": "docs/role-action-training-research.md",
+  "source_register": ".context/verify/domain-research-sources.json#pattern_learning_20261017",
+  "repository_pins": 21,
+  "pinned_source_files": 32,
+  "agent_reach_used": false,
+  "training_performed": false,
+  "gpu_allocated": false,
+  "recognition_quality_established": false,
+  "checks": [
+    "JSON parse and source-pin consistency",
+    "Document links and whitespace",
+    "GitHub handoff commands exercised"
+  ],
+  "unexecuted": [
+    "Annotation pilot",
+    "Model training/memory smoke",
+    "Private footage benchmark",
+    "Full-clip latency validation"
+  ]
+}

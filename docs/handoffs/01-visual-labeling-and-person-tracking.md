@@ -18,6 +18,8 @@ before training or legal detection can improve.
 Do not train a model, issue violation labels, change the public jury API, replace
 the production detector, expand legal retrieval or build the product frontend.
 The resulting labels must be usable for later role/action training and evaluation.
+The subsequent steps 3–4 proposal is in `docs/role-action-training-research.md`;
+read its target requirements, but do not execute training under this handoff.
 
 **Workspace and existing work**
 
@@ -59,6 +61,56 @@ The archive has 40 unique recordings: 31 development and nine reserved recording
 Use only the development allowlist. Do not open the reserved recordings or jury
 footage for this task. Keep duplicates and continuous recording sessions together
 in any later split. Do not infer session boundaries or independence from filenames.
+
+**Find and reuse GitHub projects directly**
+
+Use GitHub CLI and primary repositories. The user explicitly excludes Agent Reach
+for this work; that instruction overrides older research defaults in project docs.
+Search before implementing an annotation tool or tracker from scratch:
+
+```bash
+gh search repos --topic multi-object-tracking --sort stars --limit 20 \
+  --json fullName,url,updatedAt
+gh search repos annotation --topic video-annotation --sort stars --limit 20 \
+  --json fullName,url,updatedAt
+gh search repos '"action recognition"' --match name,description --sort stars \
+  --limit 20 --json fullName,url,updatedAt
+gh repo view cvat-ai/cvat --json nameWithOwner,url,licenseInfo,isArchived
+gh repo view roboflow/trackers --json nameWithOwner,url,licenseInfo,isArchived
+gh api repos/roboflow/trackers/commits/HEAD --jq .sha
+gh api repos/roboflow/trackers/readme -H 'Accept: application/vnd.github.raw+json'
+```
+
+Treat search ranking as discovery, then inspect code, current docs, releases,
+checkpoint terms and the relevant feature's availability. Record exact revisions
+and artifact hashes. These projects were checked on 17 October 2026:
+
+| Project | Use here | Boundary |
+| --- | --- | --- |
+| [CVAT Community](https://github.com/cvat-ai/cvat) | Self-hosted video review, box tracks, interpolation and attributes; MIT core. | Humans correct IDs, roles and actions. Preserve PTS in our sidecar; CVAT frame numbers alone are insufficient. |
+| [YOLOX](https://github.com/Megvii-BaseDetection/YOLOX) | Local person-box detector; Apache-2.0 code. | Separately pin/check checkpoint terms and class mapping. It detects people, not cashier employment. |
+| [roboflow/trackers](https://github.com/roboflow/trackers) | Apache-2.0 implementation of ByteTrack and other motion/association trackers with a common interface. | Feed local detector results. Its example's hosted inference path is unnecessary. Appearance/ReID branches are not included in these implementations. |
+| [ByteTrack reference](https://github.com/FoundationVision/ByteTrack) | MIT reference implementation/paper for association and baseline comparison. | Tracking IDs can switch; no cashier/customer classifier is supplied. |
+| [SAM 2](https://github.com/facebookresearch/sam2) | Apache-2.0 code/checkpoints for prompted video segmentation and local correction proposals. | Propagation can drift; masks/boxes and joins still need review. Run separately and import proposals. |
+| [Label Studio](https://github.com/HumanSignal/label-studio) | Apache-2.0 alternative for custom annotation tasks. | Keep as fallback if the pilot exposes a specific CVAT limitation; do not deploy both by default. |
+
+Recommended baseline: **local YOLOX person boxes → ByteTrack through
+`roboflow/trackers` → self-hosted CVAT Community review → existing private
+annotation schema**. Use standalone SAM 2 only where correction propagation helps.
+This recommendation has not been installed or benchmarked on our clips.
+
+CVAT's current [integrated SAM 2 tracker documentation](https://github.com/cvat-ai/cvat/blob/develop/site/content/en/docs/annotation/auto-annotation/segment-anything-2-tracker.md)
+limits that feature to Online/Enterprise. Do not promise a free Community
+integration or upload private footage to CVAT Online. Community can review imported
+proposals without that feature. Keep the [CVAT track export](https://github.com/cvat-ai/cvat/blob/develop/site/content/en/docs/dataset_management/formats/format-cvat.md)
+and source-PTS sidecar together, and verify a round trip including occlusion,
+outside/keyframe flags and mutable role attributes.
+
+[BoxMOT](https://github.com/mikel-brostrom/boxmot) is useful for comparing richer
+tracking/ReID approaches, but its code declares AGPL-3.0. [SAM 3](https://github.com/facebookresearch/sam3)
+uses the custom SAM License and gated checkpoints. Do not substitute either
+silently for the baseline. Detector, tracker, annotation tool and semantic role
+classifier solve different tasks; a stable track is not a verified role label.
 
 **1. Build correct visual reference labels**
 
@@ -156,6 +208,9 @@ formats. At minimum preserve:
 - Explicit training eligibility and exclusion reasons. Drafts and unresolved
   role/identity intervals are ineligible; the known regression recording is held out
   of training. Freeze a recording/session-group split before any later training.
+  Separately reviewed views that intentionally cannot establish a role/action may
+  supply explicit abstention targets. Keep those distinct from unresolved review
+  disagreements or uncertain identity joins.
 
 Keep private derivatives under a new versioned directory inside the private root;
 do not overwrite original reviews or media. Store all scene descriptions and
@@ -181,8 +236,10 @@ fixtures, general instructions and aggregate measurements may enter Git or chat.
 - Use the repository's Harness workflow and isolated dependencies. Follow relevant
   skill instructions, add meaningful failing tests before changing behavior and
   implement in small verified commits. Preserve unrelated work.
-- Use existing local viewing/review tools. Product frontend work and UI-library
-  selection are outside this handoff. Do not install a new hosted annotation service.
+- Reuse a self-hosted annotation tool from the shortlist where it reduces review
+  work. This permits a private local CVAT Community pilot, not product frontend
+  development. Product UI-library selection remains outside this handoff.
+  Do not install a hosted annotation service or send footage to public demos.
 
 **Required deliverables and acceptance**
 

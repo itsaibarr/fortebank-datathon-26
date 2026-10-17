@@ -8,6 +8,9 @@
 - [x] Separate source-bound visible facts from legal prerequisites/exceptions and explicit review states; 69 local tests, lint/format and package build pass.
 - [x] Prepare 31 private development annotation templates. They are drafts, with zero reviewed training targets; holdout/jury recordings are excluded.
 - [x] Compare pinned 8B/27B models on the same three context variants of one user-corrected role error. 27B fits but neither reliably agrees with the correction; no promotion or training.
+- [x] Update the steps 1–2 handoff with direct GitHub search commands and verified local annotation/tracking projects, excluding Agent Reach at the user's request.
+- [x] Research steps 3–4 and document the proposed supervised role/action experiment, video-classifier baseline, scan cadence and evaluation gates in `docs/role-action-training-research.md`. Research only: no training, installation or GPU rental.
+- [ ] Execute the reviewed person/role/action and tracking pilot from `docs/handoffs/01-visual-labeling-and-person-tracking.md`; prepare reviewed targets and a session-bound split before the training experiment.
 - [ ] Establish genuine reviewed positive controls, recording-date applicability and approved operational cards; complete visible-fact review and resolve split continuity.
 - [ ] Implement and evaluate persistent actor correspondence, transaction phase and production RAG integration against reviewed reference cases.
 - [ ] Reopen optional supervised training only after independent reviewed targets and the existing evaluation gates are satisfied.

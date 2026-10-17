@@ -159,5 +159,547 @@
     "retrieval_receipt": ".context/verify/legal-hybrid-experiments-20261017.json",
     "model_comparison_receipt": ".context/verify/model-size-diagnostic-20261017.json",
     "note": "Initial research collection flags describe that earlier checkpoint; the follow-up collected three official snapshots through the public API."
+  },
+  "pattern_learning_20261017": {
+    "checked_at_utc": "2026-10-17T16:05:02.071240+00:00",
+    "scope": "Steps 1-2 handoff update and steps 3-4 research proposal only; no installs, weights downloads, training, private inference or paid allocation.",
+    "workflow": "Harness category 7 research skill/templates; direct gh CLI/API and primary web sources. Agent Reach explicitly excluded by user.",
+    "report": "docs/role-action-training-research.md",
+    "searches_executed": [
+      "gh search repos 'multi object tracking' --sort stars --limit 8 --json fullName,description,url,updatedAt",
+      "gh search repos --topic multi-object-tracking --sort stars --limit 8 --json fullName,description,url",
+      "gh search repos annotation --topic video-annotation --sort stars --limit 8 --json fullName,description,url",
+      "gh search repos '\"action recognition\"' --match name,description --sort stars --limit 8 --json fullName,description,url",
+      "gh search repos 'temporal action localization' --match name,description --sort stars --limit 8 --json fullName,url",
+      "gh search repos 'temporal action segmentation' --sort stars --limit 8 --json fullName,description,url,updatedAt",
+      "gh search repos VideoMAE --sort stars --limit 8 --json fullName,description,url,updatedAt",
+      "gh search repos Video-R1 --match name,description --sort stars --limit 5 --json fullName,description,url",
+      "gh search repos cashier --match name,description --sort stars --limit 12 --json fullName,url"
+    ],
+    "search_limits": [
+      "Top results and primary seeded repositories inspected; not exhaustive GitHub coverage.",
+      "Broad README/star queries were noisy; topic and name/description searches used instead.",
+      "No verified ready-made cashier/customer/RK compliance checkpoint found in the inspected sources.",
+      "No private scenes or images used in searches or shared artifacts."
+    ],
+    "repo_pins": [
+      {
+        "repo": "cvat-ai/cvat",
+        "url": "https://github.com/cvat-ai/cvat",
+        "commit": "d6d718f1168664617b30b8c74c721efbbf903473",
+        "license_spdx": "MIT",
+        "archived": false,
+        "pushed_at": "2026-10-16T21:33:25Z"
+      },
+      {
+        "repo": "HumanSignal/label-studio",
+        "url": "https://github.com/HumanSignal/label-studio",
+        "commit": "c013134ad91f1cdbba3b7ac5ca3a5eacaf942884",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-10-16T19:48:25Z"
+      },
+      {
+        "repo": "FoundationVision/ByteTrack",
+        "url": "https://github.com/FoundationVision/ByteTrack",
+        "commit": "d1bf0191adff59bc8fcfeaa0b33d3d1642552a99",
+        "license_spdx": "MIT",
+        "archived": false,
+        "pushed_at": "2024-06-19T11:45:05Z"
+      },
+      {
+        "repo": "Megvii-BaseDetection/YOLOX",
+        "url": "https://github.com/Megvii-BaseDetection/YOLOX",
+        "commit": "6ddff4824372906469a7fae2dc3206c7aa4bbaee",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2025-06-08T03:52:54Z"
+      },
+      {
+        "repo": "roboflow/supervision",
+        "url": "https://github.com/roboflow/supervision",
+        "commit": "1fb42a45f8d223909480bdeef9ec19b30a646afb",
+        "license_spdx": "MIT",
+        "archived": false,
+        "pushed_at": "2026-10-17T05:48:01Z"
+      },
+      {
+        "repo": "roboflow/trackers",
+        "url": "https://github.com/roboflow/trackers",
+        "commit": "7f454c8e9338ae6d24c996f8d26ae9120b20d6f8",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-10-17T15:37:21Z"
+      },
+      {
+        "repo": "mikel-brostrom/boxmot",
+        "url": "https://github.com/mikel-brostrom/boxmot",
+        "commit": "060f85a059bd412004e8256139a6355ce346ed51",
+        "license_spdx": "AGPL-3.0",
+        "archived": false,
+        "pushed_at": "2026-10-13T21:19:25Z"
+      },
+      {
+        "repo": "facebookresearch/sam2",
+        "url": "https://github.com/facebookresearch/sam2",
+        "commit": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-05-30T02:29:40Z"
+      },
+      {
+        "repo": "facebookresearch/sam3",
+        "url": "https://github.com/facebookresearch/sam3",
+        "commit": "7f473cfd983d5eb43040ff608f66bff0d7bdcb53",
+        "license_spdx": "NOASSERTION",
+        "archived": false,
+        "pushed_at": "2026-10-14T23:45:15Z",
+        "license_assessment": "Custom SAM License, not a standard permissive SPDX grant; checkpoint access is gated."
+      },
+      {
+        "repo": "open-mmlab/mmaction2",
+        "url": "https://github.com/open-mmlab/mmaction2",
+        "commit": "a5a167dff2399e2d182a60332325f9c0d4663517",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-03-18T04:04:49Z"
+      },
+      {
+        "repo": "MCG-NJU/VideoMAE",
+        "url": "https://github.com/MCG-NJU/VideoMAE",
+        "commit": "14ef8d856287c94ef1f985fe30f958eb4ec2c55d",
+        "license_spdx": "NOASSERTION",
+        "archived": false,
+        "pushed_at": "2023-12-08T13:44:48Z",
+        "license_assessment": "README declares CC-BY-NC-4.0 for most of project; GitHub license API is NOASSERTION."
+      },
+      {
+        "repo": "OpenGVLab/VideoMAEv2",
+        "url": "https://github.com/OpenGVLab/VideoMAEv2",
+        "commit": "29eab1e8a588d1b3ec0cdec7b03a86cca491b74b",
+        "license_spdx": "MIT",
+        "archived": false,
+        "pushed_at": "2024-10-08T05:04:52Z"
+      },
+      {
+        "repo": "google-deepmind/videoprism",
+        "url": "https://github.com/google-deepmind/videoprism",
+        "commit": "c6eba0ece3dd49a24ffc44582966997a4a59f1d8",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-10-08T18:41:43Z",
+        "license_assessment": "Apache-2.0 software; other repository materials CC-BY-4.0. Selected HF model card declares Apache-2.0."
+      },
+      {
+        "repo": "QwenLM/Qwen3-VL",
+        "url": "https://github.com/QwenLM/Qwen3-VL",
+        "commit": "96588727e44c78b25ba03ea03b8e12f7e64fd0da",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-01-30T04:47:30Z"
+      },
+      {
+        "repo": "modelscope/ms-swift",
+        "url": "https://github.com/modelscope/ms-swift",
+        "commit": "80e55df909c83d198ad1091a6cebceb5428a46ff",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-10-16T10:08:47Z"
+      },
+      {
+        "repo": "hiyouga/LlamaFactory",
+        "url": "https://github.com/hiyouga/LlamaFactory",
+        "commit": "1fded918ac4723ac9966363f51ed4500866c5d1d",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-10-10T07:29:23Z"
+      },
+      {
+        "repo": "huggingface/trl",
+        "url": "https://github.com/huggingface/trl",
+        "commit": "6d6901c5e3963108076131ac4979d344566b13a2",
+        "license_spdx": "Apache-2.0",
+        "archived": false,
+        "pushed_at": "2026-10-16T17:10:07Z"
+      },
+      {
+        "repo": "sj-li/MS-TCN2",
+        "url": "https://github.com/sj-li/MS-TCN2",
+        "commit": "f423a9e65f4ccb1cd7322eb9f94946a19e787993",
+        "license_spdx": "MIT",
+        "archived": false,
+        "pushed_at": "2023-02-26T05:45:08Z"
+      },
+      {
+        "repo": "happyharrycn/actionformer_release",
+        "url": "https://github.com/happyharrycn/actionformer_release",
+        "commit": "61ea7eb9308a568b0cf45e3804830836e30061de",
+        "license_spdx": "MIT",
+        "archived": false,
+        "pushed_at": "2024-04-11T04:38:14Z"
+      },
+      {
+        "repo": "tulerfeng/Video-R1",
+        "url": "https://github.com/tulerfeng/Video-R1",
+        "commit": "59d65c347e44efa71be27abf9d89b4a2bb7d1c05",
+        "license_spdx": null,
+        "archived": false,
+        "pushed_at": "2025-12-14T14:22:08Z",
+        "license_assessment": "No standard license reported by repository API; research reference only, component reuse unapproved."
+      },
+      {
+        "repo": "nowshek28/guardian-vision",
+        "url": "https://github.com/nowshek28/guardian-vision",
+        "commit": "199e487e95b0d813ff714e53250757ab8e6a10d2",
+        "license_spdx": null,
+        "archived": false,
+        "pushed_at": "2025-11-13T00:46:31Z",
+        "assessment": "Rejected as learned cashier/customer solution: README uses predefined role zones and danger/no-danger hand classifier; not installed."
+      }
+    ],
+    "pinned_source_files": [
+      {
+        "repo": "cvat-ai/cvat",
+        "path": "README.md",
+        "commit": "d6d718f1168664617b30b8c74c721efbbf903473",
+        "url": "https://github.com/cvat-ai/cvat/blob/d6d718f1168664617b30b8c74c721efbbf903473/README.md",
+        "sha256": "52abb2393f8e49b6b88b233dd671913cb8338e248658e17a5ab0105d80f00f0e",
+        "bytes": 14214
+      },
+      {
+        "repo": "cvat-ai/cvat",
+        "path": "site/content/en/docs/annotation/auto-annotation/segment-anything-2-tracker.md",
+        "commit": "d6d718f1168664617b30b8c74c721efbbf903473",
+        "url": "https://github.com/cvat-ai/cvat/blob/d6d718f1168664617b30b8c74c721efbbf903473/site/content/en/docs/annotation/auto-annotation/segment-anything-2-tracker.md",
+        "sha256": "ef4be70ad5ba672fa6744aab834200f3e99d2e67fdcea99f6b9b79262ecbc0db",
+        "bytes": 11208
+      },
+      {
+        "repo": "cvat-ai/cvat",
+        "path": "site/content/en/docs/dataset_management/formats/format-cvat.md",
+        "commit": "d6d718f1168664617b30b8c74c721efbbf903473",
+        "url": "https://github.com/cvat-ai/cvat/blob/d6d718f1168664617b30b8c74c721efbbf903473/site/content/en/docs/dataset_management/formats/format-cvat.md",
+        "sha256": "85e3cb53169c49b8aa16313995a551d233739c88c7e61ffd932baf26789eb9d9",
+        "bytes": 22319
+      },
+      {
+        "repo": "HumanSignal/label-studio",
+        "path": "README.md",
+        "commit": "c013134ad91f1cdbba3b7ac5ca3a5eacaf942884",
+        "url": "https://github.com/HumanSignal/label-studio/blob/c013134ad91f1cdbba3b7ac5ca3a5eacaf942884/README.md",
+        "sha256": "40700321776602f0ee8e84bb1bc54eaa3a526dba95aa44658e2a1ee48bbcbd16",
+        "bytes": 11488
+      },
+      {
+        "repo": "FoundationVision/ByteTrack",
+        "path": "README.md",
+        "commit": "d1bf0191adff59bc8fcfeaa0b33d3d1642552a99",
+        "url": "https://github.com/FoundationVision/ByteTrack/blob/d1bf0191adff59bc8fcfeaa0b33d3d1642552a99/README.md",
+        "sha256": "126d307a421e4421aa9d3917e7849d1cf63c95f7b36864e1ca92a9d1a451c247",
+        "bytes": 15448
+      },
+      {
+        "repo": "Megvii-BaseDetection/YOLOX",
+        "path": "README.md",
+        "commit": "6ddff4824372906469a7fae2dc3206c7aa4bbaee",
+        "url": "https://github.com/Megvii-BaseDetection/YOLOX/blob/6ddff4824372906469a7fae2dc3206c7aa4bbaee/README.md",
+        "sha256": "023dbf0a5f2c48c944cc6220f9c4750febe2ceafc535445278455186bec7ec6b",
+        "bytes": 13314
+      },
+      {
+        "repo": "roboflow/supervision",
+        "path": "README.md",
+        "commit": "1fb42a45f8d223909480bdeef9ec19b30a646afb",
+        "url": "https://github.com/roboflow/supervision/blob/1fb42a45f8d223909480bdeef9ec19b30a646afb/README.md",
+        "sha256": "763f75cba29aa85b429a5d3ed20c145d18242a5978470a8b8fb49ddee51995db",
+        "bytes": 12313
+      },
+      {
+        "repo": "roboflow/trackers",
+        "path": "README.md",
+        "commit": "7f454c8e9338ae6d24c996f8d26ae9120b20d6f8",
+        "url": "https://github.com/roboflow/trackers/blob/7f454c8e9338ae6d24c996f8d26ae9120b20d6f8/README.md",
+        "sha256": "3780e905f43c79684ee2f8c8b291269fc16c6c50a5af7e9a31f70f1aee53a28f",
+        "bytes": 12288
+      },
+      {
+        "repo": "mikel-brostrom/boxmot",
+        "path": "README.md",
+        "commit": "060f85a059bd412004e8256139a6355ce346ed51",
+        "url": "https://github.com/mikel-brostrom/boxmot/blob/060f85a059bd412004e8256139a6355ce346ed51/README.md",
+        "sha256": "c89e0ba74e84b295a467e3355260d3027508a28348852c514e1a7fffd465731f",
+        "bytes": 14333
+      },
+      {
+        "repo": "facebookresearch/sam2",
+        "path": "README.md",
+        "commit": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+        "url": "https://github.com/facebookresearch/sam2/blob/2b90b9f5ceec907a1c18123530e92e794ad901a4/README.md",
+        "sha256": "eea69ee1042fb30933c5ca5019fbf0f6f9366cec5e792109281b5023a4f1589c",
+        "bytes": 16249
+      },
+      {
+        "repo": "facebookresearch/sam3",
+        "path": "README.md",
+        "commit": "7f473cfd983d5eb43040ff608f66bff0d7bdcb53",
+        "url": "https://github.com/facebookresearch/sam3/blob/7f473cfd983d5eb43040ff608f66bff0d7bdcb53/README.md",
+        "sha256": "da3dd047d18ef9a4b33557bf6f8187cf166218dc8aef40f2e18a67cc5249a502",
+        "bytes": 21417
+      },
+      {
+        "repo": "facebookresearch/sam3",
+        "path": "LICENSE",
+        "commit": "7f473cfd983d5eb43040ff608f66bff0d7bdcb53",
+        "url": "https://github.com/facebookresearch/sam3/blob/7f473cfd983d5eb43040ff608f66bff0d7bdcb53/LICENSE",
+        "sha256": "4dea99bfaa016e21bc860d73f344236bd1e5c4977d1a9a8fd32f822b500ae1be",
+        "bytes": 7353
+      },
+      {
+        "repo": "open-mmlab/mmaction2",
+        "path": "README.md",
+        "commit": "a5a167dff2399e2d182a60332325f9c0d4663517",
+        "url": "https://github.com/open-mmlab/mmaction2/blob/a5a167dff2399e2d182a60332325f9c0d4663517/README.md",
+        "sha256": "6d7610a4c339d1b04a31b34c62e1d5796c1eb1207c2430c6bf977798434fc7ff",
+        "bytes": 25956
+      },
+      {
+        "repo": "open-mmlab/mmaction2",
+        "path": "configs/recognition/videomaev2/README.md",
+        "commit": "a5a167dff2399e2d182a60332325f9c0d4663517",
+        "url": "https://github.com/open-mmlab/mmaction2/blob/a5a167dff2399e2d182a60332325f9c0d4663517/configs/recognition/videomaev2/README.md",
+        "sha256": "77dce54939e2052cbad3bb3b16f82437fe21b53329ee39519befe391ae2a3b07",
+        "bytes": 5711
+      },
+      {
+        "repo": "MCG-NJU/VideoMAE",
+        "path": "README.md",
+        "commit": "14ef8d856287c94ef1f985fe30f958eb4ec2c55d",
+        "url": "https://github.com/MCG-NJU/VideoMAE/blob/14ef8d856287c94ef1f985fe30f958eb4ec2c55d/README.md",
+        "sha256": "126a5c3940706f0b56e04241892c84a5a42513d17f607716028a077ccf7ea364",
+        "bytes": 11480
+      },
+      {
+        "repo": "OpenGVLab/VideoMAEv2",
+        "path": "README.md",
+        "commit": "29eab1e8a588d1b3ec0cdec7b03a86cca491b74b",
+        "url": "https://github.com/OpenGVLab/VideoMAEv2/blob/29eab1e8a588d1b3ec0cdec7b03a86cca491b74b/README.md",
+        "sha256": "ac4a007470ee0be85f249fe52e8e0c705e5a9d93b1df0dd89cfdc1d37da6657a",
+        "bytes": 6294
+      },
+      {
+        "repo": "OpenGVLab/VideoMAEv2",
+        "path": "LICENSE",
+        "commit": "29eab1e8a588d1b3ec0cdec7b03a86cca491b74b",
+        "url": "https://github.com/OpenGVLab/VideoMAEv2/blob/29eab1e8a588d1b3ec0cdec7b03a86cca491b74b/LICENSE",
+        "sha256": "8f03d25fbcffafa2254d4d1414bf2a38423a966006b4a6964ee21f728d610bff",
+        "bytes": 1066
+      },
+      {
+        "repo": "OpenGVLab/VideoMAEv2",
+        "path": "docs/TAD.md",
+        "commit": "29eab1e8a588d1b3ec0cdec7b03a86cca491b74b",
+        "url": "https://github.com/OpenGVLab/VideoMAEv2/blob/29eab1e8a588d1b3ec0cdec7b03a86cca491b74b/docs/TAD.md",
+        "sha256": "42be1b8fe60244470c4480643d88f6eb1ff089b32657815facccba408b4ab92f",
+        "bytes": 1103
+      },
+      {
+        "repo": "OpenGVLab/VideoMAEv2",
+        "path": "docs/FINETUNE.md",
+        "commit": "29eab1e8a588d1b3ec0cdec7b03a86cca491b74b",
+        "url": "https://github.com/OpenGVLab/VideoMAEv2/blob/29eab1e8a588d1b3ec0cdec7b03a86cca491b74b/docs/FINETUNE.md",
+        "sha256": "9b8b2d733a01851d5469a0b9c321727d5263d3d7326be29a8192769b60e1c360",
+        "bytes": 5748
+      },
+      {
+        "repo": "google-deepmind/videoprism",
+        "path": "README.md",
+        "commit": "c6eba0ece3dd49a24ffc44582966997a4a59f1d8",
+        "url": "https://github.com/google-deepmind/videoprism/blob/c6eba0ece3dd49a24ffc44582966997a4a59f1d8/README.md",
+        "sha256": "a27ae0e9216173a1e78969bbd59d581f50c6cc01dba947848ce994c08aea2653",
+        "bytes": 12732
+      },
+      {
+        "repo": "google-deepmind/videoprism",
+        "path": "videoprism/colabs/videoprism_video_classification_demo.ipynb",
+        "commit": "c6eba0ece3dd49a24ffc44582966997a4a59f1d8",
+        "url": "https://github.com/google-deepmind/videoprism/blob/c6eba0ece3dd49a24ffc44582966997a4a59f1d8/videoprism/colabs/videoprism_video_classification_demo.ipynb",
+        "sha256": "c9d317908e5b426bb532a33abfb263447c0780c9fd9863bcd5b05ca72c0922ed",
+        "bytes": 54249
+      },
+      {
+        "repo": "QwenLM/Qwen3-VL",
+        "path": "README.md",
+        "commit": "96588727e44c78b25ba03ea03b8e12f7e64fd0da",
+        "url": "https://github.com/QwenLM/Qwen3-VL/blob/96588727e44c78b25ba03ea03b8e12f7e64fd0da/README.md",
+        "sha256": "fc21106258c51e0b91a652eef12f5925becb146ea8b8c79a4251ac2e89a2f1ac",
+        "bytes": 52828
+      },
+      {
+        "repo": "QwenLM/Qwen3-VL",
+        "path": "qwen-vl-finetune/README.md",
+        "commit": "96588727e44c78b25ba03ea03b8e12f7e64fd0da",
+        "url": "https://github.com/QwenLM/Qwen3-VL/blob/96588727e44c78b25ba03ea03b8e12f7e64fd0da/qwen-vl-finetune/README.md",
+        "sha256": "cba2c1d8286c348f1d63511d7b82fbecff5ec41c1a6093f7d9398d7cf15e9c41",
+        "bytes": 11516
+      },
+      {
+        "repo": "QwenLM/Qwen3-VL",
+        "path": "qwen-vl-finetune/qwenvl/train/train_qwen.py",
+        "commit": "96588727e44c78b25ba03ea03b8e12f7e64fd0da",
+        "url": "https://github.com/QwenLM/Qwen3-VL/blob/96588727e44c78b25ba03ea03b8e12f7e64fd0da/qwen-vl-finetune/qwenvl/train/train_qwen.py",
+        "sha256": "1b16b70d21074f90f8eaf5207707b088e904d5c0df79438875b311bbbc63e511",
+        "bytes": 7308
+      },
+      {
+        "repo": "QwenLM/Qwen3-VL",
+        "path": "qwen-vl-finetune/qwenvl/train/argument.py",
+        "commit": "96588727e44c78b25ba03ea03b8e12f7e64fd0da",
+        "url": "https://github.com/QwenLM/Qwen3-VL/blob/96588727e44c78b25ba03ea03b8e12f7e64fd0da/qwen-vl-finetune/qwenvl/train/argument.py",
+        "sha256": "f418404526a7781fc55bb678baa8c5187f49db9e202ac4af82f3c65c12f3787a",
+        "bytes": 1566
+      },
+      {
+        "repo": "modelscope/ms-swift",
+        "path": "README.md",
+        "commit": "80e55df909c83d198ad1091a6cebceb5428a46ff",
+        "url": "https://github.com/modelscope/ms-swift/blob/80e55df909c83d198ad1091a6cebceb5428a46ff/README.md",
+        "sha256": "66ceebf6a1479b23035825f32330185ff87b0b8c3a55d1299dc8d27ce597e4a8",
+        "bytes": 37262
+      },
+      {
+        "repo": "hiyouga/LlamaFactory",
+        "path": "README.md",
+        "commit": "1fded918ac4723ac9966363f51ed4500866c5d1d",
+        "url": "https://github.com/hiyouga/LlamaFactory/blob/1fded918ac4723ac9966363f51ed4500866c5d1d/README.md",
+        "sha256": "2d61d3ee9a0b7a099800b17b0be7a8ef034ed9b08f43cb32bdac17642cc823dd",
+        "bytes": 70465
+      },
+      {
+        "repo": "huggingface/trl",
+        "path": "README.md",
+        "commit": "6d6901c5e3963108076131ac4979d344566b13a2",
+        "url": "https://github.com/huggingface/trl/blob/6d6901c5e3963108076131ac4979d344566b13a2/README.md",
+        "sha256": "3dca881c91a43ea939bc66f5c94db15d6aa14f16b3a14b482b15229cb4b94df9",
+        "bytes": 9007
+      },
+      {
+        "repo": "sj-li/MS-TCN2",
+        "path": "README.md",
+        "commit": "f423a9e65f4ccb1cd7322eb9f94946a19e787993",
+        "url": "https://github.com/sj-li/MS-TCN2/blob/f423a9e65f4ccb1cd7322eb9f94946a19e787993/README.md",
+        "sha256": "1551cc43cf9722431a4275f6ddb6e02bbe34e46b62c9854b765f0c77fdc4554f",
+        "bytes": 1675
+      },
+      {
+        "repo": "happyharrycn/actionformer_release",
+        "path": "README.md",
+        "commit": "61ea7eb9308a568b0cf45e3804830836e30061de",
+        "url": "https://github.com/happyharrycn/actionformer_release/blob/61ea7eb9308a568b0cf45e3804830836e30061de/README.md",
+        "sha256": "f0431584b4df0702fa08f961fb0038e1277f41c12b7df47b7d2bfed47e59af23",
+        "bytes": 22966
+      },
+      {
+        "repo": "tulerfeng/Video-R1",
+        "path": "README.md",
+        "commit": "59d65c347e44efa71be27abf9d89b4a2bb7d1c05",
+        "url": "https://github.com/tulerfeng/Video-R1/blob/59d65c347e44efa71be27abf9d89b4a2bb7d1c05/README.md",
+        "sha256": "4b1eaa614ed51a218ae6ae0fad8bc2995d5450abc521744753845bf5cf6e85da",
+        "bytes": 9591
+      },
+      {
+        "repo": "nowshek28/guardian-vision",
+        "path": "README.md",
+        "commit": "199e487e95b0d813ff714e53250757ab8e6a10d2",
+        "url": "https://github.com/nowshek28/guardian-vision/blob/199e487e95b0d813ff714e53250757ab8e6a10d2/README.md",
+        "sha256": "dac8d4f12d66e5a6f40c457c5e84c4eda84c21b444cdf3a4ed874e9b5517f979",
+        "bytes": 5020
+      }
+    ],
+    "fetch_errors": [],
+    "sources": [
+      {
+        "ev_key": "ev-pattern-01",
+        "type": "primary repository and feature documentation",
+        "supports": "Separate local detection, association, segmentation and human annotation workflow. No built-in semantic cashier truth.",
+        "confidence": "high about source capabilities; private task quality unmeasured",
+        "urls": [
+          "https://github.com/cvat-ai/cvat",
+          "https://github.com/roboflow/trackers",
+          "https://github.com/FoundationVision/ByteTrack",
+          "https://github.com/Megvii-BaseDetection/YOLOX",
+          "https://github.com/facebookresearch/sam2"
+        ]
+      },
+      {
+        "ev_key": "ev-pattern-02",
+        "type": "primary training source and official docs",
+        "supports": "Qwen3-VL model selection, multi-image/video supervised inputs and attention LoRA. Image-token truncation is a documented hazard.",
+        "confidence": "high about code; proposed recipe and task gain unmeasured",
+        "urls": [
+          "https://github.com/QwenLM/Qwen3-VL/tree/96588727e44c78b25ba03ea03b8e12f7e64fd0da/qwen-vl-finetune",
+          "https://huggingface.co/docs/trl/main/sft_trainer"
+        ]
+      },
+      {
+        "ev_key": "ev-pattern-03",
+        "type": "primary paper, model card and code",
+        "supports": "Frozen video backbone with supervised head; temporal feature localization; actor-specific overlapping annotation precedent.",
+        "confidence": "high about methods; bank-domain transfer unmeasured",
+        "urls": [
+          "https://arxiv.org/abs/2402.13217",
+          "https://huggingface.co/google/videoprism-base-f16r288",
+          "https://github.com/google-deepmind/videoprism",
+          "https://github.com/happyharrycn/actionformer_release",
+          "https://github.com/sj-li/MS-TCN2",
+          "https://research.google.com/ava/"
+        ]
+      },
+      {
+        "ev_key": "ev-pattern-04",
+        "type": "primary paper and official trainer docs",
+        "supports": "Video-R1 SFT cold-start and RL datasets, answer-checked rewards, ordered/shuffled temporal comparison. GRPO multimodal support has exact-model compatibility limits.",
+        "confidence": "high about method; deferral is project recommendation",
+        "urls": [
+          "https://arxiv.org/html/2503.21776v4",
+          "https://github.com/tulerfeng/Video-R1",
+          "https://huggingface.co/docs/trl/main/grpo_trainer"
+        ]
+      },
+      {
+        "ev_key": "ev-pattern-05",
+        "type": "local aggregate diagnostic receipts",
+        "supports": "No reviewed training targets or persistent tracker; one-recording 8B/27B role diagnostic does not justify promotion.",
+        "confidence": "high about recorded state, not domain generalization",
+        "paths": [
+          "docs/model-size-diagnostic.md",
+          ".context/verify/model-size-diagnostic-20261017.json",
+          "docs/handoffs/01-visual-labeling-and-person-tracking.md"
+        ]
+      },
+      {
+        "ev_key": "ev-pattern-06",
+        "type": "primary retail dataset cards, project README and research abstract",
+        "supports": "Related interaction annotations exist, but their labels and cameras do not establish bank employment roles, cash-operation targets or legal completion. Cashier POC uses fixed role zones.",
+        "confidence": "high about documented tasks; transfer quality unmeasured",
+        "urls": [
+          "https://huggingface.co/datasets/standard-cognition/RetailAction",
+          "https://visym.github.io/collector/pip_175k/",
+          "https://github.com/nowshek28/guardian-vision",
+          "https://research.ibm.com/publications/detecting-human-activities-in-retail-surveillance-using-hierarchical-finite-state-machine"
+        ]
+      }
+    ],
+    "video_baseline_model": {
+      "id": "google/videoprism-base-f16r288",
+      "revision": "be719a406d563b66f0ac969e7c94bab8e997c81a",
+      "card_license": "apache-2.0",
+      "repository_other_materials_notice": "CC-BY-4.0",
+      "gated": false,
+      "weights_downloaded": false
+    },
+    "recommendation": "After reviewed labels/session splits: bounded language-attention SFT LoRA of pinned Qwen3-VL-8B; compare same-input untuned base and frozen VideoPrism classifier baseline. Defer RL and production promotion until measured actor/action and runtime results.",
+    "implementation_performed": false,
+    "training_performed": false,
+    "gpu_allocated": false
   }
 }

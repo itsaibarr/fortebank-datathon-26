@@ -1,5 +1,4 @@
 # Doc index — generated 2026-10-17, 18 files
-- .pytest_cache/README.md — # pytest cache directory #
 - AGENTS.md — # Agent instructions
 - CLAUDE.md — # ForteBank Datathon 26 orientation
 - README.md — # ForteBank Datathon 26
@@ -12,6 +11,7 @@
 - docs/handoffs/01-visual-labeling-and-person-tracking.md — # Handoff prompt: correct visual labels and person tracking
 - docs/legal-and-annotation.md — # Local law retrieval and two-layer review
 - docs/model-size-diagnostic.md — # Development role diagnostic, 17 October 2026
+- docs/role-action-training-research.md — # Proposal: train actor-bound facts, then scan the complete recording
 - docs/setup-sources.md — # Setup source checks on 17 October 2026
 - legal/README.md — # Offline official-law releases
 - tasks/plan.md — # Implementation plan for ForteBank Datathon 26
