@@ -129,3 +129,23 @@ def test_selection_preserves_27b_advantage_and_rejects_abstention_gain():
     abstaining = copy.deepcopy(larger)
     abstaining["groups"]["0"]["role_coverage"] = 0
     assert select(eight, abstaining) == "inconclusive"
+
+
+def test_wrong_giver_receiver_direction_fails_actor_correct_event_match(tmp_path):
+    source = create(tmp_path / "release")
+    export(source, tmp_path / "run")
+    inputs = tmp_path / "run/inference/inputs.json"
+    refs = tmp_path / "run/reference/answers.json"
+    expected = read(refs)["cases"]
+
+    def reversed_direction(case, root):
+        answer = dict(expected[case.case_id]["answer"])
+        if case.task == "action":
+            answer["actor_participation"] = "receiver"
+        return Result(answer, 100, 100)
+
+    run_model(inputs, tmp_path / "reversed.json", "8b", reversed_direction)
+    metrics = score(inputs, refs, tmp_path / "reversed.json")["aggregate"]
+    assert metrics["wrong_actor"] == 0
+    assert metrics["0.5"]["fp"] == metrics["0.5"]["fn"] == 2
+    assert metrics["source_validity"] == 1

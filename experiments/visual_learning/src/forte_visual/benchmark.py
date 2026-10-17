@@ -193,6 +193,7 @@ def score(inputs, references, predictions):
             "role_swaps": 0,
             "invalid_contract": 0,
             "invalid_sources": 0,
+            "source_checked": 0,
             "role_asserted": 0,
             "role_correct": 0,
             "roles": 0,
@@ -231,7 +232,13 @@ def score(inputs, references, predictions):
 
         def event(answer, case=case):
             return {
-                "relation": (case.clip_id, answer.actor_id, answer.other_actor_id, answer.value),
+                "relation": (
+                    case.clip_id,
+                    answer.actor_id,
+                    answer.other_actor_id,
+                    answer.actor_participation,
+                    answer.value,
+                ),
                 "interval": (case.frames[answer.start_frame_id], case.frames[answer.end_frame_id]),
                 "clipped": (answer.continues_before_window, answer.continues_after_window),
             }
@@ -241,6 +248,7 @@ def score(inputs, references, predictions):
         if row["status"] not in {"ok", "invalid_answer"}:
             g["failed"] += 1
             continue
+        g["source_checked"] += 1
         try:
             answer = Answer.model_validate(row["answer"])
             if answer.actor_id != ref.actor_id or answer.other_actor_id != ref.other_actor_id:
@@ -249,11 +257,26 @@ def score(inputs, references, predictions):
             # Score independently of the inference contract: an asserted action
             # attributed to another supplied actor is an FP/FN, not disappearing
             # evidence just because the target-actor validator rejected it.
-            all_ids = [answer.start_frame_id, answer.end_frame_id, *answer.evidence_frame_ids]
+            all_ids = [
+                answer.start_frame_id,
+                answer.end_frame_id,
+                *answer.evidence_frame_ids,
+                *answer.other_actor_evidence_frame_ids,
+            ]
             if not set(all_ids) <= case.frames.keys() or answer.actor_id not in case.actors:
                 raise ValueError("Invalid source/track reference")
             if answer.other_actor_id and answer.other_actor_id not in case.actors:
                 raise ValueError("Invalid counterpart")
+            if any(
+                not case.track_boxes[answer.actor_id].get(id)
+                for id in [answer.start_frame_id, answer.end_frame_id, *answer.evidence_frame_ids]
+            ):
+                raise ValueError("Actor has no source-frame box")
+            if answer.other_actor_id and any(
+                not case.track_boxes[answer.other_actor_id].get(id)
+                for id in answer.other_actor_evidence_frame_ids
+            ):
+                raise ValueError("Counterpart has no source-frame box")
             if case.frames[answer.start_frame_id] > case.frames[answer.end_frame_id]:
                 raise ValueError("Unordered source interval")
             try:
@@ -323,6 +346,9 @@ def score(inputs, references, predictions):
             action_coverage=fraction(g["action_asserted"], g["actions"]),
             context_precision=fraction(g["context_correct"], g["context_asserted"]),
             context_coverage=fraction(g["context_asserted"], g["contexts"]),
+            source_validity=fraction(
+                g["source_checked"] - g["invalid_sources"], g["source_checked"]
+            ),
             evaluated_minutes=minutes,
             false_events_per_minute=fraction(g["0.5"]["fp"], minutes),
         )
@@ -338,6 +364,7 @@ def score(inputs, references, predictions):
             "role_swaps",
             "invalid_contract",
             "invalid_sources",
+            "source_checked",
             "role_asserted",
             "role_correct",
             "roles",
@@ -369,6 +396,9 @@ def score(inputs, references, predictions):
         action_coverage=fraction(total["action_asserted"], total["actions"]),
         context_precision=fraction(total["context_correct"], total["context_asserted"]),
         context_coverage=fraction(total["context_asserted"], total["contexts"]),
+        source_validity=fraction(
+            total["source_checked"] - total["invalid_sources"], total["source_checked"]
+        ),
         false_events_per_minute=fraction(total["0.5"]["fp"], minutes),
     )
     return {

@@ -83,7 +83,12 @@ def scan_metrics(manifest, annotation, report):
     )
     expected = [
         {
-            "relation": (tuple(sorted(f.segment_ids)), f.counterpart_actor_id, f.value),
+            "relation": (
+                tuple(sorted(f.segment_ids)),
+                f.counterpart_actor_id,
+                f.actor_participation,
+                f.value,
+            ),
             "interval": (f.start_sec, f.end_sec),
         }
         for f in refs
@@ -99,6 +104,7 @@ def scan_metrics(manifest, annotation, report):
             "relation": (
                 tuple(sorted(f["segments"])),
                 counterpart_id(f["other_actor_id"]),
+                f.get("actor_participation", "unclear"),
                 f["value"],
             ),
             "interval": (f["start_sec"], f["end_sec"]),

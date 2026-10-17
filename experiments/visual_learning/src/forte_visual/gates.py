@@ -11,6 +11,14 @@ from forte_visual.release import gate, verify
 def data_gate(release_path, pilot_path, inputs_path, *, training=False):
     release, pairs, receipt = verify(release_path)
     reasons = gate(pairs, training=training)
+    if not training:
+        from forte_visual.benchmark import load_cases
+
+        splits = {m.clip_id: m.split for _, m, _ in pairs}
+        if any(
+            splits[c.clip_id] not in {"development", "validation"} for c in load_cases(inputs_path)
+        ):
+            reasons.append("Selection/evaluation inference accepts development/validation only")
     if release.synthetic:
         reasons.append("Synthetic fixtures cannot open real execution gates")
     if pilot_path is None:
@@ -49,6 +57,9 @@ def resource(path, *, seconds=270):
         expiry = datetime.fromisoformat(receipt["expires_at"])
         if checked.tzinfo is None or expiry.tzinfo is None:
             raise ValueError("Resource receipt requires timezone-aware times")
+        hourly = receipt.get("hourly_total_usd", 0)
+        estimated = hourly * seconds / 3600
+        reservation = receipt.get("reserved_usd", 0)
         if (
             receipt.get("owner") != "visual-learning"
             or receipt.get("project") != "forte26"
@@ -60,6 +71,10 @@ def resource(path, *, seconds=270):
             or (expiry - now).total_seconds() < seconds
             or receipt.get("remaining_project_usd", 0) <= receipt.get("reserve_usd", 1)
             or receipt.get("total_project_ceiling_usd") != 30
+            or hourly <= 0
+            or not estimated
+            <= reservation
+            <= (receipt.get("remaining_project_usd", 0) - receipt.get("reserve_usd", 1))
         ):
             raise ValueError("Resource ownership/offline/live-budget receipt gate closed")
         yield receipt

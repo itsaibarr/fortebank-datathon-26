@@ -140,6 +140,7 @@ def assemble(facts):
                 "segments",
                 "actor_id",
                 "other_actor_id",
+                "actor_participation",
                 "kind",
                 "value",
                 "visibility",
@@ -157,6 +158,10 @@ def assemble(facts):
                 old["end_sec"] = max(old["end_sec"], fact["end_sec"])
                 old["evidence_frame_ids"] = sorted(
                     set(old["evidence_frame_ids"]) | set(fact["evidence_frame_ids"])
+                )
+                old["other_actor_evidence_frame_ids"] = sorted(
+                    set(old.get("other_actor_evidence_frame_ids", []))
+                    | set(fact.get("other_actor_evidence_frame_ids", []))
                 )
                 merged = True
                 break
@@ -269,7 +274,9 @@ def bind_facts(case, raw_facts, m):
         if answer.other_actor_id:
             other = case.actors[answer.other_actor_id]
             if not any(
-                b.frame_id in answer.evidence_frame_ids and not b.outside and not b.occluded
+                b.frame_id in answer.other_actor_evidence_frame_ids
+                and not b.outside
+                and not b.occluded
                 for s in other
                 for b in segments[s].boxes
             ):
@@ -336,6 +343,7 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
         windows = make_windows(m.duration_sec, 16, 12)
         proposals.extend(geometry_proposals(m))
         for start, end in windows:
+            bounds.check()
             case = coarse_case(m, registry, output, start, end, seed)
             try:
                 case.predicted_roles = role_hints(roles, case, m)
@@ -375,6 +383,7 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
             if not times:
                 continue
             try:
+                bounds.check()
                 case = make_case(
                     m,
                     registry,
@@ -419,6 +428,7 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
                 seen.add(key)
                 component = next(ss for ss in people.values() if segment in ss)
                 try:
+                    bounds.check()
                     case = make_case(
                         m,
                         registry,

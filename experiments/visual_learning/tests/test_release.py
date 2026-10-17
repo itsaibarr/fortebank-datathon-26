@@ -115,3 +115,57 @@ def test_private_writer_refuses_any_git_worktree(tmp_path):
     (tmp_path / ".git").write_text("gitdir: synthetic")
     with pytest.raises(ValueError, match="outside Git"):
         private_dir(tmp_path / "private-run")
+
+
+def test_real_release_requires_authoritative_development_allowlist_and_excludes_reserved(release):
+    r = json.loads(release.read_bytes())
+    r["synthetic"] = False
+    release.write_text(json.dumps(r))
+    with pytest.raises(ValueError, match="allowlist"):
+        verify(release)
+    allow = release.parent / "selection.json"
+    allow.write_text(
+        json.dumps(
+            {
+                "groups": [
+                    {
+                        "split": "development",
+                        "neutral_file": "clip000.mov",
+                        "recording_id": r["files"]["clip000/source.mov"],
+                    },
+                    {
+                        "split": "holdout",
+                        "neutral_file": "clip001.mov",
+                        "recording_id": r["files"]["clip001/source.mov"],
+                    },
+                ]
+            }
+        )
+    )
+    r["development_allowlist"] = allow.name
+    r["files"][allow.name] = digest(allow)
+    release.write_text(json.dumps(r))
+    with pytest.raises(ValueError, match="Reserved"):
+        verify(release)
+
+
+def test_training_gate_counts_independent_groups_per_action_not_windows(tmp_path):
+    path = create(tmp_path / "release", count=6)
+    raw = json.loads(path.read_bytes())
+    for i, clip in enumerate(raw["clips"]):
+        manifest_path = path.parent / clip["manifest"]
+        m = json.loads(manifest_path.read_bytes())
+        if i:
+            m.update(
+                split="train" if i <= 3 else "validation",
+                split_frozen=True,
+                training_eligible=True,
+                exclusion_reasons=[],
+            )
+        manifest_path.write_text(json.dumps(m))
+        raw["files"][clip["manifest"]] = digest(manifest_path)
+    path.write_text(json.dumps(raw))
+    pairs = verify(path)[1]
+    assert gate(pairs, training=True) == []
+    pairs[-1][1].session_group = pairs[-2][1].session_group
+    assert gate(pairs, training=True)  # another crop/session copy cannot satisfy floor

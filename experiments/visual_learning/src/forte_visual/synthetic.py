@@ -10,7 +10,10 @@ from PIL import Image, ImageDraw
 from forte_visual.io import digest, private_dir, write
 
 
-def create(root: Path, count=2):
+def create(root: Path, count=2, duration=8):
+    frame_count = int(duration * 2)
+    if frame_count < 16 or frame_count > 360:
+        raise ValueError("Synthetic duration must be between 8 and 180 seconds")
     private_dir(root)
     files, clips = {}, []
     review = {
@@ -25,7 +28,7 @@ def create(root: Path, count=2):
         with av.open(str(media), "w", format="mov") as out:
             stream = out.add_stream("mpeg4", rate=2)
             stream.width, stream.height, stream.pix_fmt = 96, 64, "yuv420p"
-            for i in range(16):
+            for i in range(frame_count):
                 image = Image.new("RGB", (96, 64), (n * 27 % 255, 20, 40))
                 ImageDraw.Draw(image).rectangle((10 + i, 8, 35 + i, 56), fill="white")
                 frame = av.VideoFrame.from_image(image)
@@ -46,7 +49,7 @@ def create(root: Path, count=2):
             "claims": [],
         }
         for kind, value, selected in [
-            ("role", "cashier", ids[::3]),
+            ("role", "cashier", [ids[round(i * (len(ids) - 1) / 5)] for i in range(6)]),
             ("action", "exchange", ids[:8]),
             ("context", "unknown", ids[:8]),
         ]:
@@ -57,8 +60,11 @@ def create(root: Path, count=2):
                     "value": value,
                     "actor_id": "p0001",
                     "counterpart_actor_id": "p0002" if kind == "action" else None,
+                    "counterpart_segment_ids": ["s0002"] if kind == "action" else [],
+                    "counterpart_frame_ids": selected if kind == "action" else [],
+                    "actor_participation": "giver" if kind == "action" else "unclear",
                     "start_sec": 0,
-                    "end_sec": 7.5,
+                    "end_sec": duration - 0.5,
                     "frame_ids": selected,
                     "continuity_supported": True,
                     "review_status": "confirmed",
@@ -71,7 +77,7 @@ def create(root: Path, count=2):
                     "visible_basis": "Synthetic",
                     "reviewed_at": review["reviewed_at"],
                     "origin": "human",
-                    "playback_interval": [0, 8],
+                    "playback_interval": [0, duration],
                     "boundary_uncertain": False,
                 }
             )
@@ -112,7 +118,7 @@ def create(root: Path, count=2):
             "work_areas": [
                 {"id": "a1", "frame_ids": ids, "points": [[0, 0], [1, 0], [1, 1]], "review": review}
             ],
-            "recording_group": f"recording{n}",
+            "recording_group": registry.source_sha256,
             "session_group": f"session{n}",
             "split": "development",
             "regression_only": n == 0,

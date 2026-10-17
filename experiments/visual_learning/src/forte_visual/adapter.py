@@ -1,4 +1,4 @@
-"""Mapping producer TrackManifest v1, committed at 292c305; no schema mutation.
+"""Mapping producer TrackManifest v1, through aeeb158; no schema mutation.
 
 The track/annotation mapping is implemented against actual committed interfaces.
 The completed-export envelope is provisional until a producer export is received.
@@ -11,7 +11,7 @@ from forte.tracking import TrackManifest, training_targets, validate_pair
 
 from forte_visual.io import digest
 
-MAPPING_VERSION = "forte-track-v1/consumer-1"
+MAPPING_VERSION = "forte-track-v1/consumer-2-aeeb158"
 
 
 def mapping_hash():
@@ -26,6 +26,14 @@ def load_pair(manifest_path, annotation_path):
     return validate_pair(m, a)
 
 
+def development_records(selection_path):
+    # Reuse producer's neutral/hash/split projection; do not inspect labels/points
+    # or duplicate its allowlist rules. No source decoding occurs here.
+    from forte.person_proposals import allowlisted_sources
+
+    return allowlisted_sources(selection_path, selection_path.parent / "neutral")
+
+
 def reviewed_targets(m, a, *, training=False):
     if training:
         eligible = {f.id for f in training_targets(m, a)}
@@ -35,6 +43,7 @@ def reviewed_targets(m, a, *, training=False):
     areas = {x.id: x for x in m.work_areas}
     result = []
     for f in a.facts:
+        participating = f.segment_ids + f.counterpart_segment_ids
         if f.id not in eligible or f.review_status != "confirmed":
             continue
         if not f.actor_id or f.target_kind == "unresolved" or f.boundary_uncertain:
@@ -48,23 +57,23 @@ def reviewed_targets(m, a, *, training=False):
                 continue
         if any(
             segments[s].identity_uncertain or segments[s].review.status != "confirmed"
-            for s in f.segment_ids
+            for s in participating
         ):
             continue
         if any(
             b.review.status != "confirmed"
             or b.outside
             or (b.occluded and f.target_kind != "abstention")
-            for s in f.segment_ids
+            for s in participating
             for b in segments[s].boxes
-            if b.frame_id in f.frame_ids
+            if b.frame_id in f.frame_ids + f.counterpart_frame_ids
         ):
             continue
         if f.work_area_id and areas[f.work_area_id].review.status != "confirmed":
             continue
         if any(
             j.review.status != "confirmed"
-            and {j.from_segment, j.to_segment}.intersection(f.segment_ids)
+            and {j.from_segment, j.to_segment}.intersection(participating)
             for j in m.joins
         ):
             continue

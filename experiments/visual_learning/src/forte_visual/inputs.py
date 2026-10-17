@@ -62,6 +62,9 @@ class Answer(Strict):
     kind: Literal["role", "action", "context"]
     value: str = Field(min_length=1, max_length=80)
     other_actor_id: str | None = None
+    other_actor_evidence_frame_ids: list[str] = Field(default_factory=list, max_length=16)
+    actor_participation: Literal["giver", "receiver", "actor", "unclear"] = "unclear"
+    service_completion_uncertain: bool = True
     start_frame_id: str
     end_frame_id: str
     continues_before_window: bool
@@ -77,13 +80,24 @@ def validate_answer(case: InputCase, answer: Answer):
         answer.other_actor_id not in case.actors or answer.other_actor_id == answer.actor_id
     ):
         raise ValueError("Unsupported participant relation")
+    if answer.other_actor_id and (
+        not answer.other_actor_evidence_frame_ids
+        or any(
+            id not in case.frames or not case.track_boxes.get(answer.other_actor_id, {}).get(id)
+            for id in answer.other_actor_evidence_frame_ids
+        )
+    ):
+        raise ValueError("Counterpart needs separate supplied source evidence")
     ids = [answer.start_frame_id, answer.end_frame_id, *answer.evidence_frame_ids]
     if not set(ids) <= case.frames.keys():
         raise ValueError("Invalid source reference")
     if any(not case.track_boxes.get(answer.actor_id, {}).get(id) for id in ids):
         raise ValueError("Actor lacks source box at cited frame")
     start, end = case.frames[answer.start_frame_id], case.frames[answer.end_frame_id]
-    if start > end or any(not start <= case.frames[f] <= end for f in answer.evidence_frame_ids):
+    if start > end or any(
+        not start <= case.frames[f] <= end
+        for f in answer.evidence_frame_ids + answer.other_actor_evidence_frame_ids
+    ):
         raise ValueError("Unordered answer interval/evidence")
     if answer.visibility != "observed" and answer.value != "unclear":
         if answer.visibility != "reviewed_absent":
@@ -140,6 +154,7 @@ def make_case(
     end,
     segments,
     counterpart=None,
+    counterpart_segments=None,
     seed=0,
     track_mode="oracle",
     allow_occluded=False,
@@ -164,7 +179,7 @@ def make_case(
             for i in range(6)
         ]
         if task == "role"
-        else [start + i / 2 for i in range(8)]
+        else [available[0].timestamp_sec + i / 2 for i in range(8)]
     )
     selected = [nearest(available, t) for t in times if t < end]
     if len({f.frame_id for f in selected}) != count:
@@ -176,7 +191,11 @@ def make_case(
         (
             p
             for p, ss in people.items()
-            if counterpart and any(segs[s].person_id == counterpart for s in ss)
+            if counterpart
+            and (
+                set(counterpart_segments or []) <= set(ss)
+                and any(segs[s].person_id == counterpart for s in ss)
+            )
         ),
         None,
     )
@@ -271,6 +290,8 @@ def export(path: Path, output: Path, *, training=False, seed=0):
     inputs.mkdir(mode=0o700)
     cases, references, excluded = [], {}, []
     for clip, m, a in pairs:
+        if m.split == "test" or (training and m.split not in {"train", "validation"}):
+            continue
         registry = decode_video(local(path.parent, clip.media), output / "source-cache" / m.clip_id)
         if registry.source_sha256 != m.source_sha256 or registry.rotation != m.rotation:
             raise ValueError("Decoded source disagrees with producer")
@@ -292,6 +313,7 @@ def export(path: Path, output: Path, *, training=False, seed=0):
                     end=end,
                     segments=f.segment_ids,
                     counterpart=f.counterpart_actor_id,
+                    counterpart_segments=f.counterpart_segment_ids,
                     seed=seed,
                     track_mode=clip.track_mode,
                     allow_occluded=f.target_kind == "abstention",
@@ -299,6 +321,10 @@ def export(path: Path, output: Path, *, training=False, seed=0):
                 evidence = [id for id in f.frame_ids if id in case.frames]
                 if not evidence:
                     raise ValueError("Target evidence lost by sampling")
+                if f.counterpart_actor_id and not set(f.counterpart_frame_ids).intersection(
+                    case.frames
+                ):
+                    raise ValueError("Counterpart evidence is outside supplied task window")
                 # Missing evidence inside this window is rejection, not truncation.
                 if any(start <= a.frames[id] < end and id not in case.frames for id in f.frame_ids):
                     raise ValueError("Prescribed samples omit reviewed target evidence")
@@ -320,6 +346,11 @@ def export(path: Path, output: Path, *, training=False, seed=0):
                     kind=f.kind,
                     value=value,
                     other_actor_id=other,
+                    other_actor_evidence_frame_ids=[
+                        id for id in f.counterpart_frame_ids if id in case.frames
+                    ],
+                    actor_participation=f.actor_participation,
+                    service_completion_uncertain=f.service_completion_uncertain,
                     start_frame_id=frames[0],
                     end_frame_id=frames[-1],
                     continues_before_window=f.start_sec < start,
@@ -470,6 +501,21 @@ def validate_pack(release_path, input_path, references=None, *, training=False):
                 case.actors[answer.actor_id]
             ):
                 raise ValueError("Reference changed actor or reviewed target")
+            if answer.actor_participation != fact.actor_participation:
+                raise ValueError("Reference changed reviewed participant direction")
+            if answer.service_completion_uncertain != fact.service_completion_uncertain:
+                raise ValueError("Reference changed service uncertainty")
+            if fact.counterpart_actor_id:
+                if (
+                    not answer.other_actor_id
+                    or not set(fact.counterpart_segment_ids)
+                    <= set(case.actors[answer.other_actor_id])
+                    or not set(answer.other_actor_evidence_frame_ids)
+                    <= set(fact.counterpart_frame_ids)
+                ):
+                    raise ValueError("Reference changed reviewed counterpart evidence")
+            elif answer.other_actor_id:
+                raise ValueError("Reference invents a known counterpart")
             if not set(answer.evidence_frame_ids) <= set(fact.frame_ids):
                 raise ValueError("Reference evidence not independently reviewed")
             if training and (m.regression_only or not m.training_eligible):

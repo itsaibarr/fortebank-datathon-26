@@ -101,3 +101,27 @@ def test_deadline_and_memory_overrun_do_not_become_complete_observations():
     budget = Bounds(deadline=10, max_memory_bytes=10, clock=lambda: 0)
     with pytest.raises(TimeoutError):
         budget.invoke(lambda *a: {"peak_memory_bytes": 11}, None, None)
+
+
+def test_complete_long_clip_scan_keeps_ids_and_last_source_frame(tmp_path):
+    path = create(tmp_path / "release", count=1, duration=30)
+    clip, m, _ = verify(path)[1][0]
+
+    class Recording(MockScanExecutor):
+        def __init__(self):
+            self.requests = []
+
+        def __call__(self, request, root, timeout):
+            self.requests.append(request)
+            return super().__call__(request, root, timeout)
+
+    executor = Recording()
+    result = scan(m, path.parent / clip.media, tmp_path / "scan", executor)
+    assert result["status"] == "complete_schedule"
+    assert result["coverage"]["scheduled_coarse"] == [[0, 16], [12, 28], [24, 30]]
+    assert "f000059" in result["coverage"]["sampled_frame_ids"]
+    assert all(c.actors == executor.requests[0].actors for c in executor.requests)
+    assert all(
+        len(c.views) == 16 and len(c.frames) == 8 for c in executor.requests if c.task == "action"
+    )
+    assert result["coverage"]["unresolved_ranges"] == [[0, 30]]

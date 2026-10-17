@@ -32,6 +32,8 @@ class Release(Strict):
     completed_by: str
     completed_at: datetime
     synthetic: bool = False
+    development_allowlist: str | None = None
+    artifact_mapping: dict[str, str] = Field(default_factory=dict)
     files: dict[str, str]
     clips: list[Clip] = Field(min_length=1)
 
@@ -48,6 +50,14 @@ def verify(path: Path):
         if len(expected) != 64 or digest(local(root, name)) != expected:
             raise ValueError("Missing/corrupt release artifact")
     pairs = []
+    allowlist = None
+    if not release.synthetic:
+        if not release.development_allowlist or release.development_allowlist not in release.files:
+            raise ValueError("Real release requires authoritative development allowlist binding")
+        allowlist = {
+            r["clip_id"]: r["recording_group"]
+            for r in adapter.development_records(local(root, release.development_allowlist))
+        }
     seen = set()
     for clip in release.clips:
         required = {clip.manifest, clip.annotation, clip.media, *clip.images.values()}
@@ -57,10 +67,20 @@ def verify(path: Path):
         if m.clip_id in seen:
             raise ValueError("Duplicate clip ID")
         seen.add(m.clip_id)
+        if allowlist is not None and allowlist.get(m.clip_id) != m.source_sha256:
+            raise ValueError("Reserved/jury/unallowlisted source is excluded")
         if m.source_sha256 != release.files[clip.media]:
             raise ValueError("Source hash mismatch")
         if m.annotation_sha256 != release.files[clip.annotation]:
             raise ValueError("Annotation hash mismatch")
+        for correction in m.corrections:
+            mapped = release.artifact_mapping.get(correction.artifact)
+            name = mapped or str(Path(clip.manifest).parent / correction.artifact)
+            local(root, name)
+            if name not in release.files or correction.before_sha256 not in release.files.values():
+                raise ValueError(
+                    "Correction artifact/prior revision missing from immutable inventory"
+                )
         if local(root, str(Path(clip.manifest).parent / m.annotation_file)) != local(
             root, clip.annotation
         ):
