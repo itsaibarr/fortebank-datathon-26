@@ -1,0 +1,111 @@
+{
+  "schema_version": "forte.browser-session-contract/1",
+  "scope": "Source integration contract; no runtime, release or quality approval",
+  "core_checkpoint": "bdf3173eef230b4def5ea0bbcd0a5b60ce998a6f",
+  "source_paths": [
+    "src/forte/api.py",
+    "src/forte/settings.py",
+    "tools/forte-session/session_gateway.py",
+    "tools/forte-session/session_store.py"
+  ],
+  "gateway": {
+    "launch": ["python3", "tools/forte-session/session_gateway.py", "--config", "<private-json>"],
+    "listen_host": "127.0.0.1",
+    "default_listen_port": 18002,
+    "tls": "Supplied-certificate ingress in front of the loopback gateway",
+    "configuration_fields": [
+      "listen_host",
+      "listen_port",
+      "origin",
+      "upstream",
+      "service_key_file",
+      "gateway_token_file",
+      "session_db",
+      "browser_uploads_enabled",
+      "limits"
+    ],
+    "origin": "Exact credential-free HTTPS origin; no trailing slash or path",
+    "upstream": "Literal http://127.0.0.1:<application-only-port>; model port 8001 rejected",
+    "credential_files": "Separate owner-private regular files, never secret values in JSON",
+    "core_gateway_token_environment": "FORTE_TRUSTED_GATEWAY_TOKEN_FILE",
+    "health": {
+      "/health/live": {"success_status": 200, "success_body": {"status": "alive"}},
+      "/health/ready": {
+        "success_status": 200,
+        "success_body": {"status": "ready"},
+        "failure_status": 503,
+        "failure_body": {"status": "not_ready"},
+        "requires": ["same-connection trusted core capability", "core model readiness"]
+      }
+    }
+  },
+  "accounts": {
+    "launch": ["python3", "tools/forte-session/session_store.py", "--db", "<private-db>"],
+    "commands": {
+      "add <username>": "Prompt twice for a password; create a persistent opaque principal",
+      "disable <username>": "Disable account and revoke its sessions",
+      "reset-password <username>": "Prompt twice for a new password and revoke sessions",
+      "list": "List local account identities and enabled state for the administrator"
+    },
+    "default_account": false,
+    "password_arguments_supported": false,
+    "database_directory_mode": "0700",
+    "database_file_mode": "0600",
+    "password_hash": "scrypt, independent salt, N=32768 r=8 p=1",
+    "absolute_session_seconds": 28800,
+    "idle_session_seconds": 1800
+  },
+  "browser": {
+    "session": "GET /auth/session",
+    "login": "POST /auth/login",
+    "login_json_fields": ["username", "password"],
+    "logout": "POST /auth/logout",
+    "authenticated_response_fields": ["authenticated", "principal", "csrf_token", "expires_at"],
+    "principal_fields": ["id", "username"],
+    "expires_at_unit": "Unix seconds, numeric UTC timestamp",
+    "unauthenticated_response": {"authenticated": false},
+    "cookie": "__Host-forte_session; Secure; HttpOnly; SameSite=Strict; Path=/; no Domain",
+    "mutations": "Exact configured Origin plus per-session X-CSRF-Token; login requires Origin",
+    "metadata": "GET /deployment.json",
+    "metadata_schema": "forte.deployment/1",
+    "metadata_fields": [
+      "schema_version", "mode", "auth_mode", "destination", "browser_uploads_enabled",
+      "ready", "retention", "training_enabled", "limits"
+    ],
+    "metadata_constants": {
+      "mode": "private",
+      "auth_mode": "browser_session",
+      "retention": "manual",
+      "training_enabled": false
+    },
+    "default_browser_uploads_enabled": false,
+    "upload_gate": "Explicit operator activation AND trusted core capability AND core readiness",
+    "private_response_cache_control": "no-store"
+  },
+  "core": {
+    "capability_path": "/api/internal/security",
+    "capability_json": {
+      "schema_version": "forte.gateway-security/1",
+      "trusted_gateway_required": true,
+      "principal_ownership": true,
+      "ownerless_jobs_denied": true
+    },
+    "capability_auth_headers": ["X-API-Key", "X-Forte-Gateway-Token", "X-Forte-Principal"],
+    "trusted_api_response_header": {"X-Forte-Ownership-Mode": "principal-v1"},
+    "ownership": "Persist principal at v1/v2 admission; check every job, source, evidence, correction and fresh range",
+    "cross_owner_or_ownerless_status": 404,
+    "legacy_mode": "Unchanged shared-key API when no trusted gateway token is configured"
+  },
+  "maximum_limits": {
+    "upload_max_bytes": 268435456,
+    "max_video_seconds": 180,
+    "upload_timeout_seconds": 30,
+    "job_timeout_seconds": 270
+  },
+  "release": {
+    "new_gpu_image_built": false,
+    "external_host_verified": false,
+    "publication_approved": false,
+    "quality_approved": false
+  }
+}
