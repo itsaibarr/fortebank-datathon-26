@@ -1,0 +1,154 @@
+{
+  "split_status": "requires_local_continuity_review_before_freeze",
+  "code_commit": "4be3734",
+  "evaluation_scope": "selected exploratory development, same tested five clips compared with be6249e; no independent accuracy claim",
+  "counts": {
+    "videos": 5,
+    "positives": 2,
+    "negatives": 3,
+    "tp": 0,
+    "tn": 0,
+    "fp": 1,
+    "fn": 0,
+    "failed_positive": 2,
+    "failed_negative": 2
+  },
+  "reported_events": 1,
+  "completed_fraction": 0.2,
+  "accuracy_including_failed": 0.0,
+  "effective_recall": 0.0,
+  "false_negative_rate_including_failed": 1.0,
+  "false_positive_rate": 0.3333333333333333,
+  "failure_codes": {
+    "insufficient_evidence": 4
+  },
+  "point_proximity": {
+    "eligible_positive_videos": 1,
+    "detected_videos_with_point_error": 0,
+    "median_error_sec": null,
+    "fraction_within_5_sec_including_misses": 0.0,
+    "limitation": "Approximate supplied points, no verified intervals or event categories. Closest prediction is a proximity diagnostic, not proof of the same action."
+  },
+  "client_latency_sec": {
+    "median": 91.921128942,
+    "p95": 104.044258361,
+    "max": 104.044258361,
+    "over_300_seconds": 0
+  },
+  "comparison_same_tested_subset": {
+    "split_status": "requires_local_continuity_review_before_freeze",
+    "code_commit": "be6249e",
+    "evaluation_scope": "exploratory development, not independent validation",
+    "counts": {
+      "videos": 5,
+      "positives": 2,
+      "negatives": 3,
+      "tp": 0,
+      "tn": 1,
+      "fp": 0,
+      "fn": 0,
+      "failed_positive": 2,
+      "failed_negative": 2
+    },
+    "reported_events": 0,
+    "completed_fraction": 0.2,
+    "accuracy_including_failed": 0.2,
+    "effective_recall": 0.0,
+    "false_negative_rate_including_failed": 1.0,
+    "false_positive_rate": 0.0,
+    "failure_codes": {
+      "insufficient_evidence": 3,
+      "analysis_failed": 1
+    },
+    "point_proximity": {
+      "eligible_positive_videos": 1,
+      "detected_videos_with_point_error": 0,
+      "median_error_sec": null,
+      "fraction_within_5_sec_including_misses": 0.0,
+      "limitation": "Approximate supplied points, no verified intervals or event categories. Closest prediction is a proximity diagnostic, not proof of the same action."
+    },
+    "client_latency_sec": {
+      "median": 61.142401171000074,
+      "p95": 64.22593112699997,
+      "max": 64.22593112699997,
+      "over_300_seconds": 0
+    }
+  },
+  "sampled_peak_gpu_memory_mib": 69671.0,
+  "checked_at_utc": "2026-10-17T13:06:14.047191+00:00",
+  "actor_grounding_commit": "52b0497",
+  "planned_videos": 6,
+  "tested_videos": 5,
+  "stop_reason": "three consecutive failed jobs",
+  "quality_gate": "failed: one supplied-negative alert, four insufficient-evidence failures, no supported positive control",
+  "human_confirmed_positive_controls": 0,
+  "no_holdout_or_jury_used": true,
+  "training_performed": false,
+  "adapter": null,
+  "original_archive_sha256_verified": "c01ee47563620f9cef14cc42fd23d81f4f58600e5d1eae39d97bb85b57961867",
+  "returned_evidence": {
+    "jpegs": 2,
+    "exact_source_reextraction_verified": true,
+    "new_semantic_review_complete": true
+  },
+  "runtime": {
+    "app_image_id": "sha256:51819aa0abe04f7654c58a9f8ff41f5e843bbbe77c755528c4c7b22018826597",
+    "network_mode": "none",
+    "source_hashes_match_checkout": true,
+    "model_snapshot": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "packages": {
+      "vllm": "0.31.0",
+      "torch": "2.13.0+cu130",
+      "transformers": "5.17.0",
+      "av": "17.1.0",
+      "fastapi": "0.143.3",
+      "starlette": "1.8.0",
+      "httpx": "0.28.1",
+      "pydantic": "2.14.1",
+      "pillow": "12.3.0"
+    },
+    "sampled_peak_gpu_memory_mib": 69671.0,
+    "memory_sample_period_seconds": 1
+  },
+  "local_validation": {
+    "pytest": "49 passed in 5.33 seconds; one existing Starlette deprecation warning",
+    "product_code_changed_this_run": false
+  },
+  "resources": {
+    "provider": "Hyperstack",
+    "region": "CANADA-1",
+    "gpu": "A100 PCIe 80 GB",
+    "compute_usd_hour": 1.35,
+    "public_ip_usd_hour": 0.00672043,
+    "delete_deadline_utc": "2026-10-17T13:48:45.612322+00:00",
+    "deleted_at_utc": "2026-10-17T13:05:04.564432+00:00",
+    "vm_count_after": 0,
+    "volume_count_after": 0,
+    "credit_before_usd": 28.409622162611036,
+    "credit_after_usd": 28.115666069444355,
+    "credit_snapshot_reduction_usd": 0.29395609316668114,
+    "billing_may_settle_later": true
+  },
+  "private_results_location": "~/.local/share/forte26/development-rehearsal/baseline-52b0497/",
+  "private_review_location": "~/.local/share/forte26/development-rehearsal/annotation-review/first-milestone-review.json",
+  "release_ready": false,
+  "model_call_diagnostics": {
+    "actor_role_assignments": {
+      "cashier": 9,
+      "customer": 7
+    },
+    "verification_verdicts": {
+      "supported": 2,
+      "unclear": 12,
+      "unsupported": 4
+    },
+    "max_recorded_prompt_tokens": 7636,
+    "max_recorded_total_tokens": 7697
+  },
+  "human_review_followup": {
+    "date": "2026-10-17",
+    "new_reported_event_rejected_by_user": true,
+    "scene_details": "Kept only in the private review JSON",
+    "dataset_labels_changed": false
+  }
+}

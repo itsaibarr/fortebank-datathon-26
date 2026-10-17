@@ -1,0 +1,154 @@
+{
+  "checked_at_utc": "2026-10-17T13:52:02.827126+00:00",
+  "scope": "Research and proposed design only; no new model inference or training",
+  "workflow": "Harness category 7, Agent-Reach Exa/GitHub CLI/Jina plus web search restricted to primary support for recommendations",
+  "repo_pins": [
+    {
+      "repo": "QwenLM/Qwen3.8",
+      "url": "https://github.com/QwenLM/Qwen3.8",
+      "license_spdx": "Apache-2.0",
+      "commit": "2ea10dc725823bf7c3e21ce8557cbe15245132ae",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "repo": "lucazanella/lavad",
+      "url": "https://github.com/lucazanella/lavad",
+      "license_spdx": null,
+      "commit": "1ad46c666d1b3cfb262f3dd84769acf873285056",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "repo": "vera-framework/VERA",
+      "url": "https://github.com/vera-framework/VERA",
+      "license_spdx": null,
+      "commit": "15b8bcb8574a977c229c577f50bfe6f06d07106e",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "repo": "Muk-00/CoReVAD",
+      "url": "https://github.com/Muk-00/CoReVAD",
+      "license_spdx": null,
+      "commit": "76ea2a0ac4ee521b9ea8d28898ad4c12731e3ef0",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "repo": "nwpu-zxr/VadCLIP",
+      "url": "https://github.com/nwpu-zxr/VadCLIP",
+      "license_spdx": "Apache-2.0",
+      "commit": "c41067f07d252efcda18008bea367886070c33b0",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "repo": "facebookresearch/sam2",
+      "url": "https://github.com/facebookresearch/sam2",
+      "license_spdx": "Apache-2.0",
+      "commit": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "repo": "FoundationVision/ByteTrack",
+      "url": "https://github.com/FoundationVision/ByteTrack",
+      "license_spdx": "MIT",
+      "commit": "d1bf0191adff59bc8fcfeaa0b33d3d1642552a99",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "repo": "FlagOpen/FlagEmbedding",
+      "url": "https://github.com/FlagOpen/FlagEmbedding",
+      "license_spdx": "MIT",
+      "commit": "fd1a2bdf69488ffebe0327999d4400d8c8058a0b",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "repo": "zeroentropy-ai/legalbenchrag",
+      "url": "https://github.com/zeroentropy-ai/legalbenchrag",
+      "license_spdx": "MIT",
+      "commit": "431bc8f2488a81569ab7259fa633dcc50ab77f9a",
+      "checked_date": "2026-10-17"
+    }
+  ],
+  "model_candidate": {
+    "id": "Qwen/Qwen3.8-27B",
+    "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "pipeline_tag": "image-text-to-text",
+    "license": "apache-2.0",
+    "weight_bytes": 55562855904.0,
+    "weight_index_url": "https://huggingface.co/Qwen/Qwen3.8-27B/resolve/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0/model.safetensors.index.json",
+    "actual_gpu_fit_or_quality_measured": false
+  },
+  "legal_inventory_status": "Incomplete seed inventory, not a complete current corpus or approved production rule catalog",
+  "currently_implemented_rule_count": 3,
+  "seed_acts": [
+    {
+      "id": "V1900019680",
+      "issuer": "National Bank of Kazakhstan",
+      "number": "231",
+      "date": "2019-11-29",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+      "scope": "cash operations and collection",
+      "available_snapshot": "existing same-day cached official-source text",
+      "snapshot_sha256": "c94f304512578c75565b8b0d72124a667acb2a1eb769e4ae02f48d10694e465c",
+      "snapshot_bytes": 226017,
+      "fresh_current_version_verified": false
+    },
+    {
+      "id": "V2000020075",
+      "issuer": "National Bank of Kazakhstan",
+      "number": "14",
+      "date": "2020-02-24",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075",
+      "scope": "premises/security; follow base act point 5",
+      "fresh_current_version_verified": false,
+      "normative_text_ingested_this_research": false
+    },
+    {
+      "id": "V1900018545",
+      "issuer": "National Bank of Kazakhstan",
+      "number": "49",
+      "date": "2019-04-04",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545",
+      "scope": "foreign-currency exchange; follow base act point 58",
+      "fresh_current_version_verified": false,
+      "normative_text_ingested_this_research": false
+    }
+  ],
+  "retrieval_gaps": [
+    "Fresh adilet.zan.kz/Jina response was a 460-byte JavaScript shell, not legal text.",
+    "curl to official EKB export failed certificate validation; web fetches failed.",
+    "Two T3 browser snapshots timed out after 15000ms; a subsequent DOM probe also timed out.",
+    "Unofficial adilet.kz mirror is excluded from normative evidence."
+  ],
+  "proposed_clause_record_fields": [
+    "act_id",
+    "issuer",
+    "official_url",
+    "provision",
+    "subparagraph",
+    "parent_headings",
+    "original_text",
+    "language",
+    "definitions",
+    "cross_references",
+    "exceptions",
+    "effective_from",
+    "effective_until",
+    "retrieved_at",
+    "source_sha256",
+    "observability",
+    "required_visual_evidence",
+    "nonvisual_dependencies",
+    "review_status"
+  ],
+  "recommendation_not_yet_implemented": [
+    "versioned local legal retrieval and coverage register",
+    "persistent anonymous track-conditioned role/action timeline",
+    "controlled 8B versus 27B evaluation",
+    "optional supervised adapter on reviewed targets"
+  ],
+  "additional_gpu_rental": false,
+  "training_performed": false,
+  "official_corroborating_publications": [
+    "https://nationalbank.kz/file/download/106258",
+    "https://nationalbank.kz/file/download/107733"
+  ]
+}

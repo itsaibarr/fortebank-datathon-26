@@ -6,7 +6,7 @@ The user subsequently delegated Hyperstack API management within $30 and confirm
 
 ## Current measured state
 
-The backend now passes 38 local tests. Real development videos have completed the offline GPU API with source-verified JPEGs. Two exploratory partial runs failed detection acceptance; see [development-rehearsal.md](../docs/development-rehearsal.md). Three private cases await local human semantic review. No training, UI or competition-ready deployment is claimed. Historical setup descriptions below do not supersede current permissions, measurements or the live task checklist.
+The backend now passes 49 local tests. Real development videos have completed the offline GPU API with source-verified JPEGs. Two broad exploratory runs and subsequent selected regressions failed detection acceptance; see [development-rehearsal.md](../docs/development-rehearsal.md). Two earlier reported-event explanations were locally reviewed and unsupported. The actor-grounding rerun stopped after five of six selected clips: one supplied-negative alert and four insufficient-evidence failures. The user subsequently reviewed and rejected that new alert. Normal-case review and verified reference annotations remain open; prepare legal mappings without requiring the user to research legislation. Follow-up recommendations are in `docs/domain-research.md`, with new architecture/model work still unimplemented. All rental resources are deleted; latest credit snapshot is $28.12, subject to settlement. No training, UI or competition-ready deployment is claimed. Historical setup descriptions below do not supersede current permissions, measurements or the live task checklist.
 
 ## Approved setup slice on 17 October 2026
 
