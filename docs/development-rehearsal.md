@@ -54,3 +54,13 @@ Actual API/inference source hashes and versions are in `.context/verify/backend-
 ## Rental closed
 
 The private results archive was copied to the Mac and its SHA256 verified before deletion. Hyperstack then reported zero VMs and zero volumes. The latest balance snapshot is $28.41 from the $30 top-up, about $1.59 consumed across both sessions; billing settlement may lag. The development-session snapshot reduction was $1.36. Non-billed project environment and public keypair remain for a future authorized session. Receipt: `.context/verify/backend-gpu.json`. Do not start another paid session while waiting for human annotations.
+
+## Review and actor verification follow-up
+
+The user locally reviewed the two evidence-bearing entries in the three-case packet. Neither reported event is supported well enough to accept its explanation. The review retains uncertainty; the normal-case result, full-video categories and exact event intervals were not inferred from that response. Private review details and corrections are only in the local annotation files.
+
+The earlier TP/TN/FP/FN counts remain comparisons with supplied binary video labels. A video-level TP does not establish that the reported action, category or point is correct. No genuine positive event has yet passed human semantic acceptance. The three-case review does not open the training gate.
+
+At `52b0497`, departure verification first establishes actor role from frames without receiving the proposed story or legal hypothesis. It requires earlier role-supporting source frames and continuity, checks wider context, and abstains on conflicting assignments. Successful departure evidence includes the earlier role frame and decisive moment. There is no fixed camera-side rule, identity recognition or new tracking framework.
+
+Two initial regression tests reproduced missing-role acceptance and narrative exposure before the change. Two further tests reproduced inconsistent-role handling. All 49 tests now pass, with Ruff and package build. This is code-level validation only: no GPU/video rerun of this version occurred and no quality improvement is claimed. Receipt: `.context/verify/actor-grounding.json`. A subsequent bounded rehearsal must include reviewed true-event controls as well as unsupported-event cases, report failures separately and retain the source-evidence/time limits. No new paid VM was created for this change.

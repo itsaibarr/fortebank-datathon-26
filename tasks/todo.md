@@ -37,6 +37,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Task 7: Implement authenticated asynchronous POST/GET, two-slot admission, atomic private records, process deadlines/restart failures and bounded upload. Local contract/failure tests and real GPU calls pass mechanically; human review follows in Task 8.
 - [ ] Task 8: Verify upload/poll/result mechanics through the API and decode returned evidence locally. Do not build the UI yet.
 - [x] Task 8 mechanical portion: real POST/GET, two verdict shapes, source-timed JPEG decoding and exact source re-extraction exercised offline. This does not complete local semantic review.
+- [x] Partial local review: two reported-event explanations reviewed and unsupported; uncertainty preserved privately. Normal-case and full-event annotation review remain open. Actor-grounding enforcement passes local tests; real GPU validation remains pending.
 - [ ] **First backend milestone:** real positive/negative development videos complete POST/GET with valid schema, source JPEGs, times, rule references and no manual inference.
 
 ## Phase 2

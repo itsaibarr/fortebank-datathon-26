@@ -1,0 +1,44 @@
+{
+  "checked_at_utc": "2026-10-17T12:32:11.244375+00:00",
+  "code_commit": "52b0497",
+  "scope": "Independent actor grounding for service_departure; exact public API unchanged",
+  "workflow": "Harness incremental implementation and test-driven development; debugging hypothesis tested before changes",
+  "reproduction_before_fix": [
+    "Supported departure without actor grounding was accepted: expected rejection test failed.",
+    "Verifier received proposed narrative before any independent role check: request-isolation test failed.",
+    "Contradictory definite role assignments did not remain unresolved: two regression tests failed."
+  ],
+  "implementation": [
+    "Frame-only actor assessment precedes narrative/legal verification.",
+    "Supplied role evidence must include a frame before the decisive action; actor continuity is required.",
+    "Wider-context disagreement remains unclear; no unsupported role can produce a departure report.",
+    "Reported departure evidence includes earlier role support and decisive source frame, capped at three JPEGs.",
+    "Actor-call token usage is recorded separately; no new inference framework or face recognition."
+  ],
+  "human_review": {
+    "reported_event_entries_reviewed": 2,
+    "reported_events_supported": 0,
+    "uncertainty_preserved": true,
+    "normal_case_review_not_inferred": true,
+    "private_details": "~/.local/share/forte26/development-rehearsal/annotation-review/first-milestone-review.json",
+    "binary_dataset_labels_changed": false,
+    "training_targets_created": 0
+  },
+  "validation": {
+    "pytest": "49 passed in 4.58s",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "package_sdist_and_wheel": "passed",
+    "real_gpu_rerun": false
+  },
+  "limitations": [
+    "Code guards and synthetic model responses do not establish real VLM actor accuracy.",
+    "Added model calls require new latency/token/VRAM measurements on the actual workload.",
+    "No human-confirmed positive event, complete reviewed category targets or frozen recording-session split yet.",
+    "Original exploratory label-level confusion matrices remain unchanged; their TP is not a grounded-event success.",
+    "Public-rule transaction scope review and full product/UI acceptance remain open."
+  ],
+  "new_gpu_rental": false,
+  "training_performed": false,
+  "release_ready": false
+}

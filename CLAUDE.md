@@ -1,7 +1,7 @@
 # ForteBank Datathon 26 orientation
 
 ## What this is
-Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 38 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. Local human semantic review is pending; no trained adapter or UI exists. Read `docs/development-rehearsal.md` before further experiments.
+Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 49 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. Two reported-event reviews are complete and unsupported; full local annotation and normal-case review remain pending. Independent actor grounding is implemented but not yet GPU-validated; no trained adapter or UI exists. Read `docs/development-rehearsal.md` before further experiments.
 
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
