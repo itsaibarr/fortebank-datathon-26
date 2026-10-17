@@ -255,8 +255,45 @@ def test_review_cli_preserves_proposals_and_refreshes_revision_receipts(tmp_path
     new_frames = {a["frame_id"] for a in json.loads((revised / "review-assets.json").read_text())}
     assert old_frames <= new_frames
     m = json.loads((revised / "tracks.json").read_text())
+    assert m["segments"][0]["review"]["status"] == "confirmed"
+    assert all(box["review"]["status"] == "draft" for box in m["segments"][0]["boxes"])
+    assert not m["training_eligible"]
     for name, digest in m["provenance"]["review_media"].items():
         assert hashlib.sha256((revised / name).read_bytes()).hexdigest() == digest
+
+    # A second review must preserve the exact input behind earlier corrections.
+    # Reusing review-operations.json for the latest input cannot rewrite history.
+    prior_manifest = (revised / "tracks.json").read_bytes()
+    first_input = operations.read_bytes()
+    second_input = tmp_path / "second-operations.json"
+    second_input.write_text(
+        json.dumps([{"operation": "review", "segment_id": "s00001", "status": "rejected"}])
+    )
+    latest = tmp_path / "reviewed-again"
+    assert (
+        main(
+            [
+                "tracks-review",
+                "--directory",
+                str(revised),
+                "--source",
+                str(source),
+                "--output",
+                str(latest),
+                "--operations",
+                str(second_input),
+                "--reviewer",
+                "synthetic reviewer",
+                "--reason",
+                "Synthetic second review",
+            ]
+        )
+        == 0
+    )
+    assert (revised / "tracks.json").read_bytes() == prior_manifest
+    history = json.loads((latest / "tracks.json").read_bytes())["corrections"]
+    assert (latest / history[0]["artifact"]).read_bytes() == first_input
+    assert (latest / history[-1]["artifact"]).read_bytes() == second_input.read_bytes()
 
 
 def test_actual_source_duration_limits_even_an_internally_valid_manifest(tmp_path):

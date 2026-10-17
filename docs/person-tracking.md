@@ -196,7 +196,17 @@ confirmed human joins supersede matching proposals without erasing them.
 
 Every review creates a new directory, preserves the previous manifest/annotation
 and exact operation/XML input, appends reviewer/time/reason/history, and rebuilds
-matching playback/assets/receipts. Roles need a work area, temporally separated
+matching playback/assets/receipts. Nested revisions archive earlier correction
+inputs under content hashes before reusing the current operation/XML filename;
+earlier correction entries point to those preserved bytes. `revision.json` records
+the archived paths and hashes.
+
+For a review of identity continuity alone, use `review` with
+`resolve_identity: true` and `approve_boxes: false`. The segment review then records
+stable identity over its existing source-frame range; every box retains its
+separate review state. The `human_reviewed_segments` aggregate counts that
+identity scope, not fully approved geometry or role/action intervals.
+Roles need a work area, temporally separated
 source frames and service context. Link identifiable giver/receiver segments and
 evidence; otherwise leave the counterpart unknown. Cash handling, clothes, side,
 posture or departure alone do not establish a role. Label unreadable documents

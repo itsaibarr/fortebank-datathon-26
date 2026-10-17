@@ -499,6 +499,25 @@ def run_command(args):
             )
             validate_pair(revised, annotation)
         shutil.copytree(args.directory, args.output)
+        # Earlier corrections must keep their exact input even when the newest
+        # review reuses the same operation/XML filename in this revision.
+        preserved_artifacts = {}
+        for correction in revised.corrections[: len(m.corrections)]:
+            original_artifact = correction.artifact
+            artifact = (args.directory / original_artifact).resolve()
+            if not artifact.is_relative_to(args.directory.resolve()) or not artifact.is_file():
+                raise ValueError("Previous correction artifact is missing or outside its revision")
+            digest = sha256(artifact)
+            relative = Path("review-history") / digest / artifact.name
+            archived = args.output / relative
+            archived.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(artifact, archived)
+            correction.artifact = relative.as_posix()
+            preserved_artifacts[original_artifact] = dict(
+                original_artifact=original_artifact,
+                archived_artifact=correction.artifact,
+                sha256=digest,
+            )
         if args.command == "tracks-review":
             shutil.copyfile(args.operations, args.output / "review-operations.json")
         else:
@@ -545,6 +564,7 @@ def run_command(args):
                 parent=str(args.directory),
                 parent_manifest_sha256=sha256(args.directory / "tracks.json"),
                 manifest_sha256=sha256(args.output / "tracks.json"),
+                preserved_review_artifacts=list(preserved_artifacts.values()),
             ),
         )
         print(json.dumps(dict(revision_created=True, training_eligible=False)))
