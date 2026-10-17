@@ -38,7 +38,10 @@ test("only exact supported HTTPS deployment metadata permits uploads", () => {
     { destination: origin + "/" },
     { auth_mode: "shared_key" },
     { schema_version: "forte.deployment/2" },
-    { mode: "hosted" },
+    { mode: "public" },
+    { mode: "Hosted" },
+    { mode: null },
+    { mode: undefined },
     { retention: "automatic" },
     { training_enabled: true },
     { ready: "true" },
@@ -51,6 +54,28 @@ test("only exact supported HTTPS deployment metadata permits uploads", () => {
     )
   )
   assert.throws(() => parseDeployment(null, origin))
+})
+test("private and hosted labels preserve the verified destination and upload gates", () => {
+  for (const mode of ["private", "hosted"]) {
+    const accepted = parseDeployment({ ...metadata, mode }, origin)
+    assert.equal(accepted.mode, mode)
+    assert.equal(accepted.destination, origin)
+    assert.equal(uploadsAvailable(accepted), true)
+    for (const gate of [{ ready: false }, { browser_uploads_enabled: false }]) {
+      assert.equal(
+        uploadsAvailable(
+          parseDeployment({ ...metadata, mode, ...gate }, origin)
+        ),
+        false
+      )
+    }
+    assert.throws(() =>
+      parseDeployment(
+        { ...metadata, mode, destination: "https://elsewhere.example.invalid" },
+        origin
+      )
+    )
+  }
 })
 test("valid unavailable deployments keep their review metadata but deny uploads", () => {
   for (const change of [{ ready: false }, { browser_uploads_enabled: false }]) {

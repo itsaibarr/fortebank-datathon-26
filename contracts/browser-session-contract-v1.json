@@ -21,13 +21,16 @@
       "service_key_file",
       "gateway_token_file",
       "session_db",
+      "deployment_mode",
       "browser_uploads_enabled",
       "limits"
     ],
     "origin": "Exact credential-free HTTPS origin; no trailing slash or path",
     "upstream": "Literal http://127.0.0.1:<application-only-port>; model port 8001 rejected",
     "credential_files": "Separate owner-private regular files, never secret values in JSON",
+    "deployment_mode": "Optional private|hosted label; default private; does not activate any service",
     "core_gateway_token_environment": "FORTE_TRUSTED_GATEWAY_TOKEN_FILE",
+    "local_probe_host_header": "Configured HTTPS origin authority, including its nondefault port",
     "health": {
       "/health/live": {"success_status": 200, "success_body": {"status": "alive"}},
       "/health/ready": {
@@ -72,8 +75,8 @@
       "schema_version", "mode", "auth_mode", "destination", "browser_uploads_enabled",
       "ready", "retention", "training_enabled", "limits"
     ],
+    "metadata_modes": ["private", "hosted"],
     "metadata_constants": {
-      "mode": "private",
       "auth_mode": "browser_session",
       "retention": "manual",
       "training_enabled": false

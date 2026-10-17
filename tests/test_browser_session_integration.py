@@ -176,7 +176,7 @@ def stack(tmp_path, tls_files, monkeypatch, request):
             "service_key_file": str(secret_dir / "service.key"),
             "gateway_token_file": str(secret_dir / "gateway.key"),
             "session_db": str(tmp_path / "sessions" / "users.sqlite3"),
-            "browser_uploads_enabled": getattr(request, "param", True),
+            "browser_uploads_enabled": True,
             "limits": {
                 "upload_max_bytes": 268435456,
                 "max_video_seconds": 180,
@@ -184,6 +184,10 @@ def stack(tmp_path, tls_files, monkeypatch, request):
                 "job_timeout_seconds": 270,
             },
         }
+        options = getattr(request, "param", {})
+        if isinstance(options, bool):
+            options = {"browser_uploads_enabled": options}
+        config.update(options)
         with gateway_https(config, store, tls_files) as (origin, trust):
             with (
                 httpx.Client(base_url=origin, verify=trust, trust_env=False, timeout=15) as alice,
@@ -303,6 +307,25 @@ def test_encoded_upload_cannot_bypass_operator_gate_or_expose_internal_routes(st
         assert response.status_code in {400, 403, 404}
     for path in ("/api/internal/security", "/%61pi/internal/security", "/api/%69nternal/security"):
         assert alice.get(path).status_code in {400, 403, 404}
+    assert list(settings.private_root.glob("*/input.mov")) == []
+
+
+@pytest.mark.parametrize(
+    "stack", [{"deployment_mode": "hosted", "browser_uploads_enabled": False}], indirect=True
+)
+def test_hosted_label_preserves_actual_destination_and_does_not_activate_uploads(stack):
+    alice, _, _, source, _, settings = stack
+    session = login(alice, "alice")
+    metadata = alice.get("/deployment.json").json()
+    assert metadata["mode"] == "hosted"
+    assert metadata["destination"] == str(alice.base_url).rstrip("/")
+    assert metadata["ready"] is True and metadata["browser_uploads_enabled"] is False
+    response = alice.post(
+        "/api/v2/analyze",
+        headers=mutation_headers(alice, session),
+        files={"file": ("synthetic.mov", source)},
+    )
+    assert response.status_code == 403
     assert list(settings.private_root.glob("*/input.mov")) == []
 
 

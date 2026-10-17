@@ -1,0 +1,63 @@
+{
+  "schema_version": "forte.frontend-qa/1",
+  "observed_at_utc": "2026-10-17T23:49:27.976811+00:00",
+  "scope": "source-only hosted-label checkpoint; exact private|hosted metadata labels and existing session/upload boundary",
+  "base_commit": "7fa153fbda4a779e258be5d71f70ad33e911a8fd",
+  "previous_receipt": "web/qa/browser-session-source-checks-20261018.json",
+  "previous_receipt_sha256": "9ade632979b0c24cdde135cd0efc17770744db94229e0f6c7d4dd47ec338c13f",
+  "previous_receipt_preserved": true,
+  "checks": {
+    "eslint": "passed",
+    "typescript": "passed",
+    "node_contract_and_body_tests": 8,
+    "static_export": "passed",
+    "impeccable_changed_target_findings": 0,
+    "diff_whitespace": "passed",
+    "synthetic_service_credentials_absent_from_static_bundle": true
+  },
+  "commands": [
+    "npm run lint",
+    "npm run typecheck",
+    "npm test",
+    "npm run build",
+    "node /Users/itsaibarr/.agents/skills/impeccable/scripts/detect.mjs --json web/components/review-access.tsx web/lib/browser-session.ts web/lib/browser-session.test.mjs",
+    "git diff --check"
+  ],
+  "source_sha256": {
+    "components/review-access.tsx": "770f648989f82bed540639497a7c81191e3b0987e555ca0fabb16f685c6d8880",
+    "lib/browser-session.ts": "9c31fe472b20682d6e000a4868a45570588448d390a8083c3ad37713ce300eab",
+    "lib/browser-session.test.mjs": "44cca5ed5f0dc14736ce5aed181d483e3dbc46dc4f086b244dd09b280e6ae2e9",
+    "README.md": "0fd0e8369262f86d307337f7b8361160cd472332332d6768e732b1230c84e727"
+  },
+  "static_tree_sha256": "b8b5b22dbb09c74e0aa7c3cc7c4ec4ac1ac8c096d1a76ccb758350cf0f5137f3",
+  "behavior": {
+    "accepted_modes": [
+      "private",
+      "hosted"
+    ],
+    "labels": {
+      "private": "Private installation",
+      "hosted": "Hosted service"
+    },
+    "actual_verified_https_origin_displayed": true,
+    "unknown_or_missing_mode_denied": true,
+    "same_origin_required_for_both_modes": true,
+    "readiness_and_explicit_upload_gate_required_for_both_modes": true,
+    "manual_retention_and_no_training_notices_preserved": true,
+    "gateway_default_changed": false,
+    "activation_changed": false,
+    "session_security_changed": false
+  },
+  "browser": {
+    "this_revision_full_workflow_verified": false,
+    "this_revision_browser_rehearsal": "not executed; existing user-assisted local certificate handoff remains separate",
+    "private_media_opened": false,
+    "screenshots": [],
+    "system_or_user_trust_store_changed": false,
+    "global_certificate_bypass_enabled": false
+  },
+  "limitations": [
+    "Source checks establish the label and unchanged gates, not an externally hosted service.",
+    "No activation, new immutable runtime image, GPU run, public URL or model/legal-quality acceptance."
+  ]
+}

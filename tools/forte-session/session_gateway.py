@@ -145,6 +145,12 @@ class LoginLimiter:
 class Gateway:
     def __init__(self, config, store):
         self.config = dict(config)
+        self.deployment_mode = config.get("deployment_mode", "private")
+        if not isinstance(self.deployment_mode, str) or self.deployment_mode not in {
+            "private",
+            "hosted",
+        }:
+            raise ValueError("deployment_mode must be private or hosted")
         origin = urlsplit(config.get("origin", ""))
         if (
             origin.scheme != "https"
@@ -569,7 +575,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 200,
                 {
                     "schema_version": "forte.deployment/1",
-                    "mode": "private",
+                    "mode": self.gateway.deployment_mode,
                     "auth_mode": "browser_session",
                     "destination": self.gateway.origin,
                     "browser_uploads_enabled": bool(self.gateway.uploads and ready),

@@ -8,7 +8,7 @@ export type BrowserSession = {
 
 export type DeploymentMetadata = {
   schema_version: "forte.deployment/1"
-  mode: "private"
+  mode: "private" | "hosted"
   auth_mode: "browser_session"
   destination: string
   browser_uploads_enabled: boolean
@@ -64,7 +64,7 @@ export function parseDeployment(
   if (
     !record(value) ||
     value.schema_version !== "forte.deployment/1" ||
-    value.mode !== "private" ||
+    (value.mode !== "private" && value.mode !== "hosted") ||
     value.auth_mode !== "browser_session" ||
     value.destination !== origin ||
     !origin.startsWith("https://") ||

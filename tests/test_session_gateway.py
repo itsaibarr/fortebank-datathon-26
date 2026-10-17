@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools/forte-session"))
-from session_gateway import COOKIE, SECURITY, LoginLimiter, create_server  # noqa: E402
+from session_gateway import COOKIE, SECURITY, Gateway, LoginLimiter, create_server  # noqa: E402
 from session_store import SessionStore  # noqa: E402
 
 ORIGIN = "https://review.invalid"
@@ -324,6 +324,34 @@ def test_response_authentication_headers_are_never_forwarded_to_browser(boundary
         ):
             assert key not in response.headers
         assert SERVICE.encode() not in response.body and GATEWAY.encode() not in response.body
+
+
+@pytest.mark.parametrize(
+    "selection,expected",
+    [
+        ({}, "private"),
+        ({"deployment_mode": "private"}, "private"),
+        ({"deployment_mode": "hosted"}, "hosted"),
+    ],
+)
+def test_deployment_mode_labels_metadata_without_activating_uploads(boundary, selection, expected):
+    boundary.server.gateway = Gateway(
+        boundary.config | selection | {"browser_uploads_enabled": False}, boundary.store
+    )
+    metadata = json.loads(boundary.request("GET", "/deployment.json").body)
+    assert metadata["mode"] == expected
+    assert metadata["ready"] is True and metadata["browser_uploads_enabled"] is False
+    assert metadata["auth_mode"] == "browser_session"
+    boundary.state.ready = False
+    metadata = json.loads(boundary.request("GET", "/deployment.json").body)
+    assert metadata["mode"] == expected
+    assert metadata["ready"] is False and metadata["browser_uploads_enabled"] is False
+
+
+@pytest.mark.parametrize("selection", ["public", None, ["hosted"]])
+def test_deployment_mode_rejects_invalid_configuration(boundary, selection):
+    with pytest.raises(ValueError, match="deployment_mode"):
+        create_server(boundary.config | {"deployment_mode": selection}, store=boundary.store)
 
 
 @pytest.mark.parametrize(

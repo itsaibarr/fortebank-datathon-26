@@ -31,7 +31,9 @@ cross-tab auth changes clear private state, cancel requests and revoke these URL
 Focus and restored-page events recheck the session. Failed metadata or an origin
 mismatch disables uploads, while an authenticated review can remain open during
 a readiness outage. The page displays verified destination, limits, manual
-retention and no-training policy.
+retention and no-training policy. Verified metadata selects the exact “Private
+installation” or “Hosted service” label. Both modes require the same session,
+exact HTTPS origin, readiness and explicit upload activation checks.
 
 No key, job, recording, evidence or reviewer content is fetched during the static
 build. Fonts are downloaded during the public build and served from local build

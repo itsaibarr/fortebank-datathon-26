@@ -82,7 +82,11 @@ export function DeploymentNotice({ access }: { access: BrowserAccess }) {
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-sm font-semibold">Private installation</h2>
+              <h2 className="text-sm font-semibold">
+                {metadata.mode === "hosted"
+                  ? "Hosted service"
+                  : "Private installation"}
+              </h2>
               <p className="mt-1 text-xs break-all text-muted-foreground">
                 Processing destination: {metadata.destination}
               </p>

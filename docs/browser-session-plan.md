@@ -56,12 +56,16 @@ force. `/api/internal/` is not proxied to browsers.
 - Existing `/api/v1/` and `/api/v2/`: session-authenticated gateway forwarding;
   CSRF plus Origin for mutations; generic cross-owner 404 from the core.
 
-Deployment metadata uses `schema_version: forte.deployment/1`, `mode: private`,
+Deployment metadata uses `schema_version: forte.deployment/1`, `mode: private|hosted`,
 `auth_mode: browser_session`, `destination` (configured HTTPS origin),
 `browser_uploads_enabled`, `ready`, `retention: manual`, `training_enabled:
 false`, and `limits` with `upload_max_bytes`, `max_video_seconds`,
 `upload_timeout_seconds`, `job_timeout_seconds`. Uploads require explicit
 operator configuration, successful ownership handshake and readiness.
+The optional gateway `deployment_mode` selects that label and defaults to `private`.
+It describes where processing is offered, independently from the installer's
+`private|attach` ownership profile. `hosted` does not activate a host, enable
+uploads, change authorization or approve publication.
 
 The UI uses same-origin credentials and CSRF; no service-key field or browser
 storage. Preserve the approved shadcn preset and review workflow. Clear private
@@ -93,7 +97,8 @@ Run `python tools/forte-session/session_gateway.py --config <private-json>`.
 `127.0.0.1`. Configuration keys are `listen_host`, `listen_port` (default 18002),
 `origin` (exact HTTPS origin), `upstream` (literal loopback HTTP origin),
 `service_key_file`, `gateway_token_file`, `session_db`,
-`browser_uploads_enabled` (default false), and the four `limits` above. TLS belongs
+`deployment_mode` (private or hosted, default private), `browser_uploads_enabled`
+(default false), and the four `limits` above. TLS belongs
 to the supplied-certificate ingress in front of this host listener. Secret values
 must never enter installation JSON, frontend assets or the public manifest.
 
