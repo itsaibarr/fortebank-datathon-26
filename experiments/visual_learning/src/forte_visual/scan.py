@@ -216,6 +216,14 @@ class MockScanExecutor:
 def coarse_case(m, registry, output, start, end, seed):
     frames = sample_window(registry, start, end, fps=1)
     people = aliases(m, seed)
+    ids = {f.frame_id for f in frames}
+    people = {
+        p: ss
+        for p, ss in people.items()
+        if any(
+            b.frame_id in ids and not b.outside for s in m.segments if s.id in ss for b in s.boxes
+        )
+    }
     views = []
     # One verified extraction pass per window, not one full decode per image.
     extracted = registry.evidence([f.frame_id for f in frames])

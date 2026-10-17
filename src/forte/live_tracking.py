@@ -8,6 +8,7 @@ import json
 import time
 from dataclasses import asdict
 from importlib.resources import files
+from pathlib import Path
 
 from forte.person_proposals import LocalByteTrack, YoloxONNX, detection_schedule
 from forte.tracking import SegmentBuilder, TrackManifest
@@ -15,7 +16,13 @@ from forte.video import open_video, oriented, probe_video
 
 
 def detector_config():
-    return json.loads(files("forte").joinpath("data/person-tracking.json").read_text())
+    asset = files("forte").joinpath("data/person-tracking.json")
+    if asset.is_file():
+        return json.loads(asset.read_text())
+    # Source checkout development; deployed wheels carry the same pinned asset.
+    return json.loads(
+        (Path(__file__).resolve().parents[2] / "configs/person-tracking.json").read_text()
+    )
 
 
 def automatic_tracks(registry, weights, deadline, *, detector=None, tracker=None):

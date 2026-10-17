@@ -416,12 +416,20 @@ def export(path: Path, output: Path, *, training=False, seed=0):
 def messages(case: InputCase, root):
     import base64
 
+    # Prompt precision only. Source geometry in the case/manifest is unchanged.
+    shown_boxes = {
+        a: {
+            f: [[round(v, 4) for v in box] for box in boxes] for f, boxes in frames.items() if boxes
+        }
+        for a, frames in case.track_boxes.items()
+    }
+    visible_actors = {a: ss for a, ss in case.actors.items() if shown_boxes.get(a)}
     content = [
         {
             "type": "text",
             "text": (
-                f"Task {case.task}. Target {case.actor_id}. Supported tracks {case.actors}. "
-                f"Normalized oriented source boxes by actor/frame: {case.track_boxes}. "
+                f"Task {case.task}. Target {case.actor_id}. Supported tracks {visible_actors}. "
+                f"Oriented source boxes by actor/frame (normalized, 4 decimals): {shown_boxes}. "
                 f"Prior unreviewed model role hints, restricted to their evidence intervals: "
                 f"{[hint.model_dump() for hint in case.predicted_roles]}. "
                 "Use visible interaction evidence. "

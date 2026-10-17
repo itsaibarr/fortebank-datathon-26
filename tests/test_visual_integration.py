@@ -194,3 +194,42 @@ def test_empty_live_scan_keeps_private_model_provenance_and_fails_unknown(tmp_pa
         analyze_visual(source, work, uuid4(), Backend(), time.monotonic() + 20, tracking=track)
     assert json.loads((work / "model-provenance.json").read_bytes())["loaded"] == Backend.loaded
     assert (work / "private-timeline.json").exists()
+
+
+def test_draft_operational_card_and_missing_applicability_never_report(config):
+    from pathlib import Path
+
+    from forte.temporal_rules import temporal_checks
+
+    root = Path(__file__).resolve().parents[1]
+    config.legal_release = root / "legal/2026-10-17"
+    config.rule_cards = root / "legal/rule-cards.json"
+    config.rule_policy = root / "configs/visual-rule-policy.json"
+    report = {
+        "source_sha256": "a" * 64,
+        "role_conflicts": [],
+        "visual_timeline": [
+            {
+                "actor_id": "p1",
+                "segments": ["s1"],
+                "kind": "action",
+                "value": "leaves_workstation",
+                "start_sec": 1,
+                "end_sec": 2,
+                "start_frame_id": "f1",
+                "end_frame_id": "f2",
+                "visibility": "observed",
+                "continues_before_window": False,
+                "continues_after_window": False,
+                "evidence_frame_ids": ["f1", "f2"],
+            }
+        ],
+    }
+    result = temporal_checks(report, config)
+    assert result["approved_cards"] == 0
+    check = result["checks"][0]
+    assert check["decision"] == "unresolved" and not check["card_approved"]
+    assert check["prerequisites"]["legal_date_applicable"] == "unknown"
+    assert check["prerequisites"]["cashier_role"] == "unknown"
+    assert all(s["url"].startswith("https://adilet.zan.kz/") for s in check["sources"])
+    assert not result["comprehensive_law_coverage"]

@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-10-17T21:04:14.417256+00:00",
+  "sources": [
+    {
+      "act_id": "V1900019680",
+      "version_id": "c4cd4052-63e3-475b-ba9e-93f23de13fdb",
+      "official_url": "https://adilet.zan.kz/rus/docs/V1900019680",
+      "snapshot_sha256": "1798a349b2326ba4c32a007a62db532ea6de906e71f0249a9de8dc81aa915de8",
+      "current_content_sha256": "1798a349b2326ba4c32a007a62db532ea6de906e71f0249a9de8dc81aa915de8",
+      "matches": true
+    },
+    {
+      "act_id": "V2000020075",
+      "version_id": "4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c",
+      "official_url": "https://adilet.zan.kz/rus/docs/V2000020075",
+      "snapshot_sha256": "89b91567941acfa3d4fca1d374f04b1716cdf20fab43bd4d50ca7074b17ee16d",
+      "current_content_sha256": "89b91567941acfa3d4fca1d374f04b1716cdf20fab43bd4d50ca7074b17ee16d",
+      "matches": true
+    },
+    {
+      "act_id": "V1900018545",
+      "version_id": "0d776d3e-1c76-40f2-90ea-64f6de7868dc",
+      "official_url": "https://adilet.zan.kz/rus/docs/V1900018545",
+      "snapshot_sha256": "af565d20ba223ad1230180e2c6656f020101c590da06aa538c249a709300a089",
+      "current_content_sha256": "af565d20ba223ad1230180e2c6656f020101c590da06aa538c249a709300a089",
+      "matches": true
+    }
+  ],
+  "card_review_status": "draft unchanged",
+  "recording_date_applicability": "unresolved",
+  "operational_implementation": "acceptance_cashier_departure only; other actions retained unresolved"
+}
