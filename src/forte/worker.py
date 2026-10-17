@@ -47,6 +47,7 @@ def main():
             args.job / "input.mov", args.job, args.job_id, backend, args.deadline, stats
         )
     except Exception as exc:
+        stats["error_type"] = type(exc).__name__
         code = (
             str(exc)
             if str(exc) in {"processing_timeout", "insufficient_evidence"}
