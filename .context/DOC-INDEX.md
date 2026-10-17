@@ -1,4 +1,4 @@
-# Doc index — generated 2026-10-17, 18 files
+# Doc index — generated 2026-10-17, 20 files
 - AGENTS.md — # Agent instructions
 - CLAUDE.md — # ForteBank Datathon 26 orientation
 - README.md — # ForteBank Datathon 26
@@ -9,8 +9,10 @@
 - docs/domain-research.md — # Research: visual grounding, Kazakhstan rules, and the next model experiment
 - docs/gpu-runbook.md — # Verified GPU setup and repeatable model check
 - docs/handoffs/01-visual-labeling-and-person-tracking.md — # Handoff prompt: correct visual labels and person tracking
+- docs/handoffs/02-visual-learning-and-complete-clip-scan.md — # Handoff prompt: visual learning and complete-clip scanning
 - docs/legal-and-annotation.md — # Local law retrieval and two-layer review
 - docs/model-size-diagnostic.md — # Development role diagnostic, 17 October 2026
+- docs/person-tracking.md — # Private person tracking and visual review
 - docs/role-action-training-research.md — # Proposal: train actor-bound facts, then scan the complete recording
 - docs/setup-sources.md — # Setup source checks on 17 October 2026
 - legal/README.md — # Offline official-law releases
