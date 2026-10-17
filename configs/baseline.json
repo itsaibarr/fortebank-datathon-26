@@ -7,7 +7,11 @@
     "engine": "vllm",
     "engine_version": "0.31.0",
     "max_context_tokens": 8192,
-    "max_active_sequences": 2
+    "max_active_sequences": 2,
+    "container_image": "vllm/vllm-openai@sha256:a4a4c0437bf7240089da5f08aa370c4aee17ae5290f7a3b468825ee26c4c3a6b",
+    "cuda_compatibility_enabled": true,
+    "enforce_eager": true,
+    "gpu_memory_utilization": 0.85
   },
   "video": {
     "coarse_window_seconds": 16,
@@ -47,5 +51,5 @@
     "initial_max_updates": 30,
     "absolute_max_updates": 60
   },
-  "status": "approved initial settings; GPU compatibility, latency and semantic accuracy unmeasured"
+  "status": "Pinned BF16 model and 16-image offline synthetic calls verified on A10080; full-video quality, latency, concurrency and training remain unmeasured."
 }

@@ -36,7 +36,7 @@ Local cash-operation video review service, initialized after the user approved s
 - FastAPI public API with required file/header/field names, asynchronous jobs, one GPU host/container and atomic filesystem records.
 - No cloud AI, audio analysis, identification, hidden-accounting claims or use of jury data for selection.
 - Next.js App Router with TypeScript comes after working backend mechanics. Ask the user for exact UI libraries and screen/state brief before frontend work. No UI packages selected now.
-- Primary GPU is Hyperstack A10080. Authenticated API preflight verified `n3-A100x1` in CANADA-1 in stock at $1.35/hour, with the R595/CUDA13.2 Docker image offered. Stock/prices must be rechecked before creating a VM. $30 total experiment cap; GPU speed remains unmeasured.
+- Primary GPU is Hyperstack A10080, `n3-A100x1` in CANADA-1 at the checked $1.35/hour compute rate. Actual setup used image 517, Ubuntu R570/CUDA12.8 with Docker. R595 image 1624 is B300-only. The pinned vLLM image worked with CUDA compatibility enabled. Stock/prices must be rechecked before another VM. $30 total cap; see `.context/verify/gpu-setup.json` for the completed synthetic check and billing snapshot.
 
 ## Data and access gotchas
 - Original archive is `/Users/itsaibarr/Downloads/open.zip`; never change or commit it.
@@ -46,7 +46,8 @@ Local cash-operation video review service, initialized after the user approved s
 - Local humans review private semantics. Keep holdout and jury footage out of tuning/training.
 - Resolve permitted rented hosting before transferring competition footage. Synthetic/public compatibility checks can run first.
 - Hyperstack credential and SSH private key live outside Git under `~/.config/forte26`; never print/copy their contents into logs, Obsidian or memory. API request headers must come from the private header file, not command arguments.
-- Dedicated project environment and public keypair are created; no VM is created while credit is zero. Private provisioning state records their IDs outside Git. See `.context/verify/hyperstack-preflight.json`.
+- Dedicated project environment and public keypair remain available. After the user funded the account, one VM passed the public/synthetic offline check and was deleted; the provider then reported zero VMs and volumes. Private provisioning state records its lifecycle and IDs outside Git. About $29.77 remained at the post-deletion snapshot. See `docs/gpu-runbook.md` before another rental.
+- HTTP-reflection and SSH source IPs differed on the old connection; the modem connection matched. Use a current `/32` SSH rule, the dedicated known-host file and a project control socket. Initial host trust used TOFU because provider console-log retrieval failed; do not claim independent console verification.
 - Stopped Hyperstack VMs still bill. The user delegated lifecycle management; delete only this project's recorded resource IDs after preserving outputs or at its budget/time limit. Do not touch other account resources. Plan automatic cleanup and reserve before paid allocation.
 
 ## Where not to look

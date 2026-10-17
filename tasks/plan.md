@@ -1,5 +1,9 @@
 # Implementation plan for ForteBank Datathon 26
 
+## Funded GPU setup completed on 17 October 2026
+
+The user subsequently delegated Hyperstack API management within $30 and confirmed funding. One A10080 passed the pinned BF16 model's offline, structured, 16-image synthetic check and was then deleted. The account snapshot showed approximately $0.23 used and $29.77 remaining. See `docs/gpu-runbook.md` and `.context/verify/gpu-setup.json`. This supersedes earlier statements below that the user must manually provision the instance or that GPU compatibility has never been checked. No competition data was transferred and no training ran. Private-data hosting permission, actual task evaluation and the rest of the implementation remain pending.
+
 ## Approved setup slice on 17 October 2026
 
 The user approved starting local setup. This product repository is now the implementation workspace and its `tasks/todo.md` is the task-status source. Original research remains in `/Users/itsaibarr/conductor/repos/aibar/research/fortebank-datathon-26`. `SPEC.md` and `docs/case-requirements.md` include the reread case and take precedence over older prose where the frontend sequence, mixed-visibility handling or optional training budget changed.

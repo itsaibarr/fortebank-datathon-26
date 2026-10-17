@@ -16,7 +16,8 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] User authorized API provisioning and resource management within $30; user handles the top-up. Do not request that authorization again.
 - [x] Validate the supplied credential with read-only API calls, check account credit, stock, actual GPU price and offered image.
 - [x] Create the dedicated project environment and import the public half of a dedicated local SSH key. No paid VM or storage created while credit is zero.
-- [ ] Recheck funding and price, establish cleanup/time controls, then provision one A10080 and verify SSH/driver/Docker using public or synthetic inputs.
+- [x] Recheck funding and price, establish cleanup/time controls, then provision one A10080 and verify SSH/driver/Docker using public or synthetic inputs.
+- [x] Run the exact BF16 model on two 16-image synthetic sequences with container networking disabled; preserve artifacts locally and delete the VM. Provider inventory and dashboard reported zero VMs/volumes afterward. Receipt: `.context/verify/gpu-setup.json`.
 - [ ] Keep competition-data hosting permission and reviewed-data training gates separate from infrastructure authorization.
 
 ## Phase 0
@@ -24,6 +25,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Task 0: Orient the clean product checkout and preserve unrelated changes.
 - [ ] Task 1: Review private recordings locally, resolve/flag duplicate time conflict, freeze recording groups/split and approved observable rules.
 - [ ] Task 2: Resolve rented-processor permission and spending separately, then run the one-hour bounded local model compatibility check.
+- [x] Task 2 public/synthetic portion: pinned model, CUDA compatibility, structured output and both planned image sizes passed. The private-data hosting interpretation and full video/concurrency measurements remain open, so the parent task is not complete.
 - [ ] Checkpoint: exact ≥8B model, licenses, local inference, token/memory bounds and dataset exclusions are explicit; no paid resource without authorization.
 
 ## Phase 1

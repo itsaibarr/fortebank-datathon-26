@@ -1,0 +1,34 @@
+{
+  "checked_at_utc": "2026-10-17T11:01:35.616447+00:00",
+  "reviewer": "Primary agent, one manual review; not an independent agent review",
+  "scope": [
+    "scripts/gpu_smoke.py",
+    "scripts/gpu_smoke.sh",
+    "configs/baseline.json",
+    "GPU verification receipt and factual project/Obsidian status updates"
+  ],
+  "checks": [
+    "No paid allocation operation exists in the checked-in smoke scripts.",
+    "Image and model revisions are pinned; model trust_remote_code is false.",
+    "Inference container has network mode none, read-only public model cache and no provider credential mount.",
+    "Result checks require the sole expected synthetic frame ID.",
+    "GPU request/deletion authority was explicit, identity checks were exercised and actual deletion was verified.",
+    "Claims distinguish model compatibility from full-video task accuracy, latency, concurrency and training."
+  ],
+  "blocking_findings": [],
+  "limitations": [
+    "First host key was TOFU, not independently confirmed via provider console.",
+    "Shell wrapper syntax checked; its equivalent operations and Python script actually ran.",
+    "Large observed VRAM total includes a deliberately oversized preallocated KV cache.",
+    "Private-data rented hosting and reviewed-label training gates are still open."
+  ],
+  "validation": {
+    "pytest": "6 passed",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "shell_syntax": "passed",
+    "package_build": "passed before documentation-only edits",
+    "gpu_offline_synthetic": "both 16-image checks passed; exit code 0",
+    "cleanup": "provider inventory: 0 VMs; dashboard: 0 VMs and volumes, hourly cost 0 for both"
+  }
+}
