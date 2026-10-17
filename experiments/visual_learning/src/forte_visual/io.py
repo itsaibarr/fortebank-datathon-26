@@ -30,11 +30,13 @@ def local(root: Path, relative: str) -> Path:
 
 
 def private_dir(path: Path):
+    assert_private(path)
     path.mkdir(parents=True, exist_ok=False, mode=0o700)
     return path
 
 
 def write(path: Path, value):
+    assert_private(path)
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     with path.open("x", encoding="utf-8") as stream:
         stream.write(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
@@ -43,3 +45,8 @@ def write(path: Path, value):
 
 def read(path: Path):
     return json.loads(path.read_bytes())
+
+
+def assert_private(path):
+    if any((parent / ".git").exists() for parent in (path.resolve(), *path.resolve().parents)):
+        raise ValueError("Experiment artifacts must remain outside Git checkouts")

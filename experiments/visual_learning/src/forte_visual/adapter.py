@@ -52,7 +52,9 @@ def reviewed_targets(m, a, *, training=False):
         ):
             continue
         if any(
-            b.review.status != "confirmed" or b.outside or b.occluded
+            b.review.status != "confirmed"
+            or b.outside
+            or (b.occluded and f.target_kind != "abstention")
             for s in f.segment_ids
             for b in segments[s].boxes
             if b.frame_id in f.frame_ids

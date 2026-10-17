@@ -68,8 +68,9 @@ def verify(path: Path):
         frame_ids = {f.frame_id for f in m.frames}
         if not clip.images.keys() <= frame_ids:
             raise ValueError("Derivative has no source frame")
-        if not m.provenance.get("producer_code_commit") == release.producer_code_commit:
-            raise ValueError("Producer code receipt missing/mismatched")
+        recorded_commit = m.provenance.get("producer_code_commit")
+        if recorded_commit and recorded_commit != release.producer_code_commit:
+            raise ValueError("Producer code receipt mismatched")
         pairs.append((clip, m, a))
     # Check again after parsing all files: partial/changing exports are never accepted.
     if digest(path) != before or any(digest(local(root, n)) != h for n, h in release.files.items()):
@@ -81,6 +82,14 @@ def verify(path: Path):
         "producer_code_commit": release.producer_code_commit,
         "mapping_version": adapter.MAPPING_VERSION,
         "mapping_sha256": adapter.mapping_hash(),
+        "consumer_import_hashes": {
+            name: digest(Path(module.__file__))
+            for name, module in (
+                ("annotations", __import__("forte.annotations", fromlist=["Annotation"])),
+                ("tracking", __import__("forte.tracking", fromlist=["TrackManifest"])),
+                ("video", __import__("forte.video", fromlist=["FrameRef"])),
+            )
+        },
         "files_digest": canonical(release.files),
         "file_count": len(release.files),
         "clips": len(pairs),
@@ -93,6 +102,9 @@ def verify(path: Path):
             len(adapter.reviewed_targets(m, a, training=True)) for _, m, a in pairs
         ),
     }
+    prior = root / "consumer-receipt.json"
+    if prior.exists() and read(prior) != receipt:
+        raise ValueError("Consumer snapshot mapping/code/content changed; create a new snapshot")
     return release, pairs, receipt
 
 
@@ -118,6 +130,7 @@ def snapshot(path: Path, output: Path):
         shutil.copyfile(local(path.parent, name), target)
         target.chmod(0o600)
     shutil.copyfile(path, output / "release.json")
+    (output / "release.json").chmod(0o600)
     _, _, copied = verify(output / "release.json")
     if copied["release_sha256"] != receipt["release_sha256"]:
         raise ValueError("Snapshot source changed")

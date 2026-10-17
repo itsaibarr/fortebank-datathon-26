@@ -95,3 +95,23 @@ def test_symlink_rejected(tmp_path):
     (tmp_path / "link").symlink_to(tmp_path / "other")
     with pytest.raises(ValueError, match="symlink"):
         local(tmp_path, "link")
+
+
+def test_only_separately_reviewed_ambiguity_can_survive_occlusion(release):
+    _, pairs, _ = verify(release)
+    _, m, a = pairs[0]
+    for b in m.segments[0].boxes:
+        b.occluded = True
+    assert reviewed_targets(m, a) == []
+    a.facts[0].target_kind = "abstention"
+    a.facts[0].value = "unclear"
+    a.facts[0].observation_state = "not_visible"
+    assert [f.id for f in reviewed_targets(m, a)] == ["role"]
+
+
+def test_private_writer_refuses_any_git_worktree(tmp_path):
+    from forte_visual.io import private_dir
+
+    (tmp_path / ".git").write_text("gitdir: synthetic")
+    with pytest.raises(ValueError, match="outside Git"):
+        private_dir(tmp_path / "private-run")

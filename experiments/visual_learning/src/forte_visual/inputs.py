@@ -28,6 +28,16 @@ class View(Strict):
     height: int
 
 
+class RoleHint(Strict):
+    actor_id: str
+    segment_ids: list[str]
+    value: Literal["cashier", "customer", "unclear"]
+    supported_window: tuple[float, float]
+    evidence_frame_ids: list[str]
+    origin: Literal["model"] = "model"
+    review_status: Literal["unreviewed"] = "unreviewed"
+
+
 class InputCase(Strict):
     case_id: str
     group_id: str
@@ -44,6 +54,7 @@ class InputCase(Strict):
     window: tuple[float, float]
     source_sha256: str
     mapping_sha256: str
+    predicted_roles: list[RoleHint] = Field(default_factory=list)
 
 
 class Answer(Strict):
@@ -69,6 +80,8 @@ def validate_answer(case: InputCase, answer: Answer):
     ids = [answer.start_frame_id, answer.end_frame_id, *answer.evidence_frame_ids]
     if not set(ids) <= case.frames.keys():
         raise ValueError("Invalid source reference")
+    if any(not case.track_boxes.get(answer.actor_id, {}).get(id) for id in ids):
+        raise ValueError("Actor lacks source box at cited frame")
     start, end = case.frames[answer.start_frame_id], case.frames[answer.end_frame_id]
     if start > end or any(not start <= case.frames[f] <= end for f in answer.evidence_frame_ids):
         raise ValueError("Unordered answer interval/evidence")
@@ -77,6 +90,12 @@ def validate_answer(case: InputCase, answer: Answer):
             raise ValueError("Unsupported visible assertion")
     if case.task == "role" and answer.value not in {"cashier", "customer", "unclear"}:
         raise ValueError("Unknown role")
+    if (
+        case.task == "role"
+        and answer.value != "unclear"
+        and len({case.frames[id] for id in answer.evidence_frame_ids}) < 2
+    ):
+        raise ValueError("Certain role needs temporally separated evidence")
 
 
 def aliases(manifest, seed):
@@ -89,7 +108,7 @@ def aliases(manifest, seed):
             for s in merged:
                 components[s] = merged
     unique = sorted({tuple(sorted(v)) for v in components.values()})
-    rng = random.Random(seed)
+    rng = random.Random(f"{seed}:{manifest.source_sha256}")
     names = rng.sample(range(1, 9999), len(unique))
     items = [(f"p{n:04d}", list(c)) for n, c in zip(names, unique, strict=True)]
     rng.shuffle(items)
@@ -123,6 +142,7 @@ def make_case(
     counterpart=None,
     seed=0,
     track_mode="oracle",
+    allow_occluded=False,
 ):
     people = aliases(m, seed)
     actor = next((p for p, ss in people.items() if set(segments) <= set(ss)), None)
@@ -181,10 +201,10 @@ def make_case(
             b.xyxy
             for s in wanted
             for b in segs[s].boxes
-            if b.frame_id == f.frame_id and not b.outside and not b.occluded
+            if b.frame_id == f.frame_id and not b.outside and (allow_occluded or not b.occluded)
         ]
         if not any(
-            b.frame_id == f.frame_id and not b.outside and not b.occluded
+            b.frame_id == f.frame_id and not b.outside and (allow_occluded or not b.occluded)
             for s in segments
             for b in segs[s].boxes
         ):
@@ -274,6 +294,7 @@ def export(path: Path, output: Path, *, training=False, seed=0):
                     counterpart=f.counterpart_actor_id,
                     seed=seed,
                     track_mode=clip.track_mode,
+                    allow_occluded=f.target_kind == "abstention",
                 )
                 evidence = [id for id in f.frame_ids if id in case.frames]
                 if not evidence:
@@ -352,6 +373,8 @@ def messages(case: InputCase, root):
             "text": (
                 f"Task {case.task}. Target {case.actor_id}. Supported tracks {case.actors}. "
                 f"Normalized oriented source boxes by actor/frame: {case.track_boxes}. "
+                f"Prior unreviewed model role hints, restricted to their evidence intervals: "
+                f"{[hint.model_dump() for hint in case.predicted_roles]}. "
                 "Use visible interaction evidence. "
                 "Return unclear when actor, role or action is unsupported. "
                 "Do not infer roles from departure, appearance or screen position. "
@@ -383,3 +406,72 @@ def messages(case: InputCase, root):
             ]
         )
     return [{"role": "user", "content": content}]
+
+
+def validate_pack(release_path, input_path, references=None, *, training=False):
+    """Bind an exported pack back to the reviewed source, not just its JSON shape."""
+    from forte_visual.benchmark import load_cases
+
+    release, pairs, receipt = verify(release_path)
+    by_clip = {m.clip_id: (clip, m, a) for clip, m, a in pairs}
+    refs = None
+    if references is not None:
+        from forte_visual.io import read
+
+        refs = read(references)
+        if refs["inputs_sha256"] != digest(input_path):
+            raise ValueError("Reference pack mismatch")
+    cases = load_cases(input_path)
+    from forte_visual.io import read
+
+    seed = read(input_path)["seed"]
+    if refs and set(refs["cases"]) != {c.case_id for c in cases}:
+        raise ValueError("Reference completeness mismatch")
+    for case in cases:
+        if case.predicted_roles:
+            raise ValueError("Frozen benchmark/training inputs cannot contain prior role answers")
+        clip, m, a = by_clip[case.clip_id]
+        if case.actors != aliases(m, seed):
+            raise ValueError("Anonymous IDs or supported identity components changed")
+        source = {f.frame_id: f for f in m.frames}
+        if case.source_sha256 != m.source_sha256 or case.track_mode != clip.track_mode:
+            raise ValueError("Input source/tracker mismatch")
+        if case.mapping_sha256 != adapter.mapping_hash():
+            raise ValueError("Consumer mapping changed since export")
+        if any(
+            id not in source
+            or source[id].timestamp_sec != t
+            or source[id].source_pts != case.source_pts[id]
+            for id, t in case.frames.items()
+        ):
+            raise ValueError("Input frame timing mismatch")
+        if any(
+            v.frame_id not in case.frames
+            or v.source_rect[0] < 0
+            or v.source_rect[1] < 0
+            or not v.source_rect[0] < v.source_rect[2] <= m.oriented_width
+            or not v.source_rect[1] < v.source_rect[3] <= m.oriented_height
+            for v in case.views
+        ):
+            raise ValueError("Input crop/source provenance mismatch")
+        # Pixel files are opaque paths; labels/points/role attributes are never admitted.
+        for v in case.views:
+            if digest(local(input_path.parent, v.path)) != v.sha256:
+                raise ValueError("Frozen pixels changed")
+        if refs:
+            ref = refs["cases"][case.case_id]
+            eligible = {f.id: f for f in adapter.reviewed_targets(m, a, training=training)}
+            if ref["fact_id"] not in eligible or ref["split"] != m.split:
+                raise ValueError("Reference not eligible in producer release")
+            fact = eligible[ref["fact_id"]]
+            answer = Answer.model_validate(ref["answer"])
+            validate_answer(case, answer)
+            if answer.value != fact.value or not set(fact.segment_ids) <= set(
+                case.actors[answer.actor_id]
+            ):
+                raise ValueError("Reference changed actor or reviewed target")
+            if not set(answer.evidence_frame_ids) <= set(fact.frame_ids):
+                raise ValueError("Reference evidence not independently reviewed")
+            if training and (m.regression_only or not m.training_eligible):
+                raise ValueError("Ineligible source in training pack")
+    return receipt

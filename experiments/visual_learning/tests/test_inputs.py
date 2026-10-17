@@ -67,3 +67,33 @@ def test_answer_actor_participant_and_source_invariants(tmp_path):
     changed["expected_role"] = "cashier"
     with pytest.raises(ValueError):
         InputCase.model_validate(changed)
+
+
+def test_pack_rejects_changed_actor_aliases_crop_pixels_and_reference_truth(tmp_path):
+    from forte_visual.inputs import validate_pack
+    from forte_visual.io import digest
+
+    source = create(tmp_path / "source")
+    export(source, tmp_path / "run")
+    inputs, refs = tmp_path / "run/inference/inputs.json", tmp_path / "run/reference/answers.json"
+    validate_pack(source, inputs, refs)
+    payload = read(inputs)
+    payload["cases"][0]["actors"] = {"cashier": ["s0001"]}
+    inputs.write_text(json.dumps(payload))
+    with pytest.raises(ValueError):
+        validate_pack(source, inputs)
+    export(source, tmp_path / "other")
+    other = tmp_path / "other/inference/inputs.json"
+    reference = tmp_path / "other/reference/answers.json"
+    changed = read(reference)
+    changed["cases"]["c000000"]["answer"]["value"] = "customer"
+    reference.write_text(json.dumps(changed))
+    assert changed["inputs_sha256"] == digest(other)
+    with pytest.raises(ValueError, match="reviewed target"):
+        validate_pack(source, other, reference)
+
+
+def test_id_names_are_independent_between_recordings(tmp_path):
+    source = create(tmp_path / "source")
+    first, second = [m for _, m, _ in verify(source)[1]]
+    assert set(aliases(first, 0)) != set(aliases(second, 0))
