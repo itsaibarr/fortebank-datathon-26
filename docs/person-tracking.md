@@ -4,7 +4,8 @@ The steps 1–2 workflow is implemented. A CPU run processed all 31 allowlisted
 development recordings offline and prepared local review packets. **No complete
 person/role/action pilot is approved, and no training targets are released.**
 The three original review cases are priority items. Human responses now supply
-role/view mappings for all three pilot recordings and one explicit same-person join; full
+role/view mappings for all three pilot recordings, six stable segment ranges,
+twelve accepted source boxes and one explicit same-person join; complete
 interval and geometry review remains open. Their narrative corrections
 are preserved, with explicit pending bindings to outlined segments/source frames.
 A local human must finish those bindings and review the tracks, areas and actions.
@@ -116,7 +117,8 @@ recording remains regression-only regardless of later annotation approval.
 [CVAT Community](https://github.com/cvat-ai/cvat/tree/9176834830e2e931a8d3a6857dcf43c6cc0ee927)
 is the selected annotation tool. The setup script derives a reduced isolated
 Compose configuration from that exact upstream revision and pins server/UI image
-digests. It publishes only `127.0.0.1:18080`, uses an internal Docker network,
+digests. It publishes only `127.0.0.1:18080`, keeps all annotation backends on an
+internal Docker network and attaches only the reverse proxy to a host-access network,
 disables analytics and keeps this project's containers/volumes separately named.
 It does not touch other Docker projects or delete retained review volumes.
 
@@ -139,14 +141,43 @@ attributes are immutable `segment_id`/`person_id` text and mutable `role`
 and export **CVAT for video 1.1**. Do not change source frame range, step or scale.
 Verify task frame count against the source sidecar before reviewing.
 
-The local server pilot has **not** started: Docker Hub repeatedly returned
-`net/http: TLS handshake timeout`; a final sequential pull also stalled and was
-stopped. No project containers were created, no footage was uploaded, and native
-server round-trip acceptance remains pending. The adapter's synthetic XML
-round trip passes for occlusion, outside/keyframe flags, mutable roles and area
-polygons. That is not a claim of successful import/export through a running CVAT
-server. Complete the native synthetic round trip before importing private pilot
-media after the image-download problem is resolved.
+The local Community 2.79.0 server now runs on loopback after a bounded image-pull
+retry. The original internal-only proxy network did not publish a usable host
+port on this Docker runtime. A regression-tested change gives only that proxy
+host access; the server, workers and databases retain their internal network.
+Native synthetic upload/import/export preserves five source frames, person IDs,
+occlusion, outside/keyframe flags, mutable role attributes and uncertain area
+polygons. Original-quality frame downloads also preserve the synthetic color
+order. These are software checks, separate from human annotation quality.
+
+Reproduce the native exchange with a fresh synthetic packet:
+
+```sh
+CHECK="$RUNTIME/cvat/synthetic-roundtrip-new"
+PYTHONPATH=src /usr/bin/sandbox-exec -p '(version 1)(allow default)(deny network*)' \
+  "$RUNTIME/.venv/bin/python" scripts/check_cvat_roundtrip.py prepare --directory "$CHECK"
+# In the local Community UI, create the task named in cvat-source-map.json,
+# with the labels/attributes in cvat.xml. Upload oriented-source.mp4 at step 1,
+# import cvat.xml as CVAT 1.1, export CVAT for video 1.1 and extract its XML.
+PYTHONPATH=src /usr/bin/sandbox-exec -p '(version 1)(allow default)(deny network*)' \
+  "$RUNTIME/.venv/bin/python" scripts/check_cvat_roundtrip.py verify \
+  --directory "$CHECK" --xml /private/extracted/annotations.xml
+```
+
+Retain the local server version, task/upload/import/export request receipts and
+export hash beside the verifier's receipt. The offline verifier alone does not
+prove server execution. For a video, CVAT's `data/meta` may contain one `frames`
+metadata entry while `size` is the full decoded frame count. Verify `size`,
+start/stop/step and original dimensions against the PTS sidecar; do not require
+one metadata entry per decoded source frame.
+
+The three allowlisted pilot tasks are also loaded locally, with source frame
+counts/dimensions and imported segment IDs checked against their immutable review
+revisions. The private queue is `run-001/cvat-review-001/review.html`; it links
+the original context packets, local CVAT jobs, source sidecars and exact pending
+work-area/interval requests. CVAT display track numbers may differ from our IDs;
+match the immutable `segment_id` and `person_id` attributes. Importing proposals
+adds no human approvals and does not replace the current reviewed manifests.
 
 Integrated SAM 2 tracking is documented for Online/Enterprise, not Community.
 Do not upload to Online or promise a free integrated SAM 2 tracker. External
@@ -275,7 +306,7 @@ Responses for all three pilot recordings are preserved privately with verbatim
 wording, reviewer source and receipt time. Fourteen named view/role mappings are
 associated with six recording-local identity groups, with seven reviewed reflection
 relationships and one independently confirmed same-person join. The groups are
-not a verified count of all physical people. Full segments, geometry, work areas,
+not a verified count of all physical people. Complete geometry, work areas,
 actions and role intervals remain unapproved, and no role/action training target
 is released. The historical regression exclusion remains. Original review packets
 and baseline proposals are intact; the private index points to immutable reviewed
@@ -284,15 +315,21 @@ role, view kind and identity unresolved; it supplies no abstention training targ
 The aggregate separates proposed, confirmed and rejected joins.
 
 Identity continuity has subsequently been confirmed for six segment ranges across
-all three pilots. Their box geometry remains draft; this does not approve the complete
+all three pilots. Twelve explicitly named source boxes across those recordings
+have since been accepted; the other 12,827 boxes remain draft. This does not approve the complete
 recording, other people, reflection continuity, role/action intervals or training
 targets. The source-bound request, exact response and earlier correction inputs
 are preserved in the nested private revision. See the additional aggregate
 checkpoints `.context/verify/person-continuity-review-20261017.json` and
 `.context/verify/person-continuity-review-followup-20261017.json`, followed by
 `.context/verify/person-continuity-six-ranges-20261018.json`. An ambiguous response
-was left pending until the human explicitly clarified it. A separate four-box
-geometry request is prepared; none of those boxes is automatically approved.
+was left pending until the human explicitly clarified it. Each four-box response
+is preserved with its source-bound request and applied only to those four boxes.
+Local re-extraction verified six selected source images and twenty linked crops,
+along with all 2,761 source frames and 5,522 playback frames in the three changed
+revisions. Coordinates, detector origins, automatic scores and earlier identity
+reviews remain intact. No role/action interval or training target was approved
+by those geometry responses.
 
 Review regeneration now retains all previously cited source-frame images,
 including diagnostic reference views, before adding new candidate views. The
@@ -300,7 +337,7 @@ packet displays recorded mappings beside pending interval/geometry gates rather
 than treating mirror detections as additional physical people.
 
 The current aggregate receipt is
-`.context/verify/person-pilot-role-review-20261017.json`; the earlier
+`.context/verify/person-box-review-cvat-20261018.json`; the earlier
 `person-view-review` receipts remain historical checkpoints.
 
 These pilots check source binding and annotation errors. Recording-local IDs
