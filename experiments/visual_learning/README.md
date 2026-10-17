@@ -1,3 +1,8 @@
+> Follow-up integration supersedes this preparation snapshot. See
+> [live integration](../../docs/visual-integration.md) for packaged serving code, current
+> producer v1/v2 compatibility and real-rehearsal status. The text below records
+> the historical `972a5d9` preparation result; it is not current runtime acceptance.
+
 # Actor-bound visual learning and complete-clip scanning
 
 Experimental, private tools for steps 3–4. Production inference, API, rules,

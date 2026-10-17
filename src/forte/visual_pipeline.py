@@ -2,15 +2,16 @@
 
 import base64
 import time
-
-from forte_visual.inputs import aliases
-from forte_visual.scan import Bounds, scan
+from pathlib import Path
 
 from forte.contracts import DoneJob, Violation
 from forte.jobs import atomic_json
 from forte.live_tracking import automatic_tracks
+from forte.person_proposals import sha256
 from forte.temporal_rules import temporal_checks
 from forte.video import decode_video
+from forte_visual.inputs import aliases
+from forte_visual.scan import Bounds, scan
 
 
 def analyze_visual(path, work, job_id, backend, deadline, stats=None, *, tracking=None):
@@ -25,6 +26,16 @@ def analyze_visual(path, work, job_id, backend, deadline, stats=None, *, trackin
             "warmup": backend.warm_receipt,
             "runtime": "forte.visual_pipeline/1",
             "reference_input": False,
+            "application_source_hashes": {
+                name: sha256(Path(module.__file__))
+                for name, module in (
+                    ("pipeline", __import__(__name__, fromlist=["analyze_visual"])),
+                    ("scanner", __import__("forte_visual.scan", fromlist=["scan"])),
+                    ("runtime", __import__("forte.visual_runtime", fromlist=["ResidentScanner"])),
+                    ("tracking", __import__("forte.live_tracking", fromlist=["automatic_tracks"])),
+                    ("rules", __import__("forte.temporal_rules", fromlist=["temporal_checks"])),
+                )
+            },
         },
     )
     registry = decode_video(path, work / "frames", deadline)

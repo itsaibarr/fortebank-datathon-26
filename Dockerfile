@@ -10,4 +10,5 @@ COPY src /app/src
 COPY configs/person-tracking.json /app/configs/person-tracking.json
 RUN python3 -m pip install --no-cache-dir --no-deps .
 COPY scripts/container-entrypoint.sh /app/
+COPY scripts/rehearse_visual_api.py /app/scripts/rehearse_visual_api.py
 ENTRYPOINT ["bash", "/app/container-entrypoint.sh"]
