@@ -87,7 +87,12 @@ def aggregate(records, annotations=None):
     return dict(
         recordings_processed=len(manifests),
         proposed_segments=sum(len(m.segments) for m in manifests),
-        proposed_joins=sum(len(m.joins) for m in manifests),
+        recorded_join_decisions=sum(len(m.joins) for m in manifests),
+        proposed_joins=sum(j.review.status == "draft" for m in manifests for j in m.joins),
+        confirmed_identity_joins=sum(
+            j.review.status == "confirmed" for m in manifests for j in m.joins
+        ),
+        rejected_joins=sum(j.review.status == "rejected" for m in manifests for j in m.joins),
         human_reviewed_segments=sum(
             s.review.status == "confirmed" for m in manifests for s in m.segments
         ),

@@ -333,6 +333,9 @@ def test_human_join_groups_repeated_role_mappings_without_approving_geometry():
     report = aggregate([({"clip_id": "clip000"}, revised)], annotations=[annotation])
     assert report["canonical_role_mapping_groups"] == 1
     assert report["confirmed_role_mappings"] == 4
+    assert report["proposed_joins"] == 0
+    assert report["confirmed_identity_joins"] == 1
+    assert report["recorded_join_decisions"] == 1
     assert report["human_reviewed_segments"] == 0 and report["training_targets"] == 0
     assert all(b.review.status == "draft" for s in revised.segments for b in s.boxes)
 
