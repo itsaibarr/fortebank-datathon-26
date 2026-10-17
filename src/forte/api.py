@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import hmac
 import json
+import re
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -36,16 +37,59 @@ def error_response(status, code, message):
 
 
 class KeyAuth:
-    def __init__(self, app, key):
+    def __init__(self, app, key, trusted_gateway_token=None):
         self.app, self.key = app, key.encode("ascii")
+        self.trusted_gateway_token = (
+            trusted_gateway_token.encode("ascii") if trusted_gateway_token is not None else None
+        )
 
     async def __call__(self, scope, receive, send):
+        trusted_api = (
+            scope["type"] == "http"
+            and scope["path"].startswith("/api/")
+            and self.trusted_gateway_token is not None
+        )
+        response_started = False
         if scope["type"] == "http" and scope["path"].startswith("/api/"):
+            if self.trusted_gateway_token is not None:
+                downstream_send = send
+
+                async def ownership_send(message):
+                    nonlocal response_started
+                    if message["type"] == "http.response.start":
+                        response_started = True
+                        message = dict(message)
+                        message["headers"] = [
+                            (key, value)
+                            for key, value in message.get("headers", [])
+                            if key.lower() != b"x-forte-ownership-mode"
+                        ] + [(b"x-forte-ownership-mode", b"principal-v1")]
+                    await downstream_send(message)
+
+                send = ownership_send
             values = [v for k, v in scope["headers"] if k.lower() == b"x-api-key"]
             if len(values) != 1 or not hmac.compare_digest(values[0], self.key):
                 response = error_response(401, "unauthorized", "Missing or invalid API key.")
                 return await response(scope, receive, send)
-        await self.app(scope, receive, send)
+            if self.trusted_gateway_token is not None:
+                tokens = [v for k, v in scope["headers"] if k.lower() == b"x-forte-gateway-token"]
+                principals = [v for k, v in scope["headers"] if k.lower() == b"x-forte-principal"]
+                if (
+                    len(tokens) != 1
+                    or not hmac.compare_digest(tokens[0], self.trusted_gateway_token)
+                    or len(principals) != 1
+                    or re.fullmatch(rb"[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}", principals[0]) is None
+                ):
+                    response = error_response(401, "unauthorized", "Trusted access is required.")
+                    return await response(scope, receive, send)
+                scope.setdefault("state", {})["forte_principal"] = principals[0].decode("ascii")
+        try:
+            await self.app(scope, receive, send)
+        except Exception:
+            if not trusted_api or response_started:
+                raise
+            response = error_response(500, "internal_error", "Unable to complete the request.")
+            await response(scope, receive, send)
 
 
 class UploadLimit(MultiPartException):
@@ -99,7 +143,9 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
             backend.client.close()
 
     app = FastAPI(title="ForteBank video review", lifespan=lifespan)
-    app.add_middleware(KeyAuth, key=settings.api_key)
+    app.add_middleware(
+        KeyAuth, key=settings.api_key, trusted_gateway_token=settings.trusted_gateway_token
+    )
 
     @app.exception_handler(Problem)
     async def problem(request, exc):
@@ -118,6 +164,17 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
         if not await asyncio.to_thread(ready):
             raise Problem(503, "model_not_ready", "The local model is not ready.")
         return {"status": "ready"}
+
+    if settings.trusted_gateway_token is not None:
+
+        @app.get("/api/internal/security", include_in_schema=False)
+        async def security_capability():
+            return {
+                "schema_version": "forte.gateway-security/1",
+                "trusted_gateway_required": True,
+                "principal_ownership": True,
+                "ownerless_jobs_denied": True,
+            }
 
     async def process(id, deadline, version=1):
         nonlocal admitted
@@ -150,14 +207,28 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                 admitted -= 1
 
     @app.get("/api/v1/jobs/{job_id}")
-    async def get_job(job_id: UUID):
-        return read_job(job_id, 1).model_dump(mode="json", exclude_none=True)
+    async def get_job(job_id: UUID, request: Request):
+        return read_job(job_id, 1, request).model_dump(mode="json", exclude_none=True)
 
-    def read_job(job_id, version):
+    def read_job(job_id, version, request):
         try:
             marker = store.directory(job_id) / "request.json"
-            stored_version = json.loads(marker.read_text())["api_version"] if marker.exists() else 1
-            if stored_version != version:
+            try:
+                metadata = json.loads(marker.read_text()) if marker.exists() else {"api_version": 1}
+            except (OSError, ValueError) as exc:
+                if settings.trusted_gateway_token is None:
+                    raise
+                raise FileNotFoundError from exc
+            if settings.trusted_gateway_token is not None:
+                principal = getattr(request.state, "forte_principal", None)
+                if (
+                    not principal
+                    or not isinstance(metadata, dict)
+                    or metadata.get("owner_principal") != principal
+                    or metadata.get("api_version") != version
+                ):
+                    raise FileNotFoundError
+            if metadata["api_version"] != version:
                 raise FileNotFoundError
             return store.read(job_id)
         except FileNotFoundError as exc:
@@ -180,20 +251,20 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
         response_model=ProcessingJob | ReasoningDoneJob | FailedJob,
         response_model_exclude_none=True,
     )
-    async def get_reasoning_job(job_id: UUID):
-        return read_job(job_id, 2).model_dump(mode="json", exclude_none=True)
+    async def get_reasoning_job(job_id: UUID, request: Request):
+        return read_job(job_id, 2, request).model_dump(mode="json", exclude_none=True)
 
-    def completed_reasoning(job_id):
-        result = read_job(job_id, 2)
+    def completed_reasoning(job_id, request):
+        result = read_job(job_id, 2, request)
         if not isinstance(result, ReasoningDoneJob):
             raise Problem(409, "result_not_available", "Analysis has not completed.")
         return result.result
 
     @app.get("/api/v2/jobs/{job_id}/source")
-    async def source(job_id: UUID):
+    async def source(job_id: UUID, request: Request):
         from forte.model_profile import hash_file
 
-        result = completed_reasoning(job_id)
+        result = completed_reasoning(job_id, request)
         root = store.directory(job_id).resolve()
         path = (root / "input.mov").resolve()
         try:
@@ -212,8 +283,8 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
         )
 
     @app.get("/api/v2/jobs/{job_id}/evidence/{frame_id}")
-    async def evidence(job_id: UUID, frame_id: str):
-        result = completed_reasoning(job_id)
+    async def evidence(job_id: UUID, frame_id: str, request: Request):
+        result = completed_reasoning(job_id, request)
         for event in result.get("events", []):
             for item in event.get("evidence", []):
                 if item.get("frame_id") != frame_id:
@@ -236,24 +307,27 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
         raise Problem(404, "evidence_not_found", "Unknown source evidence.")
 
     @app.get("/api/v2/jobs/{job_id}/corrections")
-    async def get_corrections(job_id: UUID):
-        completed_reasoning(job_id)
+    async def get_corrections(job_id: UUID, request: Request):
+        completed_reasoning(job_id, request)
         corrections = store.directory(job_id) / "corrections"
         return {
             "revisions": [json.loads(p.read_text()) for p in sorted(corrections.glob("*.json"))]
         }
 
     @app.post("/api/v2/jobs/{job_id}/corrections", status_code=201)
-    async def correct(job_id: UUID, correction: CorrectionRequest):
+    async def correct(job_id: UUID, correction: CorrectionRequest, request: Request):
         from forte.timeline import append_correction
 
-        result = completed_reasoning(job_id)
+        result = completed_reasoning(job_id, request)
+        submitted = correction.model_dump(mode="json")
+        if settings.trusted_gateway_token is not None:
+            submitted["reviewer"] = request.state.forte_principal
         try:
             path = await asyncio.to_thread(
                 append_correction,
                 store.directory(job_id) / "corrections",
                 result,
-                correction.model_dump(mode="json"),
+                submitted,
             )
             return {"revision": path.name, "correction": json.loads(path.read_text())}
         except (ValueError, FileExistsError) as exc:
@@ -321,7 +395,10 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
             store.create(id)
             from forte.jobs import atomic_json
 
-            atomic_json(directory / "request.json", {"api_version": version})
+            metadata = {"api_version": version}
+            if settings.trusted_gateway_token is not None:
+                metadata["owner_principal"] = request.state.forte_principal
+            atomic_json(directory / "request.json", metadata)
             task = asyncio.create_task(process(id, started + settings.job_timeout, version))
             tasks.add(task)
             task.add_done_callback(tasks.discard)

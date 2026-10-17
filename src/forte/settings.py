@@ -17,10 +17,20 @@ class Settings:
     max_context_tokens: int = 8192
     reasoning_config: Path | dict | None = None
     frontend_root: Path | None = None
+    trusted_gateway_token: str | None = None
 
     def __post_init__(self):
         if len(self.api_key) < 16 or not self.api_key.isascii():
             raise ValueError("Set a separate service API key of at least 16 ASCII characters")
+        if self.trusted_gateway_token is not None and (
+            len(self.trusted_gateway_token) < 32
+            or len(self.trusted_gateway_token) > 256
+            or not self.trusted_gateway_token.isascii()
+            or not all(33 <= ord(char) <= 126 for char in self.trusted_gateway_token)
+        ):
+            raise ValueError("Trusted gateway mode requires a separate 32–256 character secret")
+        if self.trusted_gateway_token == self.api_key:
+            raise ValueError("The trusted gateway token must differ from the service API key")
         self.private_root = self.private_root.resolve()
 
     @classmethod
@@ -42,6 +52,11 @@ class Settings:
             reasoning_config=(
                 Path(os.environ["FORTE_REASONING_CONFIG"])
                 if os.environ.get("FORTE_REASONING_CONFIG")
+                else None
+            ),
+            trusted_gateway_token=(
+                Path(os.environ["FORTE_TRUSTED_GATEWAY_TOKEN_FILE"]).read_text().strip()
+                if os.environ.get("FORTE_TRUSTED_GATEWAY_TOKEN_FILE")
                 else None
             ),
             frontend_root=(
