@@ -350,6 +350,7 @@ def test_human_join_cannot_make_conflicting_role_mappings_consistent():
 @pytest.mark.parametrize("status", ["confirmed", "rejected"])
 def test_box_review_changes_only_selected_review_state_and_keeps_detector_origin(status):
     from forte.tracking import training_targets
+    from forte.tracking_cli import aggregate
 
     raw, annotation = pair()
     m = TrackManifest.model_validate(raw)
@@ -368,6 +369,10 @@ def test_box_review_changes_only_selected_review_state_and_keeps_detector_origin
     assert m.segments[0].boxes[0].review.status == "draft"
     assert revised.joins == [] and annotation.facts == []
     assert training_targets(revised, annotation) == []
+    report = aggregate([({}, revised)], annotations=[annotation])
+    assert report["confirmed_boxes"] == int(status == "confirmed")
+    assert report["rejected_boxes"] == int(status == "rejected")
+    assert report["pending_boxes"] == 1
 
 
 @pytest.mark.parametrize("frames", [[], ["f000000", "f000000"], ["f999999"]])

@@ -83,6 +83,7 @@ def aggregate(records, annotations=None):
     manifests = [m for _, m in records]
     annotations = annotations or []
     facts = [f for a in annotations for f in a.facts]
+    boxes = [b for m in manifests for s in m.segments for b in s.boxes]
     groups = {m.source_sha256: confirmed_person_groups(m.segments, m.joins) for m in manifests}
     return dict(
         recordings_processed=len(manifests),
@@ -96,6 +97,9 @@ def aggregate(records, annotations=None):
         human_reviewed_segments=sum(
             s.review.status == "confirmed" for m in manifests for s in m.segments
         ),
+        confirmed_boxes=sum(b.review.status == "confirmed" for b in boxes),
+        rejected_boxes=sum(b.review.status == "rejected" for b in boxes),
+        pending_boxes=sum(b.review.status == "draft" for b in boxes),
         confirmed_roles=sum(f.kind == "role" and f.review_status == "confirmed" for f in facts),
         confirmed_actions=sum(f.kind == "action" and f.review_status == "confirmed" for f in facts),
         pending_roles=sum(f.kind == "role" and f.review_status == "draft" for f in facts),
@@ -174,6 +178,7 @@ def refresh_index(args):
         records.append((record, m))
         annotations.append(a)
         statuses = [s.review.status for s in m.segments] + [f.review_status for f in a.facts]
+        box_statuses = [b.review.status for s in m.segments for b in s.boxes]
         row.update(
             manifest=str(path / "tracks.json"),
             status="confirmed"
@@ -182,6 +187,9 @@ def refresh_index(args):
             confirmed=sum(x == "confirmed" for x in statuses),
             pending=sum(x == "draft" for x in statuses),
             rejected=sum(x == "rejected" for x in statuses),
+            confirmed_boxes=box_statuses.count("confirmed"),
+            pending_boxes=box_statuses.count("draft"),
+            rejected_boxes=box_statuses.count("rejected"),
             training_eligible=bool(training_targets(m, a)),
             confirmed_role_mappings=sum(b.review.status == "confirmed" for b in m.role_bindings),
             confirmed_reflection_relations=sum(
