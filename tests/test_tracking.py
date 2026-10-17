@@ -178,3 +178,178 @@ def test_conflicting_reviewed_roles_cannot_silently_replace_same_person():
         )
     with pytest.raises(ValueError, match="Conflicting"):
         validate_pair(TrackManifest.model_validate(raw), a)
+
+
+def test_role_review_does_not_approve_geometry_or_identity_for_training():
+    from datetime import UTC, datetime
+
+    from forte.annotations import VisualFact
+    from forte.tracking import Review, WorkArea
+
+    raw, a = pair()
+    raw.update(
+        training_eligible=True,
+        session_group="synthetic-session",
+        split="train",
+        split_frozen=True,
+        exclusion_reasons=[],
+    )
+    m = TrackManifest.model_validate(raw)
+    reviewed = Review(
+        status="confirmed", reviewer="synthetic reviewer", reviewed_at=datetime.now(UTC)
+    )
+    m.work_areas = [
+        WorkArea(
+            id="area1",
+            frame_ids=["f000000", "f000001"],
+            points=[(0.1, 0.1), (0.9, 0.1), (0.9, 0.9)],
+            review=reviewed,
+        )
+    ]
+    a.facts = [
+        VisualFact(
+            id="role",
+            kind="role",
+            actor_id="p0001",
+            value="cashier",
+            start_sec=0,
+            end_sec=1,
+            frame_ids=["f000000", "f000001"],
+            continuity_supported=True,
+            segment_ids=["s0001"],
+            work_area_id="area1",
+            review_status="confirmed",
+            reviewer="synthetic reviewer",
+            reviewed_at=datetime.now(UTC),
+            origin="human",
+            visible_basis="Synthetic service sequence",
+            visibility_limits="Synthetic clear view",
+            playback_interval=(0, 2),
+            observation_state="observed",
+            target_kind="fact",
+        )
+    ]
+    assert training_targets(m, a) == []
+    m.segments[0].review = reviewed
+    assert training_targets(m, a) == []
+    for box in m.segments[0].boxes:
+        box.review = reviewed
+    assert len(training_targets(m, a)) == 1
+    m.segments[0].identity_uncertain = True
+    assert training_targets(m, a) == []
+    m.segments[0].identity_uncertain = False
+    m.regression_only = True
+    with pytest.raises(ValueError, match="eligibility"):
+        training_targets(m, a)
+
+
+def test_counterpart_identity_requires_boxes_during_the_action():
+    from forte.annotations import VisualFact
+    from forte.tracking import validate_pair
+
+    raw, a = pair()
+    raw["segments"].append(
+        dict(
+            id="s0002",
+            person_id="p0002",
+            upstream_id=2,
+            boxes=[dict(frame_id="f000001", xyxy=[0.5, 0.1, 0.8, 0.9])],
+        )
+    )
+    m = TrackManifest.model_validate(raw)
+    a.facts = [
+        VisualFact(
+            id="action",
+            kind="action",
+            actor_id="p0001",
+            value="handing_over_cash",
+            start_sec=0,
+            end_sec=0,
+            frame_ids=["f000000"],
+            segment_ids=["s0001"],
+            counterpart_actor_id="p0002",
+        )
+    ]
+    with pytest.raises(ValueError, match="Counterpart"):
+        validate_pair(m, a)
+
+
+def test_confirmed_unclear_role_requires_explicit_abstention_target():
+    from datetime import UTC, datetime
+
+    from forte.annotations import VisualFact
+    from forte.tracking import Review, WorkArea
+
+    raw, a = pair()
+    raw.update(
+        training_eligible=True,
+        session_group="synthetic-session",
+        split="train",
+        split_frozen=True,
+        exclusion_reasons=[],
+    )
+    m = TrackManifest.model_validate(raw)
+    reviewed = Review(
+        status="confirmed", reviewer="synthetic reviewer", reviewed_at=datetime.now(UTC)
+    )
+    m.work_areas = [
+        WorkArea(
+            id="area1",
+            frame_ids=["f000000"],
+            points=[(0.1, 0.1), (0.9, 0.1), (0.9, 0.9)],
+            review=reviewed,
+        )
+    ]
+    m.segments[0].review = reviewed
+    for box in m.segments[0].boxes:
+        box.review = reviewed
+    a.facts = [
+        VisualFact(
+            id="role",
+            kind="role",
+            actor_id="p0001",
+            value="unclear",
+            start_sec=0,
+            end_sec=1,
+            frame_ids=["f000000", "f000001"],
+            segment_ids=["s0001"],
+            work_area_id="area1",
+            review_status="confirmed",
+            reviewer="synthetic reviewer",
+            reviewed_at=datetime.now(UTC),
+            origin="human",
+            visible_basis="Insufficient synthetic view",
+            visibility_limits="Context absent",
+            playback_interval=(0, 2),
+            observation_state="observed",
+            target_kind="fact",
+        )
+    ]
+    assert training_targets(m, a) == []
+    a.facts[0].target_kind = "abstention"
+    assert len(training_targets(m, a)) == 1
+
+
+def test_aggregate_counts_labels_without_calling_segments_distinct_people():
+    from forte.annotations import VisualFact
+    from forte.tracking_cli import aggregate
+
+    raw, a = pair()
+    m = TrackManifest.model_validate(raw)
+    a.facts = [
+        VisualFact(
+            id="action",
+            kind="action",
+            actor_id="p0001",
+            value="synthetic_action",
+            start_sec=0,
+            end_sec=1,
+            frame_ids=["f000000"],
+            segment_ids=["s0001"],
+        )
+    ]
+    report = aggregate([({"clip_id": "clip000"}, m)], annotations=[a])
+    assert report["pending_actions"] == 1
+    assert report["confirmed_actions"] == 0
+    assert report["people_reviewed"] is None
+    assert report["human_unreviewed_sec"] == 2

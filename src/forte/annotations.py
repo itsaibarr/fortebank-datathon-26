@@ -40,6 +40,10 @@ class VisualFact(Strict):
     segment_ids: list[str] = Field(default_factory=list)
     work_area_id: str | None = None
     counterpart_actor_id: str | None = None
+    counterpart_segment_ids: list[str] = Field(default_factory=list)
+    counterpart_frame_ids: list[str] = Field(default_factory=list)
+    actor_participation: Literal["giver", "receiver", "actor", "unclear"] = "unclear"
+    service_completion_uncertain: bool = True
     observation_state: Literal[
         "observed", "not_reviewed", "not_visible", "not_observed_in_reviewed_interval"
     ] = "not_reviewed"
