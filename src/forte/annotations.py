@@ -1,5 +1,6 @@
 """Separate private visual facts and legal assessments, with explicit review gates."""
 
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -34,6 +35,21 @@ class VisualFact(Strict):
     continuity_supported: bool = False
     review_status: Literal["draft", "confirmed", "rejected"] = "draft"
     reviewer: str | None = None
+    # Optional track-sidecar bindings. Legacy annotations remain readable; the
+    # versioned tracking workflow applies the stronger gates in validate_pair.
+    segment_ids: list[str] = Field(default_factory=list)
+    work_area_id: str | None = None
+    counterpart_actor_id: str | None = None
+    observation_state: Literal[
+        "observed", "not_reviewed", "not_visible", "not_observed_in_reviewed_interval"
+    ] = "not_reviewed"
+    target_kind: Literal["fact", "abstention", "unresolved"] = "unresolved"
+    visibility_limits: str = ""
+    visible_basis: str = ""
+    reviewed_at: datetime | None = None
+    origin: Literal["human", "model", "legacy"] = "legacy"
+    playback_interval: tuple[float, float] | None = None
+    boundary_uncertain: bool = True
 
 
 class Predicate(Strict):
