@@ -109,7 +109,12 @@
     "verified_effective_config_sha256": "33ec93ba546f7ae836cbcf9270831e701038c9174c5b7200162e907c7899366a",
     "legal_manifest_sha256": "2d91e147f55c9bee54bae22e64126ed0fd00d35bbac3715aeda96075862400a1",
     "rule_cards_sha256": "71e1d6aaa3d3bb77fac9fb5291fd66023cae24562c3d83628fff907c0e06e804",
-    "person_tracking_sha256": "24cc1880aa4ce0e2cead547f81f2dd7519a93d6035888f8c95f58feeb41b791a"
+    "person_tracking_sha256": "24cc1880aa4ce0e2cead547f81f2dd7519a93d6035888f8c95f58feeb41b791a",
+    "verified_effective_config_path": "contracts/frozen-effective-config-v1.json",
+    "public_asset_inventory_path": "contracts/frozen-assets-v1.json",
+    "public_asset_inventory_sha256": "2f858a24955c95f9655d91cc9e70badfc2ba9cc51e05af4058f16dfe19b84cf0",
+    "pinned_model_hash_manifest_path": "contracts/frozen-model-hashes-v1.json",
+    "pinned_model_hash_manifest_sha256": "d6cf043a326f8cb5b1f6e31ef37c4d650f6fda342b262029c30968174431459b"
   },
   "implementation": {
     "application_sources_sha256": {
@@ -144,7 +149,8 @@
       "Tailwind",
       "shadcn preset b3d6mT4h6m",
       "Lucide"
-    ]
+    ],
+    "core_commit": "111234c885f0a23d323fe72a81450dfca5aa7e60"
   },
   "verification": {
     "python_tests_passed": 201,
@@ -155,14 +161,125 @@
     "legal_replay_real_calls": 2,
     "legal_replay_validated_assessments": 1,
     "legal_quality": "unreviewed; one other complete response rejected",
-    "final_image_cold_start": "pending",
-    "concurrent_real_jobs": "pending",
-    "quality_metrics": "unmeasured"
+    "final_image_cold_start": "passed: model hashes, 2/2 actual16K visual warmups, live/ready/UI HTTP200",
+    "concurrent_real_jobs": {
+      "status": "both_done_partial_insufficient_evidence",
+      "seconds": [
+        257.4316568969998,
+        258.04176296100013
+      ],
+      "third_admission_status": 429,
+      "all_returned_source_jpegs_and_markers_verified": true,
+      "quality_accepted": false,
+      "complete_schedule": false
+    },
+    "quality_metrics": "unmeasured",
+    "app_only_host_bridge": "passed: localhost SSH-forwarded live/ready/UI200, unauthenticated API401"
   },
   "handoff": {
     "runtime_attach_authorized": false,
-    "instructions": "Read-only inventory only until root supplies explicit handoff window. No restart, ingress or new paid resource.",
+    "instructions": "VM deleted; no runtime available. Build/load and verify only on separately authorized infrastructure. Current verified source supports single-reviewer private use, not multi-user sessions.",
     "cleanup_deadline_utc": "2026-10-17T23:04:26Z",
     "reproduce_command_document": "docs/frozen-inference.md"
+  },
+  "resources": {
+    "scope": "observed successful cold-start and two-job private workflow envelope; minimum host requirements not established",
+    "cpu_logical": 28,
+    "host_ram_bytes": 126711271424,
+    "ephemeral_total_bytes": 791518060544,
+    "ephemeral_available_bytes_at_measurement": 677504983040,
+    "gpu": {
+      "model": "NVIDIA A100 80GB PCIe",
+      "memory_total_mib": 81920,
+      "memory_used_mib_at_measurement": 73531,
+      "driver": "570.195.03",
+      "cuda_compatibility_enabled": true
+    },
+    "container_ram_peak_bytes_at_measurement": 5746143232,
+    "container_ram_current_bytes_at_measurement": 5345316864,
+    "docker_memory_limit_bytes": 0,
+    "ipc": "host",
+    "network": "none",
+    "minimum_ram_bytes": null,
+    "minimum_disk_bytes": null,
+    "minimum_ram_disk_approved": false,
+    "smaller_host_acceptance": "requires new model hash, cold-start, workload, memory/disk and offline checks; no automatic approval"
+  },
+  "mounts": [
+    {
+      "host_role": "verified pinned model snapshot",
+      "destination": "/models/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+      "readonly": true
+    },
+    {
+      "host_role": "public detector/ReID assets",
+      "destination": "/models/public",
+      "readonly": true
+    },
+    {
+      "host_role": "pinned official legal corpus",
+      "destination": "/legal",
+      "readonly": true
+    },
+    {
+      "host_role": "development-only approved media",
+      "destination": "/media",
+      "readonly": true
+    },
+    {
+      "host_role": "private configuration and jobs",
+      "destination": "/jobs",
+      "readonly": false
+    },
+    {
+      "host_role": "separate service credential, never provider credential",
+      "destination": "/service-api.key",
+      "readonly": true
+    }
+  ],
+  "serving_environment": {
+    "FORTE_MODEL_PROFILE": "frozen27b",
+    "FORTE_MODEL_PATH": "/models/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "FORTE_REASONING_CONFIG": "/jobs/runtime-config16-bounded.json",
+    "FORTE_PRIVATE_ROOT": "/jobs/api-production",
+    "FORTE_API_KEY_FILE": "/service-api.key",
+    "FORTE_FRONTEND_ROOT": "/app/web",
+    "FORTE_MODEL_REVISION": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "FORTE_MAX_CONTEXT_TOKENS": "16384"
+  },
+  "acceptance": {
+    "mechanical_workflow_verified": true,
+    "quality_accepted": false,
+    "legal_review_accepted": false,
+    "identity_role_review_accepted": false,
+    "multi_user_security_accepted": false,
+    "overall_release_accepted": false,
+    "resource_minimums_accepted": false,
+    "single_reviewer_boundary_required": true
+  },
+  "lifecycle": {
+    "application_stopped_at_utc": "2026-10-17T23:00:07Z",
+    "app_bridge_and_tunnel_closed": true,
+    "original_vm_cleanup_deadline_utc": "2026-10-17T23:04:26Z",
+    "backup_extension_attempt_acknowledged": false,
+    "extension_attempt_outcome": "SSH timeout; original remote timer deleted VM",
+    "provider_deleting_observed_at_utc": "2026-10-17T23:04:40Z",
+    "provider_absence_observed_at_utc": "2026-10-17T23:05:47Z",
+    "no_new_resource_allocated": true,
+    "verified_base_backup": true,
+    "final_production_delta_complete": false,
+    "final_production_delta_preservation": "partial verified-prefix salvage only; no complete production result record survived; base earlier real API review packet is complete",
+    "preservation_receipt": ".context/verify/frozen-backup-preservation-20261018.json",
+    "final_vm_inventory_count": 0,
+    "final_volume_count": 0,
+    "final_inventory_observed_at_utc": "2026-10-17T23:07:34Z"
+  },
+  "optional_ownership_proposal": {
+    "applied": false,
+    "included_in_tested_image": false,
+    "base_commit": "111234c885f0a23d323fe72a81450dfca5aa7e60",
+    "patch_sha256": "b982287841594d9d55b3fdaee9cd0b1ea63739db731137e64ae7dc739761317a",
+    "independent_synthetic_tests_reproduced": 31,
+    "review": "future isolated integration only; formatting normalized by B; real authenticated gateway/session/CSRF/cross-user/range checks and new image receipts required"
   }
 }

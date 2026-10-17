@@ -1,0 +1,95 @@
+{
+  "schema_version": "forte.backup-preservation-receipt.v1",
+  "created_at_utc": "2026-10-17T23:07:05.068780+00:00",
+  "technical_aggregates_only": true,
+  "private_payloads_or_scene_contents_inspected": false,
+  "base_snapshot": {
+    "complete": true,
+    "archive_bytes": 20663859,
+    "archive_sha256": "5419aeea7b4552ba8c0d80260a91494fe50b6de09f9a36e8c2dbaa74de2ba6cb",
+    "original_archive_sha256": "5be5f4c746a01cde611bd96dce57faac6b0f0a2249d4782cc6dc49102a5bfb51",
+    "gzip_crc_and_eof_valid": true,
+    "tar_headers_valid": true,
+    "tar_members": 653,
+    "original_payload_hashes_verified": 594,
+    "deduplicated_payloads_materialized": 439,
+    "original_header_metadata_preserved": true,
+    "writable_files_independent": true,
+    "extracted": true
+  },
+  "final_delta": {
+    "complete": false,
+    "transfer_stopped_reason": "Parent reported provider instance deleting after cleanup timer; no new remote access or compute attempted after notice.",
+    "retained_artifacts": [
+      {
+        "artifact": "frozen-jobs-final04-delta-dedup.tar.gz",
+        "complete": false,
+        "immutable_remote_archive_bytes": 19678565,
+        "immutable_remote_archive_sha256": "93b21e72526c52fc24c03b10f67705dd6bb18757bd987bc55826a646ee70ed41",
+        "original_delta_archive_sha256": "ba0b8b3ffb4b6c9077848f6086dd5f8bb4e209f0e6e3cf570997c28788767b25",
+        "remote_archive_validated_before_transfer": true,
+        "retained_prefix_bytes": 2097152,
+        "verified_prefix_chunks": 2,
+        "total_chunks": 19,
+        "retained_prefix_sha256": "798f0f104095c159f63a4e729d344a0e505a2172bc75197acf04e6382979f790",
+        "full_gzip_crc_verified_locally": false,
+        "recovered_complete_raw_payloads": 27,
+        "recovered_payload_bytes": 4741110,
+        "recovered_json_files": 11,
+        "recovered_html_files": 1,
+        "recovered_image_files": 15,
+        "recovery_promoted_to_complete_backup": false
+      },
+      {
+        "artifact": "frozen-jobs-final04-priority.tar.gz",
+        "complete": false,
+        "immutable_remote_archive_bytes": 8027796,
+        "immutable_remote_archive_sha256": "98ae473c6c116358bae8dc1857798fc158d6e8923ec37426aac3dbd19d2169f0",
+        "original_delta_archive_sha256": "ba0b8b3ffb4b6c9077848f6086dd5f8bb4e209f0e6e3cf570997c28788767b25",
+        "remote_archive_validated_before_transfer": true,
+        "retained_prefix_bytes": 1048576,
+        "verified_prefix_chunks": 1,
+        "total_chunks": 8,
+        "retained_prefix_sha256": "ecb3af97f7a79c17a88b24239199af62f5513cbc57f90f6f0c3ced4738f635a9",
+        "full_gzip_crc_verified_locally": false,
+        "recovered_complete_raw_payloads": 16,
+        "recovered_payload_bytes": 2081635,
+        "recovered_json_files": 10,
+        "recovered_html_files": 1,
+        "recovered_image_files": 5,
+        "recovery_promoted_to_complete_backup": false
+      }
+    ],
+    "tiny_critical_received_bytes": 0,
+    "tiny_critical_complete": false,
+    "local_partial_case_validation": {
+      "reasoning_result_candidates": 0,
+      "contract_valid_completed_job_wrappers": 0,
+      "narrow_complete_case_records": 0,
+      "recovered_reply_is_completed_api_result": false,
+      "reviews": [
+        {
+          "scope": "frozen-jobs-final04-delta-dedup-partial-recovery",
+          "source_frame_table_internal_pts_consistent": true,
+          "review_links_existing": 10,
+          "review_links_count": 11,
+          "review_links_complete": false,
+          "evidence_association_present": false,
+          "declared_jpeg_hashes_validated_against_final_result": false
+        },
+        {
+          "scope": "frozen-jobs-final04-priority-partial-recovery",
+          "source_frame_table_internal_pts_consistent": true,
+          "review_links_existing": 10,
+          "review_links_count": 11,
+          "review_links_complete": false,
+          "evidence_association_present": false,
+          "declared_jpeg_hashes_validated_against_final_result": false
+        }
+      ],
+      "source_frames_decoded_or_regenerated": false,
+      "private_scene_values_printed": false
+    }
+  },
+  "interpretation": "Base snapshot is fully preserved. New final production delta is incomplete; recovered files are a partial subset only. Counts are transport/payload counts and do not establish semantic review or model quality."
+}

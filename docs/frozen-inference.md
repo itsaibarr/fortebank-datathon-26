@@ -22,8 +22,8 @@ comparison and rollback path.
 | Participants | YOLOX-s and ByteTrack proposals; separate immutable human review | Frozen pretrained OSNet features, bounded recording-local ReID, gallery updates, conflict/gap records and comparison interface | Public OSNet export and synthetic parity verified; private continuity gains and ID-switch metrics unmeasured |
 | Visual reasoning | Loopback model adapter, structured responses, supplied frame IDs | Overview, overlapping full-duration windows, denser bounded reinspection and final reconciliation; source/participant allowlists and persisted observations | First real bounded rehearsal returned a valid partial result; its timeline budget was exhausted and quality remains unreviewed |
 | Legal evidence | Three official acts, 272 main records, BM25 and optional local BGE experiments | Exact official context, recovered temporal notices, version limitations, explicit predicate polarity and four assessment states; reverse scoped-inventory checks | Actual eight-image replay made two 27B calls; one assessment passed structural validation, one was rejected. All findings remain unreviewed and scope incomplete |
-| Orchestration | One API process, private atomic job records, two admitted jobs, deadlines | `forte scan` and versioned `/api/v2` execution, legal-call budgets, artifact manifests and source-bound correction lineage | 201 Python tests pass; real partial API rehearsal and source/JPEG integrity checks pass; full UI/concurrency timing remains unverified |
-| Product UI | Next.js/TypeScript requirement | User-selected Tailwind, shadcn preset `b3d6mT4h6m` and Lucide under `web/` | Lint, types, static export and synthetic authenticated browser workflow pass; real deployment workflow remains unverified |
+| Orchestration | One API process, private atomic job records, two admitted jobs, deadlines | `forte scan` and versioned `/api/v2` execution, legal-call budgets, artifact manifests and source-bound correction lineage | 201 tests pass; two real API jobs completed as partial/insufficient in 257.43s and 258.04s, with third admission rejected 429; full remote UI latency remains unverified |
+| Product UI | Next.js/TypeScript requirement | User-selected Tailwind, shadcn preset `b3d6mT4h6m` and Lucide under `web/` | Synthetic workflow passes; final-image UI and actual loopback bridge return HTTP 200; real full browser workflow remains unverified |
 
 The main modules are `frozen_tracking.py`, `timeline.py`, `legal_reasoning.py`,
 `reasoning_pipeline.py`, `model_profile.py` and `contracts_v2.py`. The existing
@@ -50,14 +50,13 @@ loading do not establish a successful visual warmup or a completed private scan.
 That initial readiness checkpoint was followed by the attempts below. It was not
 itself a private inference or quality result.
 
-The latest reported credit check was **22:19 UTC**, approximately **$25.9449**,
-subject to provider settlement. The original overall authorization remains
-**$30**. The same VM's bounded session started at 21:04 UTC; its cleanup deadline
-was extended to **23:04 UTC**, with a **$3 session cap** inside the existing
-authorization. This is a dated checkpoint, not a live account or resource-status
-claim. The resource owner must preserve private results, enforce the earlier
-time/spend limit and record actual deletion. Do not infer that a stopped VM stops
-billing.
+The same VM's bounded session started at **21:04 UTC on October 17** under a
+**$3 session cap** inside the original **$30 authorization**. Its recorded remote
+deletion timer was **23:04:26 UTC**. At the final **23:07:34 UTC** inventory, the
+provider reported **zero VMs and zero volumes**, with credit **$24.92737** versus
+**$27.55036** before this session: an observed reduction of about **$2.62299**,
+inside the session cap, subject to provider settlement. The intermediate 22:19
+credit snapshot was $25.9449. No additional VM was rented.
 
 Subsequent runtime checks, still on that same VM, established the following:
 
@@ -119,9 +118,44 @@ Debian-managed `pyparsing` package. The Dockerfile now installs application
 dependencies into `/opt/forte-app`, an isolated venv with `--system-site-packages`
 to retain the bundled model engine. The v3 image build and application import,
 static-asset and configuration checks subsequently passed. The latest final image
-build has also completed. The final single-image cold-start/entrypoint check is
-now running on the same GPU; startup success is not yet established. Production,
-concurrency, final private backup and resource cleanup remain pending.
+build has also completed. At **22:54:31 UTC on October 17**, the final single-image
+cold start passed: pinned 27B hashes, both actual 16K visual warmups, live/ready
+health and the UI returned successfully. The verified local image ID is
+`sha256:ee82962c4ee4d9026ef499a0854bcb485c94a18db97e07719800ca6dfe4276dd`.
+Its nineteen application-module fingerprints match core commit
+`111234c885f0a23d323fe72a81450dfca5aa7e60`. No registry image was published.
+The public release/configuration/security record is
+[frozen-runtime-manifest-v1.json](../contracts/frozen-runtime-manifest-v1.json).
+
+The actual application-only host bridge and SSH loopback forward also passed:
+health and UI returned HTTP 200 through local port 8040; unauthenticated API
+requests returned 401. Base private artifacts were backed up, all payload hashes
+verified and restored outside Git; the human review packet was opened locally.
+The concurrent production check passed mechanically: both real API jobs returned
+`done` with partial execution and insufficient evidence in **257.43 and 258.04
+seconds**; the third request returned **429**. Sources, original PTS and every
+returned JPEG/marker were verified. This is bounded partial completion, not full
+coverage, quality acceptance or a measured remote upload-to-UI workflow.
+All inference and the production application container stopped at **23:00:07 UTC
+on October 17**. The final delta transfer failed. The verified base backup and
+historical private integration artifacts remain safe, but the **complete final
+production delta was not preserved**. Some complete files were recovered from
+hash-verified compressed prefixes; local validation found no completed production result record,
+and these files do not establish a complete archive or production-run restore.
+The short transfer margin and an unsuccessful attempt to extend a backup-only
+deadline were disclosed. The extension was not acknowledged because SSH timed
+out; the original remote timer fired at **23:04:26 UTC**. The provider reported
+`DELETING` at **23:04:40**, no VM at **23:05:47**, and zero VMs/volumes at
+**23:07:34**. These checks do not establish multi-user readiness. Public receipts:
+[frozen-backup-preservation-20261018.json](../.context/verify/frozen-backup-preservation-20261018.json)
+and the lifecycle section of the runtime manifest.
+
+The observed host envelope was an A100 80GB with 128GB-class RAM, 28 CPU cores,
+driver 570.195.03 and host IPC. The reported measured memory peak was about
+5.746GB. Minimum RAM and disk requirements have not been validated; the observed
+host is not a minimum-sizing claim. Public asset paths, byte sizes and hashes are
+in [frozen-assets-v1.json](../contracts/frozen-assets-v1.json). Effective mounts
+and resource settings remain separately pinned by the runtime release manifest.
 The existing SSH source address also changed during the session. Access was
 restored through the existing bootstrap path, then restricted to the verified
 current `/32`; the temporary broad ingress rule was removed. No new VM was rented.
@@ -155,9 +189,12 @@ the result records those skips. It does not claim complete legal coverage.
 
 After building `web/out` and successfully completing the application image build
 on the authorized host, this is an offline rehearsal layout. The image build is
-complete, while its final cold-start check is in progress. Replace host paths with existing
+complete and its cold start passed. Replace example host paths with existing
 authorized mounts. The service key is separate from the provider credential;
 never mount the Hyperstack credential into the application.
+The current manifest allows read-only inventory until the runtime owner supplies
+an explicit handoff window; reproducibility commands do not authorize restarting
+the active runtime, changing ingress or renting another GPU.
 
 ```sh
 docker run --rm --gpus all --network none --ipc=host \
@@ -174,7 +211,7 @@ docker run --rm --gpus all --network none --ipc=host \
   -e FORTE_API_KEY_FILE=/run/secrets/forte-api.key \
   -e FORTE_PRIVATE_ROOT=/private/jobs \
   -e FORTE_MAX_CONTEXT_TOKENS=16384 \
-  forte26:frozen
+  sha256:ee82962c4ee4d9026ef499a0854bcb485c94a18db97e07719800ca6dfe4276dd
 ```
 
 The entrypoint verifies model hashes, sets the served revision from that receipt,
@@ -226,6 +263,18 @@ for the lightweight host environment only when its model/tracking dependencies
 and network isolation are separately satisfied.
 
 ## API, review and baseline behavior
+
+The accepted deployment mode is **single-reviewer private only**. The current
+shared API key has no principal ownership; a key holder can access every job in
+that service root. Multi-user private uploads and public browser uploads are
+blocked until a secure same-origin session gateway and persisted per-principal
+authorization cover admission, jobs, media, corrections, range requests and
+exports. An authenticated loopback deployment is not that ownership boundary.
+The manifest records the precise restriction. Deployment/admin CLI additions are
+isolated on `codex/deployment-private-cli`. Independent synthetic review passed
+31 checks, but the patch is **not applied to core or included in the verified
+image**. Its proposed formatting is normalized; future gateway integration remains separate;
+it does not change the core's current security mode.
 
 `POST /api/v2/analyze` accepts the same authenticated multipart MOV upload as v1.
 `GET /api/v2/jobs/{job_id}` keeps execution state (`processing`, `done`, `failed`)
@@ -280,10 +329,13 @@ Missing human role/geometry/action review, approved legal interpretations and
 recording-date applicability limit quality conclusions; they do not prevent the
 software's first frozen development inference.
 
-Before quality or submission claims, complete the final cold-start deployment
-check and broader legal validation, review original evidence locally, compare
+Before quality or submission claims, complete broader legal validation,
+review original evidence locally, compare
 matched 8B/tracking variants, measure
-the full upload-to-UI workflow and one/two-job concurrency, and record failures,
-coverage gaps, actual memory/spend and resource cleanup. No precision/recall,
+the full remote upload-to-UI workflow, and record failures and coverage gaps.
+Resource deletion and observed session spend are verified above; complete final
+production-delta preservation failed and must remain an explicit limitation.
+Multi-user/public upload publication remains blocked by the explicit security
+scope above. No precision/recall,
 participant-continuity improvement, legal-match percentage, or under-300-second
 workflow claim follows from the integration tests alone.
