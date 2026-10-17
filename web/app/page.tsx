@@ -5,7 +5,6 @@ FORM: User-pinned operating workspace; original evidence and condition tabs belo
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import Link from "next/link"
 import {
   ArrowRight,
   Check,
@@ -16,7 +15,6 @@ import {
   FileVideo,
   Layers2,
   LoaderCircle,
-  LockKeyhole,
   Play,
   ScanEye,
   ShieldCheck,
@@ -32,18 +30,22 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import {
+  DeploymentNotice,
+  SignInWorkspace,
+  WorkspaceHeader,
+} from "@/components/review-access"
+import {
+  useBrowserAccess,
+  type BrowserAccess,
+} from "@/hooks/use-browser-access"
+import { uploadsAvailable } from "@/lib/browser-session"
 import {
   assessmentLabels,
   timecode,
@@ -54,23 +56,6 @@ import {
   type ReviewRevision,
   type SourceEvidence,
 } from "@/lib/review-types"
-
-async function api(path: string, key: string, options: RequestInit = {}) {
-  const headers = new Headers(options.headers)
-  headers.set("X-API-Key", key)
-  const response = await fetch(path, { ...options, headers, cache: "no-store" })
-  if (!response.ok) {
-    let message = `Request failed (${response.status}). Try again.`
-    try {
-      const body = await response.json()
-      message = body.error?.message || message
-    } catch {
-      /* HTTP fallback */
-    }
-    throw new Error(message)
-  }
-  return response
-}
 
 function AssessmentBadge({ value }: { value: Assessment }) {
   return (
@@ -85,12 +70,12 @@ function AssessmentBadge({ value }: { value: Assessment }) {
 function EvidenceImage({
   frame,
   jobId,
-  apiKey,
+  request,
   onSeek,
 }: {
   frame: SourceEvidence
   jobId: string
-  apiKey: string
+  request: BrowserAccess["request"]
   onSeek: (seconds: number) => void
 }) {
   const [image, setImage] = useState("")
@@ -98,9 +83,8 @@ function EvidenceImage({
   useEffect(() => {
     const controller = new AbortController()
     let objectUrl = ""
-    api(
+    request(
       `/api/v2/jobs/${jobId}/evidence/${encodeURIComponent(frame.frame_id)}`,
-      apiKey,
       { signal: controller.signal }
     )
       .then((response) => response.blob())
@@ -117,7 +101,7 @@ function EvidenceImage({
       controller.abort()
       if (objectUrl) URL.revokeObjectURL(objectUrl)
     }
-  }, [apiKey, frame.frame_id, jobId])
+  }, [request, frame.frame_id, jobId])
   return (
     <figure className="min-w-0">
       <button
@@ -319,8 +303,21 @@ function LegalFindings({
   )
 }
 
-export default function ReviewWorkspace() {
-  const [apiKey, setApiKey] = useState("")
+export default function ReviewPage() {
+  const access = useBrowserAccess()
+  return access.session ? (
+    <PrivateReviewWorkspace
+      key={`${access.generation}/${access.session.principal.id}`}
+      access={access}
+    />
+  ) : (
+    <SignInWorkspace access={access} />
+  )
+}
+
+function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
+  const { request } = access
+  const uploadReady = uploadsAvailable(access.metadata)
   const [file, setFile] = useState<File | null>(null)
   const [videoUrl, setVideoUrl] = useState("")
   const [jobId, setJobId] = useState("")
@@ -335,7 +332,6 @@ export default function ReviewWorkspace() {
   const [videoSize, setVideoSize] = useState<[number, number]>([16, 9])
   const [showOverlays, setShowOverlays] = useState(true)
   const [revisions, setRevisions] = useState<ReviewRevision[]>([])
-  const [reviewer, setReviewer] = useState("")
   const [scope, setScope] = useState("visual")
   const [note, setNote] = useState("")
   const [reviewStatus, setReviewStatus] = useState("")
@@ -345,6 +341,7 @@ export default function ReviewWorkspace() {
   const video = useRef<HTMLVideoElement>(null)
   const fileInput = useRef<HTMLInputElement>(null)
   const localUrl = useRef("")
+  const submitting = useRef(false)
   const busy = phase === "uploading" || phase === "processing"
   const selected =
     result?.events.find((event) => event.event_id === selectedId) ||
@@ -381,7 +378,7 @@ export default function ReviewWorkspace() {
     let timer: ReturnType<typeof setTimeout>
     async function poll() {
       try {
-        const response = await api(`/api/v2/jobs/${jobId}`, apiKey, {
+        const response = await request(`/api/v2/jobs/${jobId}`, {
           signal: controller.signal,
         })
         const job = await response.json()
@@ -413,11 +410,11 @@ export default function ReviewWorkspace() {
       controller.abort()
       clearTimeout(timer)
     }
-  }, [apiKey, jobId, phase])
+  }, [request, jobId, phase])
   useEffect(() => {
     if (!result || !jobId) return
     const controller = new AbortController()
-    api(`/api/v2/jobs/${jobId}/corrections`, apiKey, {
+    request(`/api/v2/jobs/${jobId}/corrections`, {
       signal: controller.signal,
     })
       .then((response) => response.json())
@@ -431,13 +428,13 @@ export default function ReviewWorkspace() {
           )
       })
     return () => controller.abort()
-  }, [apiKey, jobId, result])
+  }, [request, jobId, result])
 
   useEffect(() => {
     if (!result || !jobId) return
     const controller = new AbortController()
     let sourceUrl = ""
-    api(`/api/v2/jobs/${jobId}/source`, apiKey, { signal: controller.signal })
+    request(`/api/v2/jobs/${jobId}/source`, { signal: controller.signal })
       .then((response) => response.blob())
       .then((blob) => {
         if (!controller.signal.aborted) {
@@ -457,16 +454,21 @@ export default function ReviewWorkspace() {
       controller.abort()
       if (sourceUrl) URL.revokeObjectURL(sourceUrl)
     }
-  }, [apiKey, jobId, result])
+  }, [request, jobId, result])
 
   function chooseFile(candidate: File | undefined) {
-    if (!candidate || busy) return
+    if (!candidate || busy || !uploadReady || !access.metadata) return
     if (!candidate.name.toLowerCase().endsWith(".mov")) {
       setError("Choose a MOV recording.")
       return
     }
-    if (candidate.size > 256 * 1024 * 1024) {
-      setError("This recording exceeds the 256 MiB upload limit.")
+    if (
+      !candidate.size ||
+      candidate.size + 1024 > access.metadata.limits.upload_max_bytes
+    ) {
+      setError(
+        "Choose a nonempty MOV within this installation’s total upload limit."
+      )
       return
     }
     if (localUrl.current) URL.revokeObjectURL(localUrl.current)
@@ -483,7 +485,26 @@ export default function ReviewWorkspace() {
     setCurrentTime(0)
   }
   async function analyze() {
-    if (!file || !apiKey || busy) return
+    if (!file || !uploadReady || busy || submitting.current) return
+    submitting.current = true
+    setPhase("uploading")
+    const metadata = await access.refreshMetadata()
+    if (!uploadsAvailable(metadata) || !metadata) {
+      submitting.current = false
+      setPhase(result ? "done" : "idle")
+      return
+    }
+    if (
+      file.size + 1024 > metadata.limits.upload_max_bytes ||
+      (mediaDuration && mediaDuration > metadata.limits.max_video_seconds)
+    ) {
+      setError(
+        "This recording exceeds the installation’s size or duration limit."
+      )
+      submitting.current = false
+      setPhase(result ? "done" : "idle")
+      return
+    }
     setPhase("uploading")
     setJobId("")
     setVideoUrl(localUrl.current)
@@ -494,7 +515,7 @@ export default function ReviewWorkspace() {
     const form = new FormData()
     form.append("file", file)
     try {
-      const response = await api("/api/v2/analyze", apiKey, {
+      const response = await request("/api/v2/analyze", {
         method: "POST",
         body: form,
       })
@@ -508,6 +529,8 @@ export default function ReviewWorkspace() {
           : "Upload failed. Check the connection and retry."
       )
       setPhase("error")
+    } finally {
+      submitting.current = false
     }
   }
   function seek(seconds: number) {
@@ -523,13 +546,13 @@ export default function ReviewWorkspace() {
     setReviewStatus("")
   }
   async function reloadReviews() {
-    const response = await api(`/api/v2/jobs/${jobId}/corrections`, apiKey)
+    const response = await request(`/api/v2/jobs/${jobId}/corrections`)
     const data = await response.json()
     setRevisions(data.revisions)
     return data.revisions as ReviewRevision[]
   }
   async function saveCorrection() {
-    if (!result || !selected || !reviewer.trim() || !note.trim()) return
+    if (!result || !selected || !access.session || !note.trim()) return
     setSaving(true)
     setReviewStatus("")
     try {
@@ -539,7 +562,7 @@ export default function ReviewWorkspace() {
       const head = revisions.find(
         (revision) => !parents.has(revision.revision_id + ".json")
       )
-      const response = await api(`/api/v2/jobs/${jobId}/corrections`, apiKey, {
+      const response = await request(`/api/v2/jobs/${jobId}/corrections`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -547,7 +570,7 @@ export default function ReviewWorkspace() {
           parent_revision: head ? head.revision_id + ".json" : null,
           scope,
           target_id: selected.event_id,
-          reviewer: reviewer.trim(),
+          reviewer: access.session.principal.id,
           change: { note: note.trim() },
         }),
       })
@@ -595,7 +618,9 @@ export default function ReviewWorkspace() {
           <p className="mt-1 text-xs text-muted-foreground">
             {file
               ? `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)} MiB`
-              : "Drop a MOV here, or choose a file. Up to 256 MiB and 180 seconds."}
+              : uploadReady
+                ? "Drop a MOV here, or choose a file within the installation limits above."
+                : "Uploads are paused. Existing reviews remain available."}
           </p>
           <input
             ref={fileInput}
@@ -603,7 +628,7 @@ export default function ReviewWorkspace() {
             type="file"
             accept=".mov,video/quicktime"
             hidden
-            disabled={busy}
+            disabled={busy || !uploadReady}
             onChange={(event) => chooseFile(event.target.files?.[0])}
             aria-label="Choose MOV recording"
           />
@@ -611,7 +636,7 @@ export default function ReviewWorkspace() {
             variant="link"
             size="xs"
             className="mt-2 px-0"
-            disabled={busy}
+            disabled={busy || !uploadReady}
             onClick={() => fileInput.current?.click()}
           >
             {file ? "Choose another file" : "Browse files"}
@@ -620,24 +645,19 @@ export default function ReviewWorkspace() {
         </div>
       </div>
       <div className="upload-actions">
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="access-key">Service access key</FieldLabel>
-            <Input
-              id="access-key"
-              type="password"
-              autoComplete="off"
-              placeholder="Enter your access key"
-              value={apiKey}
-              disabled={busy}
-              onChange={(event) => setApiKey(event.target.value)}
-            />
-            <FieldDescription>
-              Kept in this page&apos;s memory.
-            </FieldDescription>
-          </Field>
-        </FieldGroup>
-        <Button size="lg" disabled={!file || !apiKey || busy} onClick={analyze}>
+        <Button
+          size="lg"
+          disabled={
+            !file ||
+            !uploadReady ||
+            busy ||
+            !!(
+              access.metadata &&
+              mediaDuration > access.metadata.limits.max_video_seconds
+            )
+          }
+          onClick={analyze}
+        >
           {busy ? (
             <LoaderCircle
               data-icon="inline-start"
@@ -657,26 +677,7 @@ export default function ReviewWorkspace() {
       <a href="#review-main" className="skip-link">
         Skip to review workspace
       </a>
-      <header className="workspace-header">
-        <Link href="/" className="brand">
-          <span className="brand-mark">
-            <ScanEye className="size-5" />
-          </span>
-          <span>
-            forte
-            <span className="font-normal text-muted-foreground"> / review</span>
-          </span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <span className="hidden text-xs text-muted-foreground sm:block">
-            Datathon 26
-          </span>
-          <Badge variant="outline">
-            <LockKeyhole />
-            Local processing
-          </Badge>
-        </div>
-      </header>
+      <WorkspaceHeader access={access} />
       <main
         id="review-main"
         className={cn("workspace-main", result && "has-result")}
@@ -706,6 +707,7 @@ export default function ReviewWorkspace() {
             </div>
           )}
         </div>
+        <DeploymentNotice access={access} />
         {error && (
           <Alert variant="destructive">
             <CircleHelp />
@@ -844,6 +846,7 @@ export default function ReviewWorkspace() {
                   <Button
                     variant="outline"
                     onClick={() => fileInput.current?.click()}
+                    disabled={!uploadReady}
                   >
                     <Upload data-icon="inline-start" />
                     Choose recording
@@ -925,7 +928,7 @@ export default function ReviewWorkspace() {
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {phase === "uploading"
-                      ? "Transferring the original file to the local service."
+                      ? "Transferring the original file to the installation shown above."
                       : "Participants, timeline observations and official rule conditions are being checked."}
                   </p>
                 </div>
@@ -1055,7 +1058,7 @@ export default function ReviewWorkspace() {
                         key={`${jobId}/${frame.frame_id}`}
                         frame={frame}
                         jobId={jobId}
-                        apiKey={apiKey}
+                        request={request}
                         onSeek={seek}
                       />
                     ))}
@@ -1150,17 +1153,10 @@ export default function ReviewWorkspace() {
                     </p>
                     {selected ? (
                       <FieldGroup className="mt-5">
-                        <Field>
-                          <FieldLabel htmlFor="reviewer">Reviewer</FieldLabel>
-                          <Input
-                            id="reviewer"
-                            autoComplete="name"
-                            value={reviewer}
-                            onChange={(event) =>
-                              setReviewer(event.target.value)
-                            }
-                          />
-                        </Field>
+                        <p className="text-sm text-muted-foreground">
+                          Saved as {access.session?.principal.username}.
+                          Attribution comes from your authenticated session.
+                        </p>
                         <Field>
                           <FieldLabel htmlFor="review-scope">
                             Review scope
@@ -1194,9 +1190,7 @@ export default function ReviewWorkspace() {
                         </Field>
                         <div className="flex flex-wrap gap-3">
                           <Button
-                            disabled={
-                              saving || !reviewer.trim() || !note.trim()
-                            }
+                            disabled={saving || !access.session || !note.trim()}
                             onClick={saveCorrection}
                           >
                             {saving ? (

@@ -18,7 +18,9 @@ digits. Do not display model confidence as accuracy. Evidence and participant
 overlays are distinct layers; source images remain available without overlays.
 
 Use shadcn components for controls, fields, alerts, empty states, badges and tabs.
-Keyboard focus, reduced motion and announced status changes are required. Store
-API credentials only in component memory; request resources through authenticated
-same-origin fetch and object URLs. A reviewer correction shows its scope and saved
+Keyboard focus, reduced motion and announced status changes are required. Browser
+authentication uses a protected session cookie; keep only its CSRF token in component
+memory. Service credentials stay on the server. Request resources through authenticated
+same-origin fetch and object URLs; clear private state and revoke URLs when the session
+ends or the principal changes. A reviewer correction shows its scope and saved
 revision and does not change other review scopes. All browser QA uses synthetic data.

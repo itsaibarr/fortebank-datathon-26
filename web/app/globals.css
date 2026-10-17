@@ -129,7 +129,7 @@
 }
 
 @layer components {
-  .workspace-header { @apply flex h-18 items-center justify-between gap-4 border-b bg-background px-5 sm:px-10; }
+  .workspace-header { @apply flex min-h-18 items-center justify-between gap-4 border-b bg-background px-5 sm:px-10; }
   .brand { @apply flex items-center gap-3 font-heading text-lg font-semibold tracking-tight; }
   .brand-mark { @apply flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground; }
   .workspace-main { @apply mx-auto flex max-w-[1480px] flex-col gap-7 px-5 pt-9 sm:px-10 sm:pt-12; }
@@ -156,7 +156,7 @@
   .timeline-end { @apply absolute right-0 bottom-0 text-xs text-muted-foreground; }
   .upload-section { @apply order-2 flex flex-col justify-between gap-6 rounded-xl border bg-background px-5 py-5 xl:flex-row xl:items-center; }
   .upload-section.is-dragging { @apply border-primary bg-primary/5; }
-  .upload-actions { @apply flex w-full flex-col gap-4 sm:flex-row sm:items-center xl:max-w-[510px]; }
+  .upload-actions { @apply flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center; }
   .upload-actions [data-slot=field-group] { @apply flex-1; }
   .upload-actions > [data-slot=button] { @apply shrink-0; }
   .result-details { @apply order-4 rounded-xl border bg-background p-5 sm:p-7; }
@@ -170,6 +170,8 @@
   .source-link { @apply flex items-start gap-3 rounded-lg bg-muted/50 p-4 text-sm transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary; }
   .native-select { @apply h-9 w-full rounded-lg border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary; }
   .review-revision { @apply border-b pb-5; }
+  .deployment-notice { @apply min-w-0 rounded-xl border bg-background p-5; }
+  .sign-in-panel { @apply w-full max-w-lg rounded-xl border bg-background p-5 sm:p-7; }
   .workspace-footer { @apply order-6 flex flex-wrap justify-between gap-3 pb-7 text-xs text-muted-foreground; }
   .has-result .review-grid { @apply order-2; }
   .has-result .upload-section { @apply order-5; }

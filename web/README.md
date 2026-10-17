@@ -12,21 +12,33 @@ npm ci
 npm run dev -- --port 3102
 npm run typecheck
 npm run lint
+npm test
 npm run build
 ```
 
 `npm run build` produces the static `out/` directory. Set
 `FORTE_FRONTEND_ROOT=/absolute/path/to/web/out` on the FastAPI service to serve
-it on the same origin as `/api/v2`. The development server alone does not supply
-the API; use the built static site with the service for a real analysis.
+it behind the approved browser-session gateway, on the same HTTPS origin as
+`/auth/`, `/deployment.json` and `/api/v2`. The development server alone does not
+supply these services. Direct key-only API access does not enable this browser UI.
 
-The UI calls the explicit versioned reasoning route, retains the service key
-only in component memory, and fetches source video and JPEG evidence with the
-authentication header before creating local blob URLs. No key, job, recording,
-evidence or reviewer content is fetched during the static build. Fonts are
-downloaded during the public build and served from local build assets at runtime.
+The UI signs in through the same-origin session gateway. The HttpOnly cookie is
+managed by the server; only the session CSRF token is held in page memory. No
+service key, gateway token or browser storage is used. Mutations carry CSRF,
+while original video and JPEG evidence are fetched with same-origin credentials
+before local blob URLs are created. Logout, expiry, 401, principal changes and
+cross-tab auth changes clear private state, cancel requests and revoke these URLs.
+Focus and restored-page events recheck the session. Failed metadata or an origin
+mismatch disables uploads, while an authenticated review can remain open during
+a readiness outage. The page displays verified destination, limits, manual
+retention and no-training policy.
 
-Upload a MOV, enter the service key, and analyze. Completed and partial execution
+No key, job, recording, evidence or reviewer content is fetched during the static
+build. Fonts are downloaded during the public build and served from local build
+assets at runtime.
+
+Sign in with your administrator-provided account, then upload and analyze a MOV.
+Completed and partial execution
 remain separate from assessment certainty. Select an event to seek the original
 video, inspect original frames and participant proposal overlays, check exact
 local provisions and condition findings, or append a scoped correction. The

@@ -9,7 +9,8 @@ web
 ## Users
 
 Bank control and audit staff reviewing cash-operation recordings, as described in
-the supplied implementation and jury brief. The exact production access policy is open.
+the supplied implementation and jury brief. Browser access uses individually provisioned
+private accounts with recording ownership. Runtime release and activation remain gated.
 
 ## Product Purpose
 
@@ -30,6 +31,8 @@ supported violation, no violation observed within scope, insufficient evidence, 
 applicable separately from execution status. All inference weights are frozen. Draft
 legal interpretations and sparse coverage cannot establish a validated violation or absence.
 No reserved or jury data enters configuration selection. Session grouping remains unresolved.
+The browser shows its processing destination, readiness and upload limits before admission.
+Retention is manual and uploads are not used for training.
 
 ## Brand Commitments
 

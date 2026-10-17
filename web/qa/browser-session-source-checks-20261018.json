@@ -1,0 +1,55 @@
+{
+  "schema_version": "forte.frontend-qa/1",
+  "observed_at_utc": "2026-10-17T23:39:37.897826+00:00",
+  "scope": "source-only browser session continuation; generated media and explicit synthetic runner only",
+  "checks": {
+    "eslint": "passed",
+    "typescript": "passed",
+    "node_contract_and_body_tests": 7,
+    "static_export": "passed",
+    "impeccable_changed_target_findings": 0,
+    "synthetic_service_credentials_absent_from_static_bundle": true
+  },
+  "commands": [
+    "npm run lint",
+    "npm run typecheck",
+    "npm test",
+    "npm run build",
+    "node /Users/itsaibarr/.agents/skills/impeccable/scripts/detect.mjs --json web/app/page.tsx web/components/review-access.tsx web/app/globals.css web/hooks/use-browser-access.ts web/lib/browser-session.ts"
+  ],
+  "source_sha256": {
+    "app/page.tsx": "90c3705b5309317552d465d403f0bb1837862150a03c0ecfa0091886eb7cb949",
+    "app/globals.css": "3e7439605cf9b23bffad226ad230f2fd6b52926b01d1083d9d1a3c13ee72ab4b",
+    "components/review-access.tsx": "4e74b482e978c136fff1857b6a606d7eef889c0eaf50dbec91b17666b965b184",
+    "hooks/use-browser-access.ts": "32deb91655e32a88361ab29182e54227ac5df04c06f35c7d5f5fc4ad91fc94bb",
+    "lib/browser-session.ts": "4707cf72b4bc186c71da0481514926691efb5afc51169373b4b516413bce9aaf",
+    "lib/browser-session.test.mjs": "c6c0e51b5af0590451ccee859335cd6c5b1cda830c7508cf2a51a30c05e7ccbf",
+    "package.json": "906de4bdf57061b9865eae1e036f3fcf0b32b229797396440ab0d17d55934f07"
+  },
+  "static_tree_sha256": "382c6f618c76c146e3bdc78769b92e35ce8e8d19696956654bb639dbd3a21ddd",
+  "browser": {
+    "full_workflow_verified": false,
+    "status": "certificate limitation; actual gateway/core fixture prepared for separate native-browser follow-up",
+    "private_media_opened": false,
+    "t3_errors": [
+      "Preview automation open failed: page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://localhost:8449/",
+      "Preview automation navigate failed: Navigation to https://localhost:8449/ failed: ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "t3_snapshot": "Blank chrome-error://chromewebdata/; no visible text or interactive elements.",
+    "gstack_error": "goto: net::ERR_CERT_AUTHORITY_INVALID at https://localhost:8450/",
+    "system_or_user_trust_store_changed": false,
+    "global_certificate_bypass_enabled": false,
+    "screenshots": []
+  },
+  "synthetic_fixture": {
+    "initial_mock_origin": "https://localhost:8449",
+    "actual_gateway_core_origin": "https://localhost:8450",
+    "actual_stack": "modified FastAPI + session gateway + SessionStore + generated MOV + explicit synthetic reasoning runner",
+    "actual_model_inference": false,
+    "production_or_quality_acceptance": false
+  },
+  "limitations": [
+    "The browser full workflow is not established by these source and transport checks.",
+    "No new immutable runtime image, GPU run, public URL, production session activation, recognition or legal-quality acceptance."
+  ]
+}
