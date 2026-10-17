@@ -184,7 +184,8 @@ def model_command(config):
         '{"image":16}',
         "--mm-processor-kwargs",
         '{"max_pixels":393216}',
-        "--disable-log-requests",
+        "--no-enable-log-requests",
+        "--no-enable-log-outputs",
     ]
     if config.adapter:
         cmd += [

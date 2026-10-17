@@ -16,6 +16,13 @@ forte serve --host 0.0.0.0 --port 8000 &
 api_pid=$!
 cleanup() {
   kill "$api_pid" "$model_pid" 2>/dev/null || true
+  for _ in 1 2 3 4 5; do
+    if ! kill -0 "$api_pid" 2>/dev/null && ! kill -0 "$model_pid" 2>/dev/null; then
+      break
+    fi
+    sleep 1
+  done
+  kill -KILL "$api_pid" "$model_pid" 2>/dev/null || true
   wait "$api_pid" "$model_pid" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
