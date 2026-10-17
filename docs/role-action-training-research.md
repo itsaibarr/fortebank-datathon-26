@@ -6,15 +6,24 @@ document covers steps **3, training visual recognition**, and **4, scanning the
 whole clip**, from the agreed six-step pipeline. It is a proposed experiment,
 not an implemented or validated recognizer.
 
+The executable [steps 3–4 handoff](handoffs/02-visual-learning-and-complete-clip-scan.md)
+defines parallel work with the already-running labeling/tracking task. Following
+the model-selection clarification, 8B remains the baseline; compare 8B and 27B on
+reviewed tracked inputs before choosing a model to fine-tune. The 8B recipe below
+is a conditional reference, not evidence that 8B is the quality winner.
+
 ## Recommendation
 
 After the [labeling/tracking handoff](handoffs/01-visual-labeling-and-person-tracking.md)
-produces reviewed targets, run **supervised multimodal LoRA on the existing
-Qwen3-VL-8B-Instruct**. Teach it to map chronological full-scene/person views to
-short, actor-bound role/action records. Keep its visual encoder and projector
-frozen for the first bounded experiment. Compare against the same untuned model
-with identical tracks, frames and prompts. Training success means fewer incorrect
-people/actions on separate recordings, not a lower text loss or better JSON.
+produces a reviewed evaluation pilot, compare the existing **Qwen3-VL-8B-Instruct**
+and pinned **Qwen3.8-27B** on identical tracked scene/person inputs. Choose from
+actor/action quality, answer coverage and runtime, allowing an inconclusive result.
+After reviewed training targets, a frozen split and training compatibility checks
+are ready, run **supervised multimodal LoRA on the selected model**. Teach it to
+map those views to short actor-bound role/action records, with vision/projector
+frozen initially. Compare its adapter against its own untuned base on identical
+inputs. Training success means fewer incorrect people/actions on separate
+recordings, not a lower text loss or better JSON.
 
 Use **VideoPrism-B with a frozen backbone and trained classification head** as a
 small, separate diagnostic baseline for reviewed role/action classes. It is not
@@ -24,6 +33,7 @@ temporal network, train a text LLM from scratch or start GRPO as the first fix.
 
 This is a design judgment: our immediate outputs include roles, two participants,
 visibility and evidence references, and an 8B inference service already exists.
+That integration advantage does not establish superior recognition quality.
 Qwen's official trainer supports multi-image/video supervision and language
 attention LoRA. That makes a bounded SFT experiment practical; it does not prove
 that frozen visual features contain every subtle cash-operation cue. If reviewed
@@ -183,7 +193,9 @@ behavior before use. Its generic launch examples are not a tested command for th
 project. Disable external reporting, Hub uploads and private completion logging;
 all private training runs offline after dependencies/weights are staged.
 
-Proposed first run:
+Conditional 8B reference run, if the reviewed comparison selects 8B. If 27B wins,
+verify its exact architecture/framework and training fit before deriving the
+corresponding pinned config; do not assume the Qwen3-VL command transfers:
 
 | Setting | Value |
 | --- | --- |
@@ -329,8 +341,10 @@ does not promise every model. No RL implementation is proposed for the next buil
 
 ## Evaluation and decision after the experiment
 
-Compare **A: untuned 8B with reviewed-quality tracks/context**, **B: the same inputs
-with supervised LoRA**, and **C: frozen VideoPrism plus trained heads**. Also run an
+First compare **A0: untuned 8B** and **A1: untuned 27B**, with identical reviewed-
+quality tracks/context. Then compare **B: the selected base with supervised LoRA**
+against that same untuned base; **C: frozen VideoPrism plus trained heads** is a
+separate diagnostic baseline. Also run an
 oracle-track versus automatic-track comparison: this separates recognition errors
 from ID switches. Do not attribute a simultaneous tracker/input/model change to
 training. The previous 27B result remains a diagnostic, not a promoted annotator.
@@ -368,8 +382,9 @@ confusion. Obtain the missing reviewed examples or improve the implicated visual
 component. Model size or RL is not an automatic escalation path.
 
 The next executable milestone remains the reviewed labeling/tracking pilot.
-Then export the frozen split, measure A, run the bounded B/C comparison, and select
-only on measured actor/action quality and runtime. No code, model, training dataset,
+Then complete A0/A1 model selection and the frozen training split, run bounded
+adaptation with the selected base (and C only as needed), and promote only on
+measured actor/action quality and runtime. No code, model, training dataset,
 paid allocation or runtime behavior changed during this research.
 
 ## Evidence register
