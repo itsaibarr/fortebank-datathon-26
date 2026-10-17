@@ -55,6 +55,8 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
                 "pixels": pixels,
                 "seconds": time.monotonic() - t,
                 "usage": getattr(backend, "last_usage", {}),
+                "reviewable": answer.complete,
+                "candidate_count": len(answer.events),
             }
         )
         return answer

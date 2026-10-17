@@ -89,7 +89,12 @@ class LocalVLM:
 
     def analyze(self, registry, frames, rules, pixels, max_tokens):
         instruction = (
-            "Inspect the full ordered window. Complete=false if visibility is insufficient. "
+            "Inspect the full ordered window. complete means the visible cash-handling area "
+            "can be reviewed from these images. Set complete=false only when blur, blankness, "
+            "obstruction or an absent work area prevents meaningful visual review. "
+            "Readable images with no supported event have complete=true and events=[]. "
+            "Missing transaction context or an unproven rule condition excludes that event; "
+            "it does not by itself make readable images incomplete. "
         )
         instruction += (
             "Return events only with every required condition. An empty event list is valid. "

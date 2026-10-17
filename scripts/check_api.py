@@ -88,7 +88,8 @@ def main():
                 (args.output / f"evidence-{i}-{j}.jpg").write_bytes(
                     base64.b64decode(evidence.image_base64)
                 )
-        metrics["source_evidence_verified"] = True
+        metrics["evidence_frames_checked"] = len(ids)
+        metrics["source_evidence_verified"] = True if ids else None
         assert elapsed < 300
     (args.output / "summary.json").write_text(json.dumps(metrics, indent=2) + "\n")
     print(json.dumps(metrics))
