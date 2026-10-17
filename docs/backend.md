@@ -47,6 +47,16 @@ The client checks unauthenticated rejection, POST, polling, the result schema, c
 
 Each job's private `metrics.json` stores call timing, token usage, frame counts and sanitized error classes. Do not paste `result.json`, scene descriptions, evidence or model error logs into external AI tools. Keep original footage, annotations, outputs and adapters out of Git.
 
+For an exploratory development run, keep one neutral `clipNNN.mov` name per unique recording. Keep its label and source-hash mapping in a private manifest on the Mac; send no labels to the model. Store each client's output under a directory with that neutral stem. Aggregate the completed run locally:
+
+```bash
+uv run forte evaluate \
+  --manifest /absolute/private/batch-selection.json \
+  --results /absolute/private/baseline-results
+```
+
+The evaluator rejects reserved splits, duplicate recordings, missing results and mismatched source hashes. It reports video TP/TN/FP/FN, failed positives and negatives, timing and proximity to eligible supplied points. Failed positives reduce effective recall. The point score excludes the conflicting duplicate annotation and does not claim interval or category accuracy. A development run made before session-group review is exploratory, even if every request succeeds.
+
 ## Known limits before quality evaluation
 
 The provisional catalog contains three conservative predicates under National Bank resolution 231, points 20 and 22. It cannot claim complete coverage of every cash-discipline event. No categories or intervals were supplied by the dataset, and no local semantic annotation review has been completed. The proposed development/holdout split still needs session-continuity review. No adapter is enabled. Cross-camera accuracy, full-length and concurrent-job latency remain unmeasured.

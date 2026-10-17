@@ -1,7 +1,7 @@
 # ForteBank Datathon 26 orientation
 
 ## What this is
-Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 26 local tests pass. Full GPU-backed development-video verification is pending; no trained adapter or UI exists.
+Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 31 local tests pass. Full GPU-backed development-video verification is pending; no trained adapter or UI exists.
 
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.

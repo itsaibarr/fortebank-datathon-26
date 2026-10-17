@@ -1,4 +1,4 @@
-"""Local setup commands. This module does not run model inference."""
+"""Application, source-provenance and private development-evaluation commands."""
 
 import argparse
 import json
@@ -24,6 +24,9 @@ def main(argv: list[str] | None = None) -> int:
     server = commands.add_parser("serve", help="Run the single-process private video API")
     server.add_argument("--host", default="127.0.0.1")
     server.add_argument("--port", type=int, default=8000)
+    evaluation = commands.add_parser("evaluate", help="Aggregate completed development API results")
+    evaluation.add_argument("--manifest", type=Path, required=True)
+    evaluation.add_argument("--results", type=Path, required=True)
     args = parser.parse_args(argv)
     if args.command == "serve":
         import uvicorn
@@ -31,6 +34,16 @@ def main(argv: list[str] | None = None) -> int:
         from forte.api import create_default_app
 
         uvicorn.run(create_default_app(), host=args.host, port=args.port, workers=1)
+        return 0
+    if args.command == "evaluate":
+        from forte.evaluation import evaluate
+
+        try:
+            report = evaluate(json.loads(args.manifest.read_text()), args.results)
+        except (OSError, ValueError, KeyError) as exc:
+            print(f"evaluate: invalid or incomplete run ({type(exc).__name__})", file=sys.stderr)
+            return 1
+        print(json.dumps(report, indent=2, allow_nan=False))
         return 0
     try:
         result = audit_archive(args.archive, expected_sha256=args.expected_sha256)

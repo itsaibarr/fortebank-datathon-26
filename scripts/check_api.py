@@ -2,6 +2,7 @@
 
 import argparse
 import base64
+import hashlib
 import json
 import time
 from pathlib import Path
@@ -64,6 +65,7 @@ def main():
     path.write_text(result.model_dump_json(exclude_none=True))
     path.chmod(0o600)
     metrics = {
+        "source_sha256": hashlib.sha256(args.file.read_bytes()).hexdigest(),
         "job_id": id,
         "status": result.status,
         "seconds": elapsed,
@@ -92,7 +94,7 @@ def main():
         metrics["source_evidence_verified"] = True if ids else None
         assert elapsed < 300
     (args.output / "summary.json").write_text(json.dumps(metrics, indent=2) + "\n")
-    print(json.dumps(metrics))
+    print(json.dumps({key: value for key, value in metrics.items() if key != "source_sha256"}))
     return 0 if result.status == "done" else 1
 
 

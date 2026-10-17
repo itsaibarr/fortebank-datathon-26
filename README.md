@@ -4,7 +4,7 @@ Local video review service under development. The approved design uses Qwen3-VL-
 
 ## Current setup
 
-The backend implements authenticated asynchronous MOV jobs, source-timed decoding, local VLM calls, candidate refinement, evidence verification and public-rule mapping. Its 26 local tests pass. The first GPU check proved the pinned model on synthetic images; complete development-video API verification is still pending. There is no trained adapter or UI. Keep model weights and competition files outside this repository.
+The backend implements authenticated asynchronous MOV jobs, source-timed decoding, local VLM calls, candidate refinement, evidence verification and public-rule mapping. Its 31 local tests pass. The first GPU check proved the pinned model on synthetic images; complete development-video API verification is still pending. There is no trained adapter or UI. Keep model weights and competition files outside this repository.
 
 ```bash
 uv sync --frozen
