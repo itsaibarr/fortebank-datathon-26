@@ -1,7 +1,7 @@
 # ForteBank Datathon 26 orientation
 
 ## What this is
-Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 101 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. The revised preparation adds three verified official law snapshots, 272 main-clause records, a coverage register, twelve draft rule cards, optional offline hybrid retrieval/reranking, and separate visual/legal review contracts. The one-recording 8B/27B role diagnostic still fails reliable actor agreement; no model is promoted. No human-confirmed positive control, trained adapter or UI exists. Read `docs/development-rehearsal.md`, `docs/legal-and-annotation.md` and `docs/model-size-diagnostic.md` before further experiments.
+Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 106 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. The revised preparation adds three verified official law snapshots, 272 main-clause records, a coverage register, twelve draft rule cards, optional offline hybrid retrieval/reranking, and separate visual/legal review contracts. The one-recording 8B/27B role diagnostic still fails reliable actor agreement; no model is promoted. No human-confirmed positive control, trained adapter or UI exists. Read `docs/development-rehearsal.md`, `docs/legal-and-annotation.md` and `docs/model-size-diagnostic.md` before further experiments.
 
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
@@ -74,6 +74,8 @@ See `.context/DOC-INDEX.md`. Regenerate with `bash /Users/itsaibarr/harness/agen
   for `role_bindings`, `view_relations` and partial `view_observations`. Reflections
   share a canonical local person only when a human identifies the owner. Responses
   for all three pilots supply initial mappings and one independent same-person join;
-  one item remains unclear. Four segment ranges across two pilots now have identity-only confirmation;
-  nested revisions retain the exact inputs behind prior corrections. Full role/action intervals, boxes, areas and training
-  gates remain pending. Do not place private role/scene corrections in Git or shared memory.
+  one item remains unclear. Six segment ranges across all three pilots now have
+  identity-only confirmation. Nested revisions retain prior correction inputs.
+  Selected source-box acceptance preserves detector origin and approves only named
+  frames. Full role/action intervals, boxes, areas and training gates remain pending.
+  Do not place private role/scene corrections in Git or shared memory.
