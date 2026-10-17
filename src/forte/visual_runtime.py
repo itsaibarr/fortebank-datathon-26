@@ -355,6 +355,9 @@ class ResidentScanner(LocalVLM):
             "Return multiple facts and source-bound proposals for closer inspection. "
             "Facts describe visible support only. Never output law, violations, absence claims, "
             "private identities or guessed employment. Giver/receiver direction must be explicit. "
+            "Use leaves_workstation for a visible workstation departure; cash_acceptance, "
+            "cash_payout, service_ongoing or service_complete for supported context. "
+            "Other visible actions/context may use additional concise names. "
             "Propose work-area polygons from visible operational surfaces. "
             "Visibility assessments cover supplied sampled frames, never continuous absence. "
             "Return this JSON schema: " + json.dumps(ScanResponse.model_json_schema())

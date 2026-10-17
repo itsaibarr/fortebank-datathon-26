@@ -41,18 +41,11 @@ tracking = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/forte"]
+packages = ["src/forte", "src/forte_visual"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "contracts/api-contract.json" = "forte/data/api-contract.json"
 "configs/person-tracking.json" = "forte/data/person-tracking.json"
-"experiments/visual_learning/src/forte_visual/__init__.py" = "forte_visual/__init__.py"
-"experiments/visual_learning/src/forte_visual/scan.py" = "forte_visual/scan.py"
-"experiments/visual_learning/src/forte_visual/inputs.py" = "forte_visual/inputs.py"
-"experiments/visual_learning/src/forte_visual/adapter.py" = "forte_visual/adapter.py"
-"experiments/visual_learning/src/forte_visual/release.py" = "forte_visual/release.py"
-"experiments/visual_learning/src/forte_visual/io.py" = "forte_visual/io.py"
-"experiments/visual_learning/src/forte_visual/live.py" = "forte_visual/live.py"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

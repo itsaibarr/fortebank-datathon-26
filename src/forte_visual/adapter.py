@@ -8,7 +8,6 @@ from pathlib import Path
 
 from forte.annotations import Annotation
 from forte.tracking import TrackManifest, training_targets, validate_pair
-
 from forte_visual.io import digest
 
 MAPPING_VERSION = "forte-track-v1-v2/consumer-3-7d9a1ca"
@@ -70,9 +69,19 @@ def reviewed_targets(m, a, *, training=False):
         eligible = {f.id for f in a.facts}
     segments = {s.id: s for s in m.segments}
     areas = {x.id: x for x in m.work_areas}
+    owned_views = {
+        v.reflected_segment_id for v in m.view_relations if v.review.status == "confirmed"
+    }
+    unknown_views = {
+        v.segment_id
+        for v in m.view_observations
+        if v.review.status == "confirmed" and v.view_kind == "reflection"
+    } - owned_views
     result = []
     for f in a.facts:
         participating = f.segment_ids + f.counterpart_segment_ids
+        if unknown_views.intersection(participating):
+            continue
         if f.id not in eligible or f.review_status != "confirmed":
             continue
         if not f.actor_id or f.target_kind == "unresolved" or f.boundary_uncertain:

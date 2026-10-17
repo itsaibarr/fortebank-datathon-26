@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from forte.video import decode_video, make_windows, sample_window
-
 from forte_visual.inputs import (
     Answer,
     InputCase,
@@ -246,8 +245,9 @@ def coarse_case(m, registry, output, start, end, seed):
         raw = base64.b64decode(evidence.image_base64)
         import io
 
-        from forte.video import jpeg_bytes
         from PIL import Image
+
+        from forte.video import jpeg_bytes
 
         image = Image.open(io.BytesIO(raw))
         payload = jpeg_bytes(image, 196608)

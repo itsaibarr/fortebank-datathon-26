@@ -6,10 +6,10 @@ import random
 from pathlib import Path
 from typing import Literal
 
-from forte.video import decode_video, jpeg_bytes, nearest
 from PIL import Image
 from pydantic import Field
 
+from forte.video import decode_video, jpeg_bytes, nearest
 from forte_visual import adapter
 from forte_visual.io import canonical, digest, private_dir, write
 from forte_visual.release import Strict, local, verify

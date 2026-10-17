@@ -230,4 +230,7 @@ def test_v2_unknown_reflection_is_preserved_without_creating_person_or_target(re
     assert len(aliases(updated, 0)) == 1
     assert len(updated.view_observations) == 1
     assert updated.segments[1].review == m.segments[1].review
-    assert len(reviewed_targets(updated, a)) == len(reviewed_targets(m, a))
+    assert all(
+        "s0002" not in f.segment_ids + f.counterpart_segment_ids
+        for f in reviewed_targets(updated, a)
+    )
