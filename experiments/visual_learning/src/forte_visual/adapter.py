@@ -1,4 +1,4 @@
-"""Mapping producer TrackManifest v1, through aeeb158; no schema mutation.
+"""Mapping producer TrackManifest v1/v2 through shared implementations.
 
 The track/annotation mapping is implemented against actual committed interfaces.
 The completed-export envelope is provisional until a producer export is received.
@@ -11,7 +11,7 @@ from forte.tracking import TrackManifest, training_targets, validate_pair
 
 from forte_visual.io import digest
 
-MAPPING_VERSION = "forte-track-v1/consumer-2-aeeb158"
+MAPPING_VERSION = "forte-track-v1-v2/consumer-3-7d9a1ca"
 
 
 def mapping_hash():
@@ -20,10 +20,38 @@ def mapping_hash():
 
 def load_pair(manifest_path, annotation_path):
     m = TrackManifest.model_validate_json(manifest_path.read_bytes())
-    if m.schema_version != 1:
+    if m.schema_version not in {1, 2}:
         raise ValueError("Unsupported producer schema mapping")
     a = Annotation.model_validate_json(annotation_path.read_bytes())
-    return validate_pair(m, a)
+    m, a = validate_pair(m, a)
+    validate_actor_targets(m, a)
+    return m, a
+
+
+def validate_actor_targets(m, a):
+    """Consumer guard for the producer's actorless positive-action bypass.
+
+    Do not alter the producer's annotations or confuse a context assertion with
+    a person-action target. Reject the entire release instead of quietly omitting
+    its invalid training truth.
+    """
+    segments = {s.id: s for s in m.segments}
+    for fact in a.facts:
+        if fact.kind != "action" or fact.review_status != "confirmed":
+            continue
+        if fact.target_kind != "fact" or fact.observation_state != "observed":
+            continue
+        if not fact.actor_id or not fact.segment_ids:
+            raise ValueError("Positive person-action target requires actor and source segments")
+        if any(s not in segments for s in fact.segment_ids) or not all(
+            any(
+                b.frame_id == f and not b.outside
+                for s in fact.segment_ids
+                for b in segments[s].boxes
+            )
+            for f in fact.frame_ids
+        ):
+            raise ValueError("Positive person-action target lacks participating source geometry")
 
 
 def development_records(selection_path):
@@ -35,6 +63,7 @@ def development_records(selection_path):
 
 
 def reviewed_targets(m, a, *, training=False):
+    validate_actor_targets(m, a)
     if training:
         eligible = {f.id for f in training_targets(m, a)}
     else:

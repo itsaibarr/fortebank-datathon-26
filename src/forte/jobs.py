@@ -118,6 +118,7 @@ async def probe(path: Path):
 
 
 async def run_worker(directory, id, deadline, settings):
+    extra = ["--visual-config", str(settings.visual_config)] if settings.visual_config else []
     await child(
         [
             "--job",
@@ -130,6 +131,7 @@ async def run_worker(directory, id, deadline, settings):
             settings.model_url,
             "--model",
             settings.model_name,
+            *extra,
         ],
         max(0.001, deadline - time.monotonic()),
     )

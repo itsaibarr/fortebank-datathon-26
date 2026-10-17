@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "approved_cards_sha256": null,
+  "independent_review_receipt_sha256": null,
+  "applicability_by_source": {},
+  "status": "unresolved: current operational cards remain drafts; recording dates and institutional scope are unknown",
+  "normal_opportunity_acceptance": "not validated; empty sparse scans fail with insufficient_evidence"
+}

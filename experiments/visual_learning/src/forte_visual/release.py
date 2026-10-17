@@ -26,7 +26,7 @@ class Clip(Strict):
 
 class Release(Strict):
     schema_version: Literal["forte-visual-release/1"]
-    producer_schema: Literal["forte-track/1"]
+    producer_schema: Literal["forte-track/1", "forte-track/2", "forte-track/1+2"]
     producer_code_commit: str = Field(pattern=r"^[0-9a-f]{40}$")
     export_complete: bool
     completed_by: str
@@ -64,6 +64,10 @@ def verify(path: Path):
         if not required <= release.files.keys():
             raise ValueError("Referenced files absent from release inventory")
         m, a = adapter.load_pair(local(root, clip.manifest), local(root, clip.annotation))
+        if release.producer_schema != "forte-track/1+2" and release.producer_schema != (
+            f"forte-track/{m.schema_version}"
+        ):
+            raise ValueError("Release and track schema version disagree")
         if m.clip_id in seen:
             raise ValueError("Duplicate clip ID")
         seen.add(m.clip_id)

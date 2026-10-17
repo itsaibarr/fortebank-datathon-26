@@ -7,6 +7,8 @@ RUN python3 -m pip install --no-cache-dir -r requirements.runtime.txt
 COPY pyproject.toml README.md /app/
 COPY contracts /app/contracts
 COPY src /app/src
+COPY experiments/visual_learning/src/forte_visual /app/experiments/visual_learning/src/forte_visual
+COPY configs/person-tracking.json /app/configs/person-tracking.json
 RUN python3 -m pip install --no-cache-dir --no-deps .
 COPY scripts/container-entrypoint.sh /app/
 ENTRYPOINT ["bash", "/app/container-entrypoint.sh"]

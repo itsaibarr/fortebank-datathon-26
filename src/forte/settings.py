@@ -13,6 +13,7 @@ class Settings:
     upload_timeout: float = 30
     upload_max_bytes: int = 268435456
     max_admitted: int = 2
+    visual_config: Path | None = None
 
     def __post_init__(self):
         if len(self.api_key) < 16 or not self.api_key.isascii():
@@ -24,10 +25,16 @@ class Settings:
         key = os.environ.get("FORTE_API_KEY", "")
         if not key and os.environ.get("FORTE_API_KEY_FILE"):
             key = Path(os.environ["FORTE_API_KEY_FILE"]).read_text().strip()
+        visual = os.environ.get("FORTE_VISUAL_CONFIG")
+        if not visual and os.environ.get("FORTE_PIPELINE") != "legacy":
+            raise ValueError(
+                "Set FORTE_VISUAL_CONFIG for integrated scanning; legacy requires explicit opt-in"
+            )
         return cls(
             key,
             Path(
                 os.environ.get("FORTE_PRIVATE_ROOT", str(Path.home() / ".local/share/forte26/jobs"))
             ),
             os.environ.get("FORTE_MODEL_URL", "http://127.0.0.1:8001"),
+            visual_config=Path(visual) if visual else None,
         )

@@ -121,7 +121,24 @@ def aliases(manifest, seed):
             merged = components[j.from_segment] | components[j.to_segment]
             for s in merged:
                 components[s] = merged
-    unique = sorted({tuple(sorted(v)) for v in components.values()})
+    known_reflections = set()
+    for relation in manifest.view_relations:
+        if relation.review.status == "confirmed":
+            direct, reflected = relation.direct_segment_id, relation.reflected_segment_id
+            merged = components[direct] | components[reflected]
+            for s in merged:
+                components[s] = merged
+            known_reflections.add(reflected)
+    # A confirmed reflection with unknown ownership is a view, never a newly
+    # counted physical person or an automatic role-abstention training target.
+    unknown_reflections = {
+        v.segment_id
+        for v in manifest.view_observations
+        if v.review.status == "confirmed" and v.view_kind == "reflection"
+    } - known_reflections
+    unique = sorted(
+        {tuple(sorted(v)) for k, v in components.items() if k not in unknown_reflections}
+    )
     rng = random.Random(f"{seed}:{manifest.source_sha256}")
     names = rng.sample(range(1, 9999), len(unique))
     items = [(f"p{n:04d}", list(c)) for n, c in zip(names, unique, strict=True)]
@@ -158,6 +175,7 @@ def make_case(
     seed=0,
     track_mode="oracle",
     allow_occluded=False,
+    max_pixels=196608,
 ):
     people = aliases(m, seed)
     actor = next((p for p, ss in people.items() if set(segments) <= set(ss)), None)
@@ -233,7 +251,7 @@ def make_case(
             ("crop", crop_rect(boxes, image.width, image.height)),
         ]:
             cropped = image.crop(rect)
-            payload = jpeg_bytes(cropped, 196608)
+            payload = jpeg_bytes(cropped, max_pixels)
             rendered = Image.open(io.BytesIO(payload))
             name = f"{case_id}-{f.frame_id}-{kind}.jpg"
             path = directory / "images" / name

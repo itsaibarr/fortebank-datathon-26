@@ -45,6 +45,7 @@ def main():
     parser.add_argument("--deadline", type=float)
     parser.add_argument("--model-url", default="http://127.0.0.1:8001")
     parser.add_argument("--model", default="forte-vlm")
+    parser.add_argument("--visual-config", type=Path)
     args = parser.parse_args()
     os.umask(0o077)
     if sys.platform == "linux":
@@ -53,7 +54,8 @@ def main():
         import signal
 
         ctypes.CDLL(None).prctl(1, signal.SIGKILL)
-        resource.setrlimit(resource.RLIMIT_AS, (3 * 1024**3, 3 * 1024**3))
+        limit = 12 * 1024**3 if args.visual_config and not args.probe else 3 * 1024**3
+        resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
     if args.probe:
         try:
             print(json.dumps(probe_video(args.probe)))
@@ -65,8 +67,18 @@ def main():
         parser.error("A job, ID and deadline are required")
     stats = {}
     try:
-        backend = LocalVLM(args.model_url, args.model)
-        result = analyze_video(
+        if args.visual_config:
+            from forte.visual_pipeline import analyze_visual
+            from forte.visual_runtime import ResidentScanner, VisualConfig
+
+            backend = ResidentScanner(VisualConfig.load(args.visual_config), full=False)
+            if not backend.warm():
+                raise ValueError("model_identity_unavailable")
+            analyze = analyze_visual
+        else:
+            backend = LocalVLM(args.model_url, args.model)
+            analyze = analyze_video
+        result = analyze(
             args.job / "input.mov", args.job, args.job_id, backend, args.deadline, stats
         )
     except Exception as exc:
@@ -78,6 +90,8 @@ def main():
         )
         result = failure(args.job_id, code)
     finally:
+        if "backend" in locals():
+            backend.client.close()
         shutil.rmtree(args.job / "frames", ignore_errors=True)
     atomic_json(args.job / "metrics.json", stats)
     atomic_json(args.job / "worker-result.json", result.model_dump(mode="json", exclude_none=True))

@@ -68,7 +68,12 @@ async def upload_stream(request, settings):
 
 
 def create_app(settings: Settings, runner=None, ready=None):
-    backend = LocalVLM(settings.model_url, settings.model_name)
+    if settings.visual_config:
+        from forte.visual_runtime import ResidentScanner, VisualConfig
+
+        backend = ResidentScanner(VisualConfig.load(settings.visual_config))
+    else:
+        backend = LocalVLM(settings.model_url, settings.model_name)
     ready = ready or backend.ready
     tasks = set()
     admitted = 0
@@ -80,6 +85,12 @@ def create_app(settings: Settings, runner=None, ready=None):
         nonlocal store
         store = JobStore(settings.private_root)
         try:
+            if settings.visual_config:
+                warming_deadline = time.monotonic() + 180
+                while not await asyncio.to_thread(backend.warm):
+                    if time.monotonic() >= warming_deadline:
+                        raise RuntimeError("Configured model failed startup verification/warmup")
+                    await asyncio.sleep(1)
             yield
         finally:
             for task in tasks:

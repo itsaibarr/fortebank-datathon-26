@@ -169,3 +169,65 @@ def test_training_gate_counts_independent_groups_per_action_not_windows(tmp_path
     assert gate(pairs, training=True) == []
     pairs[-1][1].session_group = pairs[-2][1].session_group
     assert gate(pairs, training=True)  # another crop/session copy cannot satisfy floor
+
+
+def test_actorless_positive_action_producer_bypass_rejected_by_consumer(release):
+    from forte.tracking import training_targets, validate_pair
+
+    from forte_visual.adapter import load_pair
+
+    _, pairs, _ = verify(release)
+    clip, m, a = pairs[0]
+    f = next(f for f in a.facts if f.kind == "action")
+    f.actor_id = None
+    f.segment_ids = []
+    f.counterpart_actor_id = None
+    f.counterpart_segment_ids = []
+    f.counterpart_frame_ids = []
+    # Demonstrated producer bypass remains pending its owner's fix.
+    validate_pair(m, a)
+    m.regression_only = False
+    m.split_frozen = True
+    m.training_eligible = True
+    m.exclusion_reasons = []
+    assert f.id in {x.id for x in training_targets(m, a)}
+    with pytest.raises(ValueError, match="requires actor"):
+        reviewed_targets(m, a, training=True)
+    target = release.parent / clip.annotation
+    target.write_text(a.model_dump_json())
+    with pytest.raises(ValueError, match="requires actor"):
+        load_pair(release.parent / clip.manifest, target)
+    mutate(release, lambda r: r["files"].update({clip.annotation: digest(target)}))
+    with pytest.raises(ValueError, match="requires actor"):
+        verify(release)
+
+
+def test_v2_unknown_reflection_is_preserved_without_creating_person_or_target(release):
+    from forte.tracking import TrackManifest
+
+    from forte_visual.inputs import aliases
+
+    _, pairs, _ = verify(release)
+    _, m, a = pairs[0]
+    raw = m.model_dump(mode="json")
+    raw["schema_version"] = 2
+    raw["view_observations"] = [
+        {
+            "id": "reflection",
+            "segment_id": "s0002",
+            "view_kind": "reflection",
+            "review_scope": "synthetic view observation only",
+            "candidate_frame_ids": ["f000000"],
+            "reviewed_frame_ids": ["f000000"],
+            "review": {
+                "status": "confirmed",
+                "reviewer": "synthetic-reviewer",
+                "reviewed_at": "2026-10-18T00:00:00Z",
+            },
+        }
+    ]
+    updated = TrackManifest.model_validate(raw)
+    assert len(aliases(updated, 0)) == 1
+    assert len(updated.view_observations) == 1
+    assert updated.segments[1].review == m.segments[1].review
+    assert len(reviewed_targets(updated, a)) == len(reviewed_targets(m, a))

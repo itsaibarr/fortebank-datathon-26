@@ -56,6 +56,7 @@ class Bounds:
     tokens: int = 0
     peak_memory_bytes: int = 0
     clock: object = time.monotonic
+    receipts: list = field(default_factory=list)
 
     def check(self):
         if (
@@ -69,7 +70,31 @@ class Bounds:
         self.check()
         self.calls += 1
         remaining = self.deadline - self.clock()
-        response = executor(request, root, remaining)
+        began = self.clock()
+        receipt = {
+            "task": request.task if request else None,
+            "window": request.window if request else None,
+            "images": len(request.views) if request else None,
+        }
+        try:
+            response = executor(request, root, remaining)
+            receipt.update(
+                {
+                    k: response.get(k)
+                    for k in (
+                        "input_tokens",
+                        "output_tokens",
+                        "peak_memory_bytes",
+                        "memory_samples",
+                    )
+                }
+            )
+        except Exception as exc:
+            receipt["error"] = type(exc).__name__
+            raise
+        finally:
+            receipt["seconds"] = self.clock() - began
+            self.receipts.append(receipt)
         self.tokens += response.get("input_tokens", 0) + response.get("output_tokens", 0)
         self.peak_memory_bytes = max(self.peak_memory_bytes, response.get("peak_memory_bytes") or 0)
         if (
@@ -258,8 +283,14 @@ def bind_facts(case, raw_facts, m):
         if answer.actor_id not in case.actors:
             raise ValueError("Unprovided actor")
         specific = case.model_copy(update={"task": answer.kind, "actor_id": answer.actor_id})
-        if case.task != "coarse" and (answer.actor_id != case.actor_id or answer.kind != case.task):
+        if case.task != "coarse" and (
+            answer.actor_id != case.actor_id or (case.task == "role" and answer.kind != "role")
+        ):
             raise ValueError("Target actor/task substitution")
+        if answer.visibility == "reviewed_absent":
+            raise ValueError(
+                "Runtime absence requires independently validated complete opportunity"
+            )
         validate_answer(specific, answer)
         owned = case.actors[answer.actor_id]
         for frame_id in [answer.start_frame_id, answer.end_frame_id, *answer.evidence_frame_ids]:
@@ -324,7 +355,17 @@ def geometry_proposals(m):
     return proposals
 
 
-def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_started=None, seed=0):
+def scan(
+    m,
+    media: Path,
+    output: Path,
+    executor=None,
+    bounds=None,
+    *,
+    upload_started=None,
+    seed=0,
+    registry=None,
+):
     started = upload_started if upload_started is not None else time.monotonic()
     bounds = bounds or Bounds(deadline=started + 270)
     executor = executor or MockScanExecutor()
@@ -332,10 +373,38 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
     facts, failures, proposals, sampled, inspected, scheduled = [], [], [], set(), [], []
     roles = RoleCache()
     status = "complete_schedule"
-    registry = None
+    visibility, areas = [], []
+
+    def assess(case, response):
+        from forte_visual.live import validate_response
+
+        validated = validate_response(
+            case,
+            {
+                k: response[k]
+                for k in ("facts", "proposals", "work_areas", "visibility")
+                if k in response
+            },
+        )
+        for item in validated.visibility:
+            visibility.append(
+                {
+                    "start_sec": case.frames[item.start_frame_id],
+                    "end_sec": case.frames[item.end_frame_id],
+                    "state": item.state,
+                    "model_resolution_assessment": item.object_resolution_adequate,
+                    "origin": "model",
+                    "continuous_visibility_validated": False,
+                }
+            )
+        for area in validated.work_areas:
+            areas.append({**area.model_dump(), "origin": "model", "review_status": "draft"})
+
     try:
         bounds.check()
-        registry = decode_video(media, output / "source-cache", deadline=bounds.deadline)
+        registry = registry or decode_video(
+            media, output / "source-cache", deadline=bounds.deadline
+        )
         if registry.source_sha256 != m.source_sha256 or registry.rotation != m.rotation:
             raise ValueError("Scan source mismatch")
         if [vars(f) for f in registry.frames] != [f.model_dump() for f in m.frames]:
@@ -348,6 +417,7 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
             try:
                 case.predicted_roles = role_hints(roles, case, m)
                 response = bounds.invoke(executor, case, output)
+                assess(case, response)
                 sampled.update(case.frames)
                 scheduled.append([start, end])
                 observations = bind_facts(case, response.get("facts", []), m)
@@ -368,6 +438,23 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
                     {"stage": "coarse", "window": [start, end], "error": type(exc).__name__}
                 )
         people = aliases(m, seed)
+        if areas:
+            from forte.tracking import WorkArea
+
+            predicted = m.model_copy(
+                update={
+                    "work_areas": [
+                        WorkArea(
+                            id=f"predicted-area-{i}",
+                            frame_ids=a["frame_ids"],
+                            points=a["points"],
+                            notes="Unreviewed model-origin runtime proposal",
+                        )
+                        for i, a in enumerate(areas)
+                    ]
+                }
+            )
+            proposals.extend(geometry_proposals(predicted))
         # Establish roles separately on supported segment context, once per component.
         for p, segments in people.items():
             times = [
@@ -396,6 +483,7 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
                     seed=seed,
                 )
                 response = bounds.invoke(executor, case, output)
+                assess(case, response)
                 bound = bind_facts(case, response.get("facts", []), m)
                 facts.extend(bound)
                 for fact in bound:
@@ -439,9 +527,11 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
                         end=end,
                         segments=component,
                         seed=seed,
+                        max_pixels=393216,
                     )
                     case.predicted_roles = role_hints(roles, case, m)
                     response = bounds.invoke(executor, case, output)
+                    assess(case, response)
                     facts.extend(bind_facts(case, response.get("facts", []), m))
                     inspected.append([start, end])
                     sampled.update(case.frames)
@@ -480,7 +570,16 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
         "occluded_frame_ids": sorted(
             {b.frame_id for s in m.segments for b in s.boxes if b.occluded}
         ),
-        "unresolved_ranges": [[0, m.duration_sec]],
+        "sample_visibility_assessments": visibility,
+        "occluded_ranges": union(
+            [[v["start_sec"], v["end_sec"]] for v in visibility if v["state"] == "occluded"]
+        ),
+        "unresolved_ranges": complement(
+            [[v["start_sec"], v["end_sec"]] for v in visibility if v["state"] == "visible_samples"],
+            m.duration_sec,
+        ),
+        "unresolved_for_absence_ranges": [[0, m.duration_sec]],
+        "continuous_visibility_validated": False,
         "adequate_for_omission": False,
         "inspection_temporal_resolution_fps": 2,
         "object_resolution_validated": False,
@@ -496,9 +595,11 @@ def scan(m, media: Path, output: Path, executor=None, bounds=None, *, upload_sta
         "coverage": ledger,
         "roles": list(roles.values.values()),
         "role_conflicts": roles.conflicts,
+        "predicted_work_areas": areas,
         "proposals": [{"center_sec": t, "segment_id": s, "reason": r} for t, s, r in proposals],
         "failures": failures,
         "calls": bounds.calls,
+        "call_receipts": bounds.receipts,
         "tokens": bounds.tokens,
         "peak_memory_bytes": bounds.peak_memory_bytes,
         "seconds": time.monotonic() - started,
