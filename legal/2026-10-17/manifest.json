@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "856f66bc541f92a7c3b0316d43ce9e2664cef321e6db63fc83396007ee561462",
+  "sources": [
+    {
+      "snapshot": {
+        "act_id": "V1900019680",
+        "version_id": "c4cd4052-63e3-475b-ba9e-93f23de13fdb",
+        "official_url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "retrieved_at": "2026-10-17T14:16:06.909881+00:00",
+        "revision_date_raw": "2026-07-11T18:00:00.000Z",
+        "is_current": true,
+        "title": "Об утверждении Правил осуществления кассовых операций и операций по инкассации банкнот, монет и ценностей в банках второго уровня, филиалах банков-нерезидентов Республики Казахстан, Национальном операторе почты и юридических лицах, исключительной деятельностью которых является инкассация банкнот, монет и ценностей",
+        "sha256": "1798a349b2326ba4c32a007a62db532ea6de906e71f0249a9de8dc81aa915de8"
+      },
+      "sha256": {
+        "metadata.json": "d48ca3760051d42915a6048a5eecc71a631712882b86b7b75eb488d526ff7d80",
+        "versions.json": "662846a3a9713fd2ec971d2491ebfd762ccc86c5f9a41166672dc86010f701da",
+        "content.json": "8e92f27e54edfaa3dcb331cdb518d3bd53956aa86201c264b133618fc3363aec",
+        "source.html": "1798a349b2326ba4c32a007a62db532ea6de906e71f0249a9de8dc81aa915de8"
+      },
+      "main_clause_records": 154,
+      "annexes": "preserved in raw source, not main-clause records"
+    },
+    {
+      "snapshot": {
+        "act_id": "V2000020075",
+        "version_id": "4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c",
+        "official_url": "https://adilet.zan.kz/rus/docs/V2000020075",
+        "retrieved_at": "2026-10-17T14:16:07.150384+00:00",
+        "revision_date_raw": "2024-12-23T18:00:00.000Z",
+        "is_current": true,
+        "title": "Об утверждении Правил организации охраны и устройства помещений банков второго уровня, филиалов банков-нерезидентов Республики Казахстан, Национального оператора почты, юридических лиц, исключительной деятельностью которых является инкассация банкнот, монет и ценностей, и юридических лиц, осуществляющих деятельность исключительно через обменные пункты на основании лицензии Национального Банка Республики Казахстан на обменные операции с наличной иностранной валютой",
+        "sha256": "89b91567941acfa3d4fca1d374f04b1716cdf20fab43bd4d50ca7074b17ee16d"
+      },
+      "sha256": {
+        "metadata.json": "7582ebad002b7477385e870ac984faa303daba1c31acd3e9d6fdcb1d88c05954",
+        "versions.json": "e1768c7f46f876a154720e20a5b828b21cd27c6f6abee3ab2d6b3ed61a8e75d6",
+        "content.json": "e7365d0ff3b3784f8c145e2d4bfc953850153341ae3873bcbf5c044ec372af06",
+        "source.html": "89b91567941acfa3d4fca1d374f04b1716cdf20fab43bd4d50ca7074b17ee16d"
+      },
+      "main_clause_records": 24,
+      "annexes": "preserved in raw source, not main-clause records"
+    },
+    {
+      "snapshot": {
+        "act_id": "V1900018545",
+        "version_id": "0d776d3e-1c76-40f2-90ea-64f6de7868dc",
+        "official_url": "https://adilet.zan.kz/rus/docs/V1900018545",
+        "retrieved_at": "2026-10-17T14:16:10.100132+00:00",
+        "revision_date_raw": "2026-06-29T18:00:00.000Z",
+        "is_current": true,
+        "title": "Об утверждении Правил осуществления обменных операций с наличной иностранной валютой в Республике Казахстан",
+        "sha256": "af565d20ba223ad1230180e2c6656f020101c590da06aa538c249a709300a089"
+      },
+      "sha256": {
+        "metadata.json": "6f9cece35197b825703c54e18f6a5b3e2f4442c63072ee94e9cd5eb754b05f51",
+        "versions.json": "e66e178782d8377a4c9460a979020b3ac690219553134a90857ddbc6c2948108",
+        "content.json": "4837c4e04811b5f17d788f017e2a42f3f687766c6173b238ee5b8bd50042faaa",
+        "source.html": "af565d20ba223ad1230180e2c6656f020101c590da06aa538c249a709300a089"
+      },
+      "main_clause_records": 94,
+      "annexes": "preserved in raw source, not main-clause records"
+    }
+  ],
+  "coverage": "three scoped seed acts, not all RK law",
+  "date_semantics": "revision_date_raw is publisher metadata; end_date is not interpreted as an effective-until date",
+  "rule_cards_reviewed": false
+}

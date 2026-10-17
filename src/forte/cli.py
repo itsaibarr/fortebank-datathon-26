@@ -27,7 +27,22 @@ def main(argv: list[str] | None = None) -> int:
     evaluation = commands.add_parser("evaluate", help="Aggregate completed development API results")
     evaluation.add_argument("--manifest", type=Path, required=True)
     evaluation.add_argument("--results", type=Path, required=True)
+    legal = commands.add_parser("legal-search", help="Verify and search an offline law release")
+    legal.add_argument("--release", type=Path, required=True)
+    legal.add_argument("--query", required=True)
+    legal.add_argument("--act")
+    legal.add_argument("--limit", type=int, default=5)
     args = parser.parse_args(argv)
+    if args.command == "legal-search":
+        from forte.legal import load_release
+
+        try:
+            hits = load_release(args.release).search(args.query, act_id=args.act, limit=args.limit)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print(f"legal-search: invalid release or query ({type(exc).__name__})", file=sys.stderr)
+            return 1
+        print(json.dumps(hits, ensure_ascii=False, indent=2, allow_nan=False))
+        return 0
     if args.command == "serve":
         import uvicorn
 
