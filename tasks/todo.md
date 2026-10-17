@@ -31,7 +31,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 ## Phase 1
 
 - [x] Task 3: Implement exact public/internal contracts and semantic invariants; strict verdict, JPEG and supplied-frame/rule checks are covered by tests.
-- [ ] Task 4: Decode MOV video only, retain PTS, implement coverage/fine windows and source evidence extraction.
+- [x] Task 4: Decode MOV video only, retain normalized source PTS, implement bounded coverage/fine samples and source JPEG re-extraction; VFR, rotation, source mutation and corrupt/duration checks pass.
 - [ ] Task 5: Wrap resident local Qwen/vLLM with structured outputs and adapter slot.
 - [ ] Task 6: Produce one real locally verified positive/negative result through the full temporal/rule/evidence pipeline.
 - [ ] Task 7: Implement authenticated asynchronous POST/GET, admission, atomic state, deadlines and failures.
