@@ -227,7 +227,7 @@ def test_reflection_review_counts_mapped_entities_without_claiming_reviewed_trac
     )
     report = aggregate([({"clip_id": "clip000"}, m)], annotations=[a])
     assert report["confirmed_role_mappings"] == 4
-    assert report["physical_people_with_role_mapping"] == 2
+    assert report["canonical_role_mapping_groups"] == 2
     assert report["confirmed_reflection_relations"] == 2
     assert report["human_reviewed_segments"] == 0
     assert report["confirmed_roles"] == 0 and report["training_targets"] == 0
@@ -256,3 +256,89 @@ def test_later_conflicting_role_fact_cannot_override_the_reviewed_mapping():
     ]
     with pytest.raises(ValueError, match="human role mapping"):
         validate_pair(m, a)
+
+
+def test_reflection_observation_and_role_do_not_invent_an_owner_or_abstention():
+    from forte.tracking import training_targets
+    from forte.tracking_cli import aggregate
+
+    m, a, mappings = reflection_fixture()
+    operations = mappings[:2]
+    for number in (3, 4):
+        operations.append(
+            dict(
+                operation="view_observation",
+                observation=dict(
+                    id=f"vo{number}",
+                    segment_id=f"s{number:04d}",
+                    view_kind="reflection",
+                    candidate_frame_ids=["f000000", "f000001"],
+                    reviewed_frame_ids=["f000000"],
+                    review_scope="view_kind_only; owner not supplied",
+                ),
+            )
+        )
+    # A human can recognize a role in a reflected view without establishing
+    # which direct-view segment is the same person.
+    reflected_role = mappings[2]
+    reflected_role["binding"]["canonical_person_id"] = None
+    operations.append(reflected_role)
+    revised, annotation = apply_corrections(
+        m, a, operations, reviewer="synthetic human", reason="partial synthetic response"
+    )
+    assert revised.schema_version == 2 and m.schema_version == 1
+    assert len(revised.view_observations) == 2 and revised.view_relations == []
+    assert len(revised.role_bindings) == 3
+    assert revised.role_bindings[-1].canonical_person_id is None
+    assert not any(b.segment_id == "s0004" for b in revised.role_bindings)
+    assert revised.joins == [] and annotation.facts == []
+    assert training_targets(revised, annotation) == []
+    assert all(s.review.status == "draft" for s in revised.segments)
+    assert all(b.review.status == "draft" for s in revised.segments for b in s.boxes)
+    report = aggregate([({"clip_id": "clip000"}, revised)], annotations=[annotation])
+    assert report["canonical_role_mapping_groups"] == 2
+    assert report["role_mappings_with_unresolved_identity"] == 1
+    assert report["confirmed_view_observations"] == 2
+    assert report["people_reviewed"] is None
+    assert report["confirmed_abstentions"] == 0
+
+
+def test_partial_view_observations_require_real_source_anchors_and_do_not_imply_roles():
+    m, a, _ = reflection_fixture()
+    operation = dict(
+        operation="view_observation",
+        observation=dict(
+            id="vo1",
+            segment_id="s0004",
+            view_kind="reflection",
+            candidate_frame_ids=["f999999"],
+            review_scope="synthetic partial view",
+        ),
+    )
+    with pytest.raises(ValueError, match="frame"):
+        apply_corrections(m, a, [operation], reviewer="synthetic human", reason="synthetic")
+
+
+def test_human_join_groups_repeated_role_mappings_without_approving_geometry():
+    from forte.tracking_cli import aggregate
+
+    m, a, operations = reflection_fixture()
+    for op in operations:
+        if op["operation"] == "role_binding":
+            op["binding"]["role"] = "cashier"
+    operations.append(dict(operation="join", from_segment="s0001", to_segment="s0002"))
+    revised, annotation = apply_corrections(
+        m, a, operations, reviewer="synthetic human", reason="synthetic same-person response"
+    )
+    report = aggregate([({"clip_id": "clip000"}, revised)], annotations=[annotation])
+    assert report["canonical_role_mapping_groups"] == 1
+    assert report["confirmed_role_mappings"] == 4
+    assert report["human_reviewed_segments"] == 0 and report["training_targets"] == 0
+    assert all(b.review.status == "draft" for s in revised.segments for b in s.boxes)
+
+
+def test_human_join_cannot_make_conflicting_role_mappings_consistent():
+    m, a, operations = reflection_fixture()
+    operations.append(dict(operation="join", from_segment="s0001", to_segment="s0002"))
+    with pytest.raises(ValueError, match="role"):
+        apply_corrections(m, a, operations, reviewer="synthetic human", reason="synthetic")

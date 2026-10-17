@@ -15,6 +15,7 @@ from forte.tracking import (
     RoleBinding,
     Segment,
     TrackManifest,
+    ViewObservation,
     ViewRelation,
     WorkArea,
     validate_pair,
@@ -373,6 +374,14 @@ def apply_corrections(
             m.schema_version = 2
             m.view_relations = [v for v in m.view_relations if v.id != relation.id] + [relation]
             affected = [relation.id, relation.direct_segment_id, relation.reflected_segment_id]
+        elif kind == "view_observation":
+            observation = ViewObservation.model_validate(op["observation"])
+            observation.review = reviewed
+            m.schema_version = 2
+            m.view_observations = [v for v in m.view_observations if v.id != observation.id] + [
+                observation
+            ]
+            affected = [observation.id, observation.segment_id]
         elif kind == "fact":
             f = VisualFact.model_validate(op["fact"])
             f.reviewer, f.reviewed_at, f.origin = reviewer, at, "human"

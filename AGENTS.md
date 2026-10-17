@@ -28,3 +28,7 @@ Store them as view relationships, not temporal joins or additional physical
 people. Segment/role mapping approval does not establish complete role intervals,
 approve geometry or release training targets. Preserve prior cited frames when
 regenerating a review revision.
+
+A human can confirm a reflection without identifying its owner or role. Preserve
+that as a view observation; unknown ownership stays null and does not become a
+role abstention target. Repeated role words across segments do not approve a join.

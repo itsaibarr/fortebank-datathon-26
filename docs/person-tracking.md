@@ -179,7 +179,15 @@ reviewed source frames) and `view_relation` (direct/reflected views sharing a
 recording-local canonical person ID). These mappings are review constraints, not
 complete role-interval facts or training targets. Mirror relationships do not
 create temporal joins or approve boxes. Reflected views cannot silently acquire
-a different role from their reviewed canonical person. See the synthetic
+a different role from their reviewed canonical person. `view_observation` records
+just the human-reported view kind when the reflection owner or role is unknown.
+A reflected `role_binding` may have a null `canonical_person_id` only alongside
+a reviewed reflection observation; this preserves the reported role without
+inventing an owner. A view-only response does not become a reviewed `unclear`
+role or abstention target. Repeated cashier assignments on separate segments do
+not establish that they depict the same person. The aggregate reports canonical
+role-mapping groups and unresolved identities separately; those groups are not
+a count of verified distinct physical people. See the synthetic
 examples in `tests/test_track_review.py` and `tests/test_tracking.py`. A split
 keeps the old person before the cut and creates a fresh person after it. Facts
 are not moved automatically; a split that invalidates old facts requires explicit

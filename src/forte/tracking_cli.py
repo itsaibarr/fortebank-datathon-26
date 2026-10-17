@@ -20,7 +20,13 @@ from forte.person_proposals import (
     write_json,
 )
 from forte.track_review import apply_corrections, import_cvat
-from forte.tracking import Correction, TrackManifest, training_targets, validate_pair
+from forte.tracking import (
+    Correction,
+    TrackManifest,
+    confirmed_person_groups,
+    training_targets,
+    validate_pair,
+)
 
 
 def add_commands(commands):
@@ -77,6 +83,7 @@ def aggregate(records, annotations=None):
     manifests = [m for _, m in records]
     annotations = annotations or []
     facts = [f for a in annotations for f in a.facts]
+    groups = {m.source_sha256: confirmed_person_groups(m.segments, m.joins) for m in manifests}
     return dict(
         recordings_processed=len(manifests),
         proposed_segments=sum(len(m.segments) for m in manifests),
@@ -95,13 +102,21 @@ def aggregate(records, annotations=None):
         confirmed_role_mappings=sum(
             b.review.status == "confirmed" for m in manifests for b in m.role_bindings
         ),
-        physical_people_with_role_mapping=len(
+        canonical_role_mapping_groups=len(
             {
-                (m.source_sha256, b.canonical_person_id)
+                (m.source_sha256, groups[m.source_sha256][b.canonical_person_id])
                 for m in manifests
                 for b in m.role_bindings
-                if b.review.status == "confirmed"
+                if b.review.status == "confirmed" and b.canonical_person_id is not None
             }
+        ),
+        role_mappings_with_unresolved_identity=sum(
+            b.review.status == "confirmed" and b.canonical_person_id is None
+            for m in manifests
+            for b in m.role_bindings
+        ),
+        confirmed_view_observations=sum(
+            v.review.status == "confirmed" for m in manifests for v in m.view_observations
         ),
         confirmed_reflection_relations=sum(
             v.review.status == "confirmed" for m in manifests for v in m.view_relations
@@ -166,6 +181,9 @@ def refresh_index(args):
             confirmed_role_mappings=sum(b.review.status == "confirmed" for b in m.role_bindings),
             confirmed_reflection_relations=sum(
                 v.review.status == "confirmed" for v in m.view_relations
+            ),
+            confirmed_view_observations=sum(
+                v.review.status == "confirmed" for v in m.view_observations
             ),
             excluded=m.exclusion_reasons,
         )

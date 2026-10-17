@@ -57,7 +57,7 @@ def write_overview(directory):
         # Keep newly identified views visible even if they occur outside the
         # original three-frame request. Candidate images are not auto-reviewed.
         existing = {a["frame_id"] for a in selected}
-        for binding in m.role_bindings:
+        for binding in [*m.role_bindings, *m.view_observations]:
             if binding.review.status != "confirmed":
                 continue
             candidates = [a for a in assets if a["frame_id"] in binding.candidate_frame_ids]
@@ -119,13 +119,28 @@ def write_overview(directory):
                     "<li>"
                     + html.escape(
                         f"{b.segment_id}: {b.role}; {b.view_kind}; "
-                        f"canonical person {b.canonical_person_id}; {b.review.status}"
+                        f"canonical person {b.canonical_person_id or 'unresolved'}; "
+                        f"{b.review.status}"
                     )
                     + "</li>"
                     for b in m.role_bindings
                 )
                 + "</ul><p>Temporal role intervals, work areas, "
                 "visible basis, geometry and temporal joins remain separately reviewed gates.</p>"
+            )
+        if m.view_observations:
+            mapping_panel += (
+                "<h2>Recorded human view observations</h2><ul>"
+                + "".join(
+                    "<li>"
+                    + html.escape(
+                        f"{v.segment_id}: {v.view_kind}; {v.review.status}; "
+                        "view observation alone does not establish role or reflection owner"
+                    )
+                    + "</li>"
+                    for v in m.view_observations
+                )
+                + "</ul>"
             )
         page += (
             "outlined choices: <b>"
