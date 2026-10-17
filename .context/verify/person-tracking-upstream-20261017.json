@@ -1,0 +1,373 @@
+{
+  "checked_date": "2026-10-17",
+  "method": "Direct GitHub CLI searches and primary source code/docs/releases; Agent Reach excluded",
+  "searches": {
+    "mot": [
+      {
+        "fullName": "PaddlePaddle/PaddleDetection",
+        "updatedAt": "2026-10-17T02:33:44Z",
+        "url": "https://github.com/PaddlePaddle/PaddleDetection"
+      },
+      {
+        "fullName": "mikel-brostrom/boxmot",
+        "updatedAt": "2026-10-17T02:30:42Z",
+        "url": "https://github.com/mikel-brostrom/boxmot"
+      },
+      {
+        "fullName": "FoundationVision/ByteTrack",
+        "updatedAt": "2026-10-17T12:10:09Z",
+        "url": "https://github.com/FoundationVision/ByteTrack"
+      },
+      {
+        "fullName": "OpenDriveLab/UniAD",
+        "updatedAt": "2026-10-16T14:01:42Z",
+        "url": "https://github.com/OpenDriveLab/UniAD"
+      },
+      {
+        "fullName": "ifzhang/FairMOT",
+        "updatedAt": "2026-10-16T03:17:44Z",
+        "url": "https://github.com/ifzhang/FairMOT"
+      },
+      {
+        "fullName": "roboflow/trackers",
+        "updatedAt": "2026-10-16T20:24:45Z",
+        "url": "https://github.com/roboflow/trackers"
+      },
+      {
+        "fullName": "open-mmlab/mmtracking",
+        "updatedAt": "2026-10-16T03:17:38Z",
+        "url": "https://github.com/open-mmlab/mmtracking"
+      },
+      {
+        "fullName": "tryolabs/norfair",
+        "updatedAt": "2026-10-15T22:06:47Z",
+        "url": "https://github.com/tryolabs/norfair"
+      },
+      {
+        "fullName": "xinshuoweng/AB3DMOT",
+        "updatedAt": "2026-10-16T03:17:32Z",
+        "url": "https://github.com/xinshuoweng/AB3DMOT"
+      },
+      {
+        "fullName": "SpyderXu/multi-object-tracking-paper-list",
+        "updatedAt": "2026-10-16T03:17:52Z",
+        "url": "https://github.com/SpyderXu/multi-object-tracking-paper-list"
+      },
+      {
+        "fullName": "NirAharon/BoT-SORT",
+        "updatedAt": "2026-10-17T07:51:08Z",
+        "url": "https://github.com/NirAharon/BoT-SORT"
+      },
+      {
+        "fullName": "GeekAlexis/FastMOT",
+        "updatedAt": "2026-10-15T02:11:44Z",
+        "url": "https://github.com/GeekAlexis/FastMOT"
+      },
+      {
+        "fullName": "megvii-research/MOTR",
+        "updatedAt": "2026-10-15T16:00:52Z",
+        "url": "https://github.com/megvii-research/MOTR"
+      },
+      {
+        "fullName": "adipandas/multi-object-tracker",
+        "updatedAt": "2026-10-13T09:32:58Z",
+        "url": "https://github.com/adipandas/multi-object-tracker"
+      },
+      {
+        "fullName": "MCG-NJU/MOTIP",
+        "updatedAt": "2026-10-12T02:52:23Z",
+        "url": "https://github.com/MCG-NJU/MOTIP"
+      },
+      {
+        "fullName": "wmuron/motpy",
+        "updatedAt": "2026-10-02T09:37:04Z",
+        "url": "https://github.com/wmuron/motpy"
+      },
+      {
+        "fullName": "amazon-science/siam-mot",
+        "updatedAt": "2026-10-13T17:35:02Z",
+        "url": "https://github.com/amazon-science/siam-mot"
+      },
+      {
+        "fullName": "yihongXU/deepMOT",
+        "updatedAt": "2026-10-16T03:17:43Z",
+        "url": "https://github.com/yihongXU/deepMOT"
+      },
+      {
+        "fullName": "megvii-research/MOTRv2",
+        "updatedAt": "2026-10-15T16:00:53Z",
+        "url": "https://github.com/megvii-research/MOTRv2"
+      },
+      {
+        "fullName": "mikel-brostrom/Yolov7_StrongSORT_OSNet",
+        "updatedAt": "2026-10-14T05:44:21Z",
+        "url": "https://github.com/mikel-brostrom/Yolov7_StrongSORT_OSNet"
+      }
+    ],
+    "annotation": [
+      {
+        "fullName": "cvat-ai/cvat",
+        "updatedAt": "2026-10-17T14:07:18Z",
+        "url": "https://github.com/cvat-ai/cvat"
+      },
+      {
+        "fullName": "wkentaro/labelme",
+        "updatedAt": "2026-10-17T01:51:34Z",
+        "url": "https://github.com/wkentaro/labelme"
+      },
+      {
+        "fullName": "HumanSignal/awesome-data-labeling",
+        "updatedAt": "2026-10-15T19:33:32Z",
+        "url": "https://github.com/HumanSignal/awesome-data-labeling"
+      },
+      {
+        "fullName": "diffgram/diffgram",
+        "updatedAt": "2026-10-06T08:52:21Z",
+        "url": "https://github.com/diffgram/diffgram"
+      },
+      {
+        "fullName": "cvondrick/vatic",
+        "updatedAt": "2026-08-19T09:18:24Z",
+        "url": "https://github.com/cvondrick/vatic"
+      },
+      {
+        "fullName": "ryouchinsa/Rectlabel-support",
+        "updatedAt": "2026-08-22T17:36:41Z",
+        "url": "https://github.com/ryouchinsa/Rectlabel-support"
+      },
+      {
+        "fullName": "Somnusochi/VLM-AutoYOLO",
+        "updatedAt": "2026-10-16T19:01:18Z",
+        "url": "https://github.com/Somnusochi/VLM-AutoYOLO"
+      },
+      {
+        "fullName": "anucvml/vidat",
+        "updatedAt": "2026-10-08T23:50:02Z",
+        "url": "https://github.com/anucvml/vidat"
+      },
+      {
+        "fullName": "Kitware/dive",
+        "updatedAt": "2026-10-16T15:58:07Z",
+        "url": "https://github.com/Kitware/dive"
+      },
+      {
+        "fullName": "abnste/mewu_ai",
+        "updatedAt": "2026-10-17T12:39:34Z",
+        "url": "https://github.com/abnste/mewu_ai"
+      },
+      {
+        "fullName": "datagym-ai/datagym-core",
+        "updatedAt": "2026-06-01T02:36:23Z",
+        "url": "https://github.com/datagym-ai/datagym-core"
+      },
+      {
+        "fullName": "SerkioTeam/Tagger",
+        "updatedAt": "2026-10-14T23:27:17Z",
+        "url": "https://github.com/SerkioTeam/Tagger"
+      },
+      {
+        "fullName": "pixano/pixano-elements",
+        "updatedAt": "2026-03-17T18:48:18Z",
+        "url": "https://github.com/pixano/pixano-elements"
+      },
+      {
+        "fullName": "pixano/pixano-app",
+        "updatedAt": "2025-11-04T03:42:52Z",
+        "url": "https://github.com/pixano/pixano-app"
+      },
+      {
+        "fullName": "bhavyaajani/smart-labelme",
+        "updatedAt": "2026-08-05T04:09:08Z",
+        "url": "https://github.com/bhavyaajani/smart-labelme"
+      },
+      {
+        "fullName": "mctrinh/awesome-labeling-tools",
+        "updatedAt": "2026-09-25T17:26:29Z",
+        "url": "https://github.com/mctrinh/awesome-labeling-tools"
+      },
+      {
+        "fullName": "biigle/biigle",
+        "updatedAt": "2026-10-16T03:31:16Z",
+        "url": "https://github.com/biigle/biigle"
+      },
+      {
+        "fullName": "CarlosPena00/SimpleVideoAnnotation",
+        "updatedAt": "2024-03-30T19:36:54Z",
+        "url": "https://github.com/CarlosPena00/SimpleVideoAnnotation"
+      },
+      {
+        "fullName": "josedvq/covfee",
+        "updatedAt": "2026-04-20T15:05:09Z",
+        "url": "https://github.com/josedvq/covfee"
+      },
+      {
+        "fullName": "mberkay0/automated-labelme",
+        "updatedAt": "2025-12-22T08:01:10Z",
+        "url": "https://github.com/mberkay0/automated-labelme"
+      }
+    ],
+    "action": [
+      {
+        "fullName": "jinwchoi/awesome-action-recognition",
+        "updatedAt": "2026-10-17T04:15:31Z",
+        "url": "https://github.com/jinwchoi/awesome-action-recognition"
+      },
+      {
+        "fullName": "kenshohara/3D-ResNets-PyTorch",
+        "updatedAt": "2026-10-14T13:37:24Z",
+        "url": "https://github.com/kenshohara/3D-ResNets-PyTorch"
+      },
+      {
+        "fullName": "open-mmlab/mmskeleton",
+        "updatedAt": "2026-10-13T07:29:57Z",
+        "url": "https://github.com/open-mmlab/mmskeleton"
+      },
+      {
+        "fullName": "PaddlePaddle/PaddleVideo",
+        "updatedAt": "2026-10-08T05:59:53Z",
+        "url": "https://github.com/PaddlePaddle/PaddleVideo"
+      },
+      {
+        "fullName": "kennymckormick/pyskl",
+        "updatedAt": "2026-10-16T05:41:26Z",
+        "url": "https://github.com/kennymckormick/pyskl"
+      },
+      {
+        "fullName": "HHTseng/video-classification",
+        "updatedAt": "2026-10-16T03:17:49Z",
+        "url": "https://github.com/HHTseng/video-classification"
+      },
+      {
+        "fullName": "felixchenfy/Realtime-Action-Recognition",
+        "updatedAt": "2026-09-22T08:46:30Z",
+        "url": "https://github.com/felixchenfy/Realtime-Action-Recognition"
+      },
+      {
+        "fullName": "shahroudy/NTURGB-D",
+        "updatedAt": "2026-10-01T13:38:01Z",
+        "url": "https://github.com/shahroudy/NTURGB-D"
+      },
+      {
+        "fullName": "jeffreyyihuang/two-stream-action-recognition",
+        "updatedAt": "2026-10-09T15:27:17Z",
+        "url": "https://github.com/jeffreyyihuang/two-stream-action-recognition"
+      },
+      {
+        "fullName": "firework8/Awesome-Skeleton-based-Action-Recognition",
+        "updatedAt": "2026-10-13T07:36:55Z",
+        "url": "https://github.com/firework8/Awesome-Skeleton-based-Action-Recognition"
+      },
+      {
+        "fullName": "LZQthePlane/Online-Realtime-Action-Recognition-based-on-OpenPose",
+        "updatedAt": "2026-09-30T07:34:22Z",
+        "url": "https://github.com/LZQthePlane/Online-Realtime-Action-Recognition-based-on-OpenPose"
+      },
+      {
+        "fullName": "feichtenhofer/twostreamfusion",
+        "updatedAt": "2026-10-09T15:27:18Z",
+        "url": "https://github.com/feichtenhofer/twostreamfusion"
+      },
+      {
+        "fullName": "lshiwjx/2s-AGCN",
+        "updatedAt": "2026-10-14T13:37:48Z",
+        "url": "https://github.com/lshiwjx/2s-AGCN"
+      },
+      {
+        "fullName": "niais/Awesome-Skeleton-based-Action-Recognition",
+        "updatedAt": "2026-06-30T16:31:17Z",
+        "url": "https://github.com/niais/Awesome-Skeleton-based-Action-Recognition"
+      },
+      {
+        "fullName": "sallymmx/ActionCLIP",
+        "updatedAt": "2026-10-06T06:23:14Z",
+        "url": "https://github.com/sallymmx/ActionCLIP"
+      },
+      {
+        "fullName": "bryanyzhu/two-stream-pytorch",
+        "updatedAt": "2026-10-09T17:17:27Z",
+        "url": "https://github.com/bryanyzhu/two-stream-pytorch"
+      },
+      {
+        "fullName": "chaoyuaw/pytorch-coviar",
+        "updatedAt": "2026-10-15T01:44:01Z",
+        "url": "https://github.com/chaoyuaw/pytorch-coviar"
+      },
+      {
+        "fullName": "kenziyuliu/MS-G3D",
+        "updatedAt": "2026-09-28T02:32:32Z",
+        "url": "https://github.com/kenziyuliu/MS-G3D"
+      },
+      {
+        "fullName": "dluvizon/deephar",
+        "updatedAt": "2026-09-24T10:27:29Z",
+        "url": "https://github.com/dluvizon/deephar"
+      },
+      {
+        "fullName": "TianzhongSong/Real-Time-Action-Recognition",
+        "updatedAt": "2026-06-30T16:37:52Z",
+        "url": "https://github.com/TianzhongSong/Real-Time-Action-Recognition"
+      }
+    ]
+  },
+  "projects": [
+    {
+      "repo": "cvat-ai/cvat",
+      "revision": "9176834830e2e931a8d3a6857dcf43c6cc0ee927",
+      "tag": "v2.79.0",
+      "license": "MIT",
+      "feature": "Community video XML review; integrated SAM2 excluded (Online/Enterprise)"
+    },
+    {
+      "repo": "Megvii-BaseDetection/YOLOX",
+      "revision": "6ddff4824372906469a7fae2dc3206c7aa4bbaee",
+      "license": "Apache-2.0",
+      "feature": "Official ONNX demo preprocessing and output decoding"
+    },
+    {
+      "repo": "roboflow/trackers",
+      "revision": "7f454c8e9338ae6d24c996f8d26ae9120b20d6f8",
+      "license": "Apache-2.0",
+      "feature": "ByteTrack local detections and timestamp update; no appearance ReID"
+    },
+    {
+      "repo": "FoundationVision/ByteTrack",
+      "revision": "d1bf0191adff59bc8fcfeaa0b33d3d1642552a99",
+      "license": "MIT",
+      "feature": "Reference only"
+    }
+  ],
+  "checkpoint": {
+    "schema_version": 1,
+    "detector": "YOLOX-s COCO ONNX",
+    "code_repository": "https://github.com/Megvii-BaseDetection/YOLOX",
+    "code_revision": "6ddff4824372906469a7fae2dc3206c7aa4bbaee",
+    "code_license": "Apache-2.0",
+    "weights_url": "https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_s.onnx",
+    "weights_release": "0.1.1rc0",
+    "weights_asset_id": 42724906,
+    "weights_sha256": "c5c2d13e59ae883e6af3b45daea64af4833a4951c92d116ec270d9ddbe998063",
+    "weights_terms": "Official YOLOX release under repository Apache-2.0 distribution; no separate checkpoint restriction declared in release. Preserve Apache notice. COCO dataset not redistributed.",
+    "class_mapping": {
+      "0": "person"
+    },
+    "tracker_repository": "https://github.com/roboflow/trackers",
+    "tracker_revision": "7f454c8e9338ae6d24c996f8d26ae9120b20d6f8",
+    "tracker_license": "Apache-2.0",
+    "tracker": "ByteTrackTracker",
+    "appearance_reid": false,
+    "detector_score_floor": 0.1,
+    "detector_nms_iou": 0.45,
+    "input_size": [
+      640,
+      640
+    ],
+    "tracker_parameters": {
+      "track_activation_threshold": 0.5,
+      "high_conf_det_threshold": 0.5,
+      "lost_track_buffer": 30,
+      "minimum_consecutive_frames": 1,
+      "minimum_iou_threshold": 0.1
+    },
+    "automatic_role_assignment": false
+  }
+}

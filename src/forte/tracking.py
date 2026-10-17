@@ -291,6 +291,21 @@ def validate_pair(manifest: TrackManifest, annotation: Annotation):
                 raise ValueError("Confirmed fact requires independent evidence review")
             if f.kind == "role" and (not f.work_area_id or not f.segment_ids):
                 raise ValueError("Confirmed role requires source-bound work area and actor")
+    for i, first in enumerate(a.facts):
+        if first.kind != "role" or first.value == "unclear" or first.review_status == "rejected":
+            continue
+        for other in a.facts[i + 1 :]:
+            if (
+                other.kind == "role"
+                and other.review_status != "rejected"
+                and other.value not in {"unclear", first.value}
+                and (
+                    first.actor_id == other.actor_id
+                    or bool(set(first.segment_ids) & set(other.segment_ids))
+                )
+                and max(first.start_sec, other.start_sec) <= min(first.end_sec, other.end_sec)
+            ):
+                raise ValueError("Conflicting role assignments require specific local adjudication")
     return m, a
 
 

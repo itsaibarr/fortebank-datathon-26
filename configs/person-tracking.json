@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "detector": "YOLOX-s COCO ONNX",
+  "code_repository": "https://github.com/Megvii-BaseDetection/YOLOX",
+  "code_revision": "6ddff4824372906469a7fae2dc3206c7aa4bbaee",
+  "code_license": "Apache-2.0",
+  "weights_url": "https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_s.onnx",
+  "weights_release": "0.1.1rc0",
+  "weights_asset_id": 42724906,
+  "weights_sha256": "c5c2d13e59ae883e6af3b45daea64af4833a4951c92d116ec270d9ddbe998063",
+  "weights_terms": "Official YOLOX release under repository Apache-2.0 distribution; no separate checkpoint restriction declared in release. Preserve Apache notice. COCO dataset not redistributed.",
+  "class_mapping": {
+    "0": "person"
+  },
+  "tracker_repository": "https://github.com/roboflow/trackers",
+  "tracker_revision": "3666546420b0fd564c8e63157a6621efffdfa01a",
+  "tracker_license": "Apache-2.0",
+  "tracker": "ByteTrackTracker",
+  "appearance_reid": false,
+  "detector_score_floor": 0.1,
+  "detector_nms_iou": 0.45,
+  "input_size": [
+    640,
+    640
+  ],
+  "tracker_parameters": {
+    "track_activation_threshold": 0.5,
+    "high_conf_det_threshold": 0.5,
+    "lost_track_buffer": 30,
+    "minimum_consecutive_frames": 1,
+    "minimum_iou_threshold": 0.1
+  },
+  "automatic_role_assignment": false,
+  "tracker_version": "2.6.1",
+  "tracker_artifacts": [
+    {
+      "filename": "trackers-2.6.1-py3-none-any.whl",
+      "sha256": "b5188de630f449958be3ce787fbb0375c69cfde094b6e4b4329cd79a98108501"
+    },
+    {
+      "filename": "trackers-2.6.1.tar.gz",
+      "sha256": "e8363838384cea25967b4501fff2565cc9c0e234a6f7eaea3ba5343b65a30561"
+    }
+  ]
+}

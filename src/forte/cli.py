@@ -42,7 +42,12 @@ def main(argv: list[str] | None = None) -> int:
     annotation.add_argument("--release", type=Path, required=True)
     annotation.add_argument("--cards", type=Path, required=True)
     annotation.add_argument("--file", type=Path, required=True)
+    from forte.tracking_cli import add_commands, run_command
+
+    add_commands(commands)
     args = parser.parse_args(argv)
+    if args.command.startswith("tracks-"):
+        return run_command(args)
     if args.command == "annotations-check":
         from forte.annotations import Annotation, RuleCard, validate_annotation
         from forte.legal import load_release
