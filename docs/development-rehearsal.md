@@ -79,6 +79,34 @@ Private results, both JPEGs, metrics, logs and source mappings are saved on the 
 
 The VM was deleted after backup. Provider inventory reports **zero VMs and zero volumes**. Credit moved from $28.4096 to **$28.1157**, approximately $0.29 at the observed snapshot; billing may settle later. Both local and VM-side one-hour deletion guards were armed. No training or UI work ran, and this revision does not pass the promotion gate.
 
-The next evidence needed is local review of the new alert and one human-confirmed real event with an approximate source timestamp. Preserve the supplied labels and uncertainty. Do not spend another session on blind prompt changes or train on these model outputs; the reviewed category/context and recording-group gates remain open.
+At that checkpoint, the next proposed evidence was local review of the new alert and a genuine event control. The user's subsequent request supersedes asking them to supply statutory labels: the agent prepares legislation and draft mappings, while local review establishes visible facts and ambiguous business context. Do not train on the rejected model outputs; reviewed category/context and recording-group gates remain open.
 
-The user subsequently rejected the new alert after local review; the correction is in the private review JSON, and the aggregate receipt now records that rejection. The follow-up domain research is `docs/domain-research.md`: prepare legal mappings and observable-fact annotations separately, without requiring the user to identify statutory violations. The RAG, tracking and larger-model proposals are not implemented yet.
+The user subsequently rejected the new alert after local review; the correction is in the private review JSON, and the aggregate receipt records that rejection. The follow-up [domain research](domain-research.md) separates legal mappings from observable facts without requiring the user to identify statutory violations. At that research checkpoint, the proposed architecture changes had not run.
+
+## Authorized corpus and model-size follow-up
+
+After the user said to proceed, three full official Adilet snapshots and their
+current-version inventories were collected and verified. The 272 main-clause
+records include six repealed provisions. Full raw annexes are retained, a coverage
+register enumerates every collected clause, and twelve draft cards reference
+thirteen clauses. [Offline retrieval and separate visual/legal review contracts](legal-and-annotation.md)
+are implemented. This is scoped preparation, not full applicable-law coverage or
+a promoted detector. The legal retrieval pilot still misses relevant queries.
+
+The [controlled model diagnostic](model-size-diagnostic.md) used three context
+variants of one user-corrected development recording. 8B agrees with the existing
+role correction in 0/3 variants and 27B in 1/3; each still makes one confident
+conflicting assignment. 27B fits the A100 for twelve-image, one-sequence BF16
+inference, but this does not establish production concurrency or full-video
+latency. All generated descriptions and original corrections remain private.
+
+Thirty-one source-bound development annotation templates were prepared without
+holdout/jury data. They contain no reviewed training targets. No genuine positive
+control, SFT adapter, tracking system, production RAG integration or model
+replacement was produced. All 69 tests, lint/format and package build pass.
+
+The one-hour session's results were saved before VM deletion. Provider inventory
+reports zero VMs and volumes. Credit moved from $28.1157 to $27.5504, about $0.57 at
+the observed snapshot; settlement may lag. Receipts:
+[role diagnostic](../.context/verify/model-size-diagnostic-20261017.json) and
+[retrieval experiments](../.context/verify/legal-hybrid-experiments-20261017.json).

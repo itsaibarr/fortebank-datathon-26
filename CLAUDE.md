@@ -1,7 +1,7 @@
 # ForteBank Datathon 26 orientation
 
 ## What this is
-Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 49 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. Two earlier reported-event reviews are complete and unsupported; full local annotation and normal-case review remain pending. The actor-grounding GPU rerun tested five of six selected clips before its failure stop: one supplied-negative alert and four insufficient-evidence failures. No human-confirmed positive control, trained adapter or UI exists. Read `docs/development-rehearsal.md` before further experiments.
+Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 69 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. The revised preparation adds three verified official law snapshots, 272 main-clause records, a coverage register, twelve draft rule cards, optional offline hybrid retrieval/reranking, and separate visual/legal review contracts. The one-recording 8B/27B role diagnostic still fails reliable actor agreement; no model is promoted. No human-confirmed positive control, trained adapter or UI exists. Read `docs/development-rehearsal.md`, `docs/legal-and-annotation.md` and `docs/model-size-diagnostic.md` before further experiments.
 
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
@@ -27,13 +27,14 @@ Local cash-operation video review service. Contracts, MOV decoding, loopback VLM
 - `src/forte/cli.py` exposes the dataset check.
 - `src/forte/{api,jobs,worker}.py` own admission, atomic state, subprocess deadlines and sanitized failures.
 - `src/forte/{video,inference,pipeline,rules}.py` own source PTS, loopback model calls, evidence verification and the provisional public-rule catalog.
+- `src/forte/{legal,retrieval,annotations}.py`, `legal/` and their preparation scripts own verified experimental law retrieval and separate review layers; these are not integrated into the legacy detector.
 - `tests/test_dataset.py` checks wrong inputs, integrity failures and CLI behavior.
 - `tasks/todo.md` records actual completed tasks; do not mark future GPU/UI work done.
 - `docs/case-requirements.md` maps the complete case to submission checks.
 - `docs/development-rehearsal.md` records actual development runs, quality blockers and the private human-review procedure.
 
 ## Settled decisions
-- The user requested a fresh domain/open-source/model review after rejecting the new report. See `docs/domain-research.md` and `.context/verify/domain-research-sources.json`. Proposed changes are a versioned scoped legal corpus/RAG, persistent actor grounding and an 8B-versus-Qwen3.8-27B comparison before optional SFT. These are research recommendations, not implemented or GPU-validated changes. The current catalog has only three provisional rules; do not describe it as full RK-law coverage. The user is not responsible for researching legislation to label visible facts.
+- The user requested domain/open-source/model research, then authorized proceeding. See `docs/domain-research.md`. Official ingestion, experimental local retrieval, draft rule cards and two-layer annotation validation are implemented. The 27B role diagnostic fits A10080 but agrees with the existing correction in only one of three context variants; both models still make a confident conflicting assignment. Neither is promoted. Persistent visual tracking and production RAG integration remain open. The legacy detector still has only three provisional rules; neither it nor the three-act corpus constitutes full RK-law coverage. The user is not responsible for researching legislation to label visible facts.
 - Qwen/Qwen3-VL-8B-Instruct BF16, exact revision in configuration; InternVL3_5-8B fallback. Main VLM remains at least 8B.
 - Pretrained pipeline first; optional language-attention LoRA only after reviewed supervision and measured errors. No adapter is enabled now.
 - PyAV/FFmpeg source timestamps, overlapping coarse/fine windows, source-frame evidence and local public-rule mapping.
@@ -54,6 +55,8 @@ Local cash-operation video review service. Contracts, MOV decoding, loopback VLM
 - HTTP-reflection and SSH source IPs differed on the old connection; the modem connection matched. Use a current `/32` SSH rule, the dedicated known-host file and a project control socket. Initial host trust used TOFU because provider console-log retrieval failed; do not claim independent console verification.
 - Stopped Hyperstack VMs still bill. The user delegated lifecycle management; delete only this project's recorded resource IDs after preserving outputs or at its budget/time limit. Do not touch other account resources. Plan automatic cleanup and reserve before paid allocation.
 - Latest role-check rehearsal is closed: zero VMs/volumes; $28.12 credit snapshot, with settlement possibly pending. Clean image source hashes matched the checkout and inference networking was disabled. Receipt: `.context/verify/role-regression-52b0497.json`. Further paid tuning needs new reviewed evidence; role guards alone did not pass quality.
+
+- The authorized corpus/model diagnostic session is closed: zero VMs/volumes, $27.55 latest credit with settlement possibly pending. Its observed credit reduction was about $0.57. See `.context/verify/model-size-diagnostic-20261017.json`. Generated scene content remains private; no model or retrieval candidate was promoted and no training occurred.
 
 ## Where not to look
 Ignore `.venv`, caches, generated `dist`, private runs, downloaded weights and future `web/out` for code orientation.

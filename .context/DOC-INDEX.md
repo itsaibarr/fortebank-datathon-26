@@ -1,4 +1,5 @@
-# Doc index — generated 2026-10-17, 12 files
+# Doc index — generated 2026-10-17, 17 files
+- .pytest_cache/README.md — # pytest cache directory #
 - AGENTS.md — # Agent instructions
 - CLAUDE.md — # ForteBank Datathon 26 orientation
 - README.md — # ForteBank Datathon 26
@@ -6,8 +7,12 @@
 - docs/backend.md — # Run the backend and verify a private result
 - docs/case-requirements.md — # The plan covers the case but the product still has to pass its checks
 - docs/development-rehearsal.md — # Development rehearsal: mechanics work, detection quality does not pass
+- docs/domain-research.md — # Research: visual grounding, Kazakhstan rules, and the next model experiment
 - docs/gpu-runbook.md — # Verified GPU setup and repeatable model check
+- docs/legal-and-annotation.md — # Local law retrieval and two-layer review
+- docs/model-size-diagnostic.md — # Development role diagnostic, 17 October 2026
 - docs/setup-sources.md — # Setup source checks on 17 October 2026
+- legal/README.md — # Offline official-law releases
 - tasks/plan.md — # Implementation plan for ForteBank Datathon 26
 - tasks/todo.md — # ForteBank Datathon 26 execution checklist
 - web/README.md — # Frontend work starts after the backend works

@@ -4,7 +4,9 @@ Local video review service under development. The approved design uses Qwen3-VL-
 
 ## Current setup
 
-The backend implements authenticated asynchronous MOV jobs, source-timed decoding, local VLM calls, candidate refinement, evidence verification and public-rule mapping. Its 49 local tests pass. Real development videos have traversed the offline GPU API, including source-verified JPEG evidence. Detection quality fails the acceptance gate: the second exploratory run tested 24 of 31 videos and returned 1 TP, 6 TN, 2 FP, 6 FN and 9 failed jobs. Two local event reviews rejected the reported explanations as unsupported; no grounded real positive is confirmed. The new actor check has not yet had a GPU/video rerun. There is no trained adapter or UI. See `docs/development-rehearsal.md`; keep private content outside this repository.
+The backend implements authenticated asynchronous MOV jobs and source-timed JPEG evidence, with 69 local tests passing. Real offline GPU calls work, but detection quality fails acceptance and no grounded real positive is confirmed. The actor guard rerun was rejected on local review. A later controlled 8B/27B diagnostic still makes confident conflicting role assignments; neither model is promoted. There is no trained adapter or UI. See [development results](docs/development-rehearsal.md) and [the model diagnostic](docs/model-size-diagnostic.md).
+
+The revised experimental preparation adds [three verified official-law snapshots](legal/README.md), 272 main-clause records, a coverage register, twelve draft operational cards, local lexical/dense/reranked retrieval and [separate visual/legal annotation validation](docs/legal-and-annotation.md). Retrieval quality and legal coverage remain incomplete, and these additions are not integrated into the legacy three-rule detector. Private review files and 31 development templates remain outside Git. All rented resources are deleted; latest credit is $27.55, with billing possibly still settling.
 
 ```bash
 uv sync --frozen

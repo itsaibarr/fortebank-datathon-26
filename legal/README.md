@@ -27,12 +27,34 @@ uv run forte legal-search --release legal/2026-10-17 \
   --act V1900019680 --query 'пункт 22' --limit 1
 ```
 
-The first retrieval slice uses deterministic lexical BM25 and exact provision
-lookup, retaining complete main clauses, parent headings and linked references.
-It does not yet resolve cross-references, embed/rerank, or certify completeness.
+Default retrieval uses deterministic lexical BM25 and exact provision lookup,
+retaining complete main clauses, parent headings and linked references. Opt-in
+local BGE-M3 dense fusion and BGE reranking are implemented and measured, with
+quality gaps described in [the review guide](../docs/legal-and-annotation.md).
+Automatic cross-reference expansion and completeness certification remain open.
 An applicable rule and a visible fact must be established separately. Search
-results are legal text, never a video finding. The legacy three-rule production
-pipeline is not silently replaced by this experimental corpus.
+results are legal text, never a video finding; empty retrieval is abstention. The
+legacy three-rule production pipeline is not replaced by this experimental corpus.
+
+Build the 266-clause dense index inside the existing pinned model runtime, with
+networking disabled and public model snapshots downloaded beforehand:
+
+```sh
+python scripts/prepare_legal_index.py --release legal/2026-10-17 \
+  --model /models/5617a9f61b028005a4858fdac845db406aefb181 \
+  --reranker /models/953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e \
+  --cases legal/retrieval-cases.json --output /output/law-index --device cuda
+```
+
+The corresponding `forte legal-search` flags are `--dense-index`,
+`--embedding-model`, `--reranker-model` and `--embedding-device cpu|cuda`. Both
+models load local files only, with remote code disabled. This optional path needs
+the model runtime's Torch/Transformers; default lexical search works in the
+lightweight uv environment. The tested runtime is vLLM 0.31.0 / Torch 2.13.0+cu130 /
+Transformers 5.17.0 in the image pinned by `Dockerfile`. Encoder model
+`BAAI/bge-m3` is MIT; reranker `BAAI/bge-reranker-v2-m3` is Apache-2.0. The dense
+floor 0.35 and reranker raw-logit floor zero are development settings, not
+calibrated applicability probabilities.
 
 Prepare another immutable release explicitly, outside inference:
 

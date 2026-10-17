@@ -1,0 +1,103 @@
+{
+  "independent_recordings": 1,
+  "context_variants": 3,
+  "models": {
+    "8b": {
+      "model_snapshot": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+      "load_seconds": 35.45270035100009,
+      "cases": 3,
+      "valid": 3,
+      "matches_existing_user_correction": 0,
+      "abstentions": 2,
+      "incorrect_certain_role": 1,
+      "seconds": [
+        9.158,
+        7.983,
+        7.551
+      ],
+      "prompt_tokens": [
+        2645,
+        2645,
+        2643
+      ],
+      "output_tokens": [
+        186,
+        237,
+        213
+      ]
+    },
+    "27b": {
+      "model_snapshot": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+      "load_seconds": 146.14089467500003,
+      "cases": 3,
+      "valid": 3,
+      "matches_existing_user_correction": 1,
+      "abstentions": 1,
+      "incorrect_certain_role": 1,
+      "seconds": [
+        21.458,
+        12.751,
+        13.031
+      ],
+      "prompt_tokens": [
+        2649,
+        2649,
+        2647
+      ],
+      "output_tokens": [
+        189,
+        169,
+        173
+      ]
+    }
+  },
+  "legal_violations_confirmed": 0,
+  "training_performed": false,
+  "schema_version": 1,
+  "code_commit": "7e3416a",
+  "model_ids": {
+    "8b": "Qwen/Qwen3-VL-8B-Instruct",
+    "27b": "Qwen/Qwen3.8-27B"
+  },
+  "input_manifest_sha256": "67b9017ada110958219e9d027bacb3c67b53818a81eb3be63b0d988291e84183",
+  "peak_vram_mib_sequential_comparison": 73307,
+  "image": "vllm/vllm-openai@sha256:a4a4c0437bf7240089da5f08aa370c4aee17ae5290f7a3b468825ee26c4c3a6b",
+  "network": "Each model used Docker --network none with offline HF/Transformers flags; one resident model at a time.",
+  "inference_settings": {
+    "dtype": "bfloat16",
+    "max_model_len": 8192,
+    "max_num_seqs": 1,
+    "max_pixels": 196608,
+    "images_per_variant": 12,
+    "temperature": 0,
+    "seed": 0,
+    "max_output_tokens": 768,
+    "enable_thinking": false
+  },
+  "limitations": [
+    "One human-corrected recording and three dependent context variants; no general accuracy estimate.",
+    "Agreement is with an existing role correction, not new independent adjudication of each generated explanation.",
+    "This is a role question, not an end-to-end API or legal-violation benchmark.",
+    "No genuine legal-positive control is confirmed.",
+    "No tracking, SFT, model replacement or production RAG promotion occurred."
+  ],
+  "promotion_decision": "not_promoted",
+  "lifecycle": {
+    "state": "deleted",
+    "checked_at_utc": "2026-10-17T14:53:23.037654+00:00",
+    "vm_count": 0,
+    "volume_count": 0,
+    "credit_before_usd": 28.115666069444355,
+    "credit_after_usd": 27.55036589027766,
+    "observed_credit_reduction_usd": 0.5653001791666945,
+    "billing_may_still_settle": true,
+    "session_ceiling_usd": 1.5,
+    "total_authorized_budget_usd": 30
+  },
+  "runtime": {
+    "vllm": "0.31.0",
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "cuda": "13.0"
+  }
+}

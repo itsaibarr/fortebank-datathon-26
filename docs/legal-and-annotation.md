@@ -28,11 +28,28 @@ Several distinctions prevent predictable false reports:
   may need context that a camera cannot establish.
 
 `forte legal-search` verifies the raw-file receipts and reconstructs the index
-before offline lexical retrieval. It returns full clauses, parent headings,
-references, official anchors, snapshot identifiers and revision metadata. Legal
-matching does not establish a visual fact. Automatic cross-reference expansion,
-multilingual embeddings/reranking, as-of-date legal resolution and broad retrieval
-quality evaluation are not implemented in this slice.
+before offline lexical retrieval. Optional pinned BGE-M3 embeddings and a local
+BGE reranker can be enabled explicitly. All modes return full clauses, parent
+headings, references, official anchors, snapshot identifiers and revision metadata.
+Legal matching does not establish a visual fact. Automatic cross-reference
+expansion, as-of-date legal resolution and broad independent retrieval evaluation
+remain open.
+
+The small agent-prepared public-law pilot has fourteen relevant queries and one
+unrelated query. Lexical retrieval finds the expected clause first in 8/14 and in
+the top three in 10/14. Dense fusion reaches 8/14 and 11/14 but fails the unrelated
+query. Adding reranking reaches 10/14 first, 10/14 top three and rejects the
+unrelated query. The fixed rejection floor also removes a relevant departure
+paraphrase. These results are a baseline with precision/recall tradeoffs, not a
+production acceptance result. Expected clause labels themselves need independent
+review, particularly ambiguous transaction-context queries. Never interpret an
+empty search as `no_violation` or as proof that no public duty exists.
+
+The local dense index covers the 266 non-repealed collected clauses. The index is
+hash-bound to the verified corpus, saved outside Git and rebuildable from the
+preparation script. Both text models ran offline in the pinned GPU image. No text
+model weights or CUDA dependencies were installed into the lightweight Mac uv
+environment. See the [experiment receipt](../.context/verify/legal-hybrid-experiments-20261017.json).
 
 `forte.annotations.Annotation` separates source-bound visual facts from legal
 claims. Facts have anonymous actor IDs, roles/actions/context, intervals, source

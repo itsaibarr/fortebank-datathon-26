@@ -1,5 +1,17 @@
 # ForteBank Datathon 26 execution checklist
 
+## Revised approach authorized after domain research
+
+- [x] Collect three official Adilet full-text snapshots and current-version inventories; verify offline reconstruction of 272 main-clause records, with annexes preserved raw.
+- [x] Add a complete register of collected clauses and twelve source-bound draft cards covering thirteen clauses. This does not establish exhaustive applicable-law coverage or approved interpretations.
+- [x] Implement offline lexical retrieval and opt-in pinned BGE-M3 dense retrieval/reranking; keep measured development query results and avoid production promotion without broader validation.
+- [x] Separate source-bound visible facts from legal prerequisites/exceptions and explicit review states; 69 local tests, lint/format and package build pass.
+- [x] Prepare 31 private development annotation templates. They are drafts, with zero reviewed training targets; holdout/jury recordings are excluded.
+- [x] Compare pinned 8B/27B models on the same three context variants of one user-corrected role error. 27B fits but neither reliably agrees with the correction; no promotion or training.
+- [ ] Establish genuine reviewed positive controls, recording-date applicability and approved operational cards; complete visible-fact review and resolve split continuity.
+- [ ] Implement and evaluate persistent actor correspondence, transaction phase and production RAG integration against reviewed reference cases.
+- [ ] Reopen optional supervised training only after independent reviewed targets and the existing evaluation gates are satisfied.
+
 Ordered task list following Harness's plan convention. Details, dependencies, file scope and verification are in [plan.md](plan.md). No product tasks are checked off by the architecture research.
 
 ## Local setup approved on 17 October 2026

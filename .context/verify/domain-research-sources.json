@@ -150,5 +150,14 @@
   "official_corroborating_publications": [
     "https://nationalbank.kz/file/download/106258",
     "https://nationalbank.kz/file/download/107733"
-  ]
+  ],
+  "authorized_implementation_followup": {
+    "official_release": "legal/2026-10-17",
+    "manifest": "legal/2026-10-17/manifest.json",
+    "main_clause_records": 272,
+    "coverage_register": "legal/coverage-2026-10-17.json",
+    "retrieval_receipt": ".context/verify/legal-hybrid-experiments-20261017.json",
+    "model_comparison_receipt": ".context/verify/model-size-diagnostic-20261017.json",
+    "note": "Initial research collection flags describe that earlier checkpoint; the follow-up collected three official snapshots through the public API."
+  }
 }

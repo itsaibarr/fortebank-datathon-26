@@ -1,0 +1,353 @@
+{
+  "schema_version": 1,
+  "code_commit": "c3ea26f",
+  "release": "2026-10-17",
+  "network_inspected": "none",
+  "model_ids": {
+    "encoder": "BAAI/bge-m3",
+    "reranker": "BAAI/bge-reranker-v2-m3"
+  },
+  "licenses": {
+    "encoder": "MIT",
+    "reranker": "Apache-2.0"
+  },
+  "experiments": {
+    "bge-m3-index": {
+      "model": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "pooling": "normalized_cls",
+      "dimensions": 1024,
+      "indexed_clauses": 266,
+      "build_seconds": 19.04871911300006,
+      "device": "cuda",
+      "positive_queries": 14,
+      "top1_hits": 8,
+      "top3_hits": 11,
+      "negative_queries": 1,
+      "negative_passes": 0,
+      "torch": "2.13.0+cu130",
+      "results": [
+        {
+          "case_id": "departure_wording",
+          "retrieved": [
+            "22",
+            "109-7",
+            "64"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "departure_paraphrase",
+          "retrieved": [
+            "20",
+            "22",
+            "31"
+          ],
+          "rank": 2,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "acceptance_presence",
+          "retrieved": [
+            "20",
+            "35",
+            "26"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "acceptance_absence",
+          "retrieved": [
+            "35",
+            "21",
+            "44"
+          ],
+          "rank": null,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "prior_storage",
+          "retrieved": [
+            "20",
+            "80",
+            "26"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "payout_pack_exception",
+          "retrieved": [
+            "32",
+            "49",
+            "54"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "payout_pack_paraphrase",
+          "retrieved": [
+            "49",
+            "50",
+            "32"
+          ],
+          "rank": 3,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "controller_exception",
+          "retrieved": [
+            "33",
+            "27",
+            "29"
+          ],
+          "rank": null,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "acceptance_document",
+          "retrieved": [
+            "31",
+            "19",
+            "28"
+          ],
+          "rank": 2,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "payout_document",
+          "retrieved": [
+            "31",
+            "19",
+            "28"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "exchange_access",
+          "retrieved": [
+            "41",
+            "34",
+            "36"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "premises_door",
+          "retrieved": [
+            "16",
+            "19",
+            "8"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "bag_check",
+          "retrieved": [
+            "113",
+            "107",
+            "94"
+          ],
+          "rank": null,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "exact_provision",
+          "retrieved": [
+            "22"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "no_lexical_match",
+          "retrieved": [
+            "59",
+            "129",
+            "61"
+          ],
+          "rank": null,
+          "no_match_correct": false
+        }
+      ],
+      "limitations": [
+        "Small agent-prepared development query set, not independent QA.",
+        "Fixed uncalibrated dense floor 0.35; similarity is not applicability.",
+        "No reranker, automatic cross-reference expansion or legal adjudication."
+      ],
+      "index_sha256": "5e930f652fea98811c00286382630af36858234ffce2244d34e027a0a3c2d9b6"
+    },
+    "bge-m3-reranked-index": {
+      "model": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "pooling": "normalized_cls",
+      "dimensions": 1024,
+      "indexed_clauses": 266,
+      "build_seconds": 18.55873458499991,
+      "device": "cuda",
+      "positive_queries": 14,
+      "top1_hits": 10,
+      "top3_hits": 10,
+      "negative_queries": 1,
+      "negative_passes": 1,
+      "torch": "2.13.0+cu130",
+      "reranker_revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "results": [
+        {
+          "case_id": "departure_wording",
+          "retrieved": [
+            "22"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "departure_paraphrase",
+          "retrieved": [],
+          "rank": null,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "acceptance_presence",
+          "retrieved": [
+            "20",
+            "35",
+            "31"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "acceptance_absence",
+          "retrieved": [],
+          "rank": null,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "prior_storage",
+          "retrieved": [
+            "20"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "payout_pack_exception",
+          "retrieved": [
+            "32"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "payout_pack_paraphrase",
+          "retrieved": [
+            "32"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "controller_exception",
+          "retrieved": [],
+          "rank": null,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "acceptance_document",
+          "retrieved": [
+            "19",
+            "31"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "payout_document",
+          "retrieved": [
+            "31",
+            "29",
+            "19"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "exchange_access",
+          "retrieved": [
+            "41"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "premises_door",
+          "retrieved": [
+            "16",
+            "19",
+            "21"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "bag_check",
+          "retrieved": [
+            "107"
+          ],
+          "rank": null,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "exact_provision",
+          "retrieved": [
+            "22"
+          ],
+          "rank": 1,
+          "no_match_correct": null
+        },
+        {
+          "case_id": "no_lexical_match",
+          "retrieved": [],
+          "rank": null,
+          "no_match_correct": true
+        }
+      ],
+      "limitations": [
+        "Small agent-prepared development query set, not independent QA.",
+        "Fixed uncalibrated dense floor 0.35; similarity is not applicability.",
+        "No automatic cross-reference expansion or legal adjudication.",
+        "Reranker logit floor zero is not calibrated on independent legal queries."
+      ],
+      "index_sha256": "5e930f652fea98811c00286382630af36858234ffce2244d34e027a0a3c2d9b6"
+    }
+  },
+  "live_cli": {
+    "completed_offline": true,
+    "paraphrase_returned_clauses": 0,
+    "interpretation": "An empty retrieval is abstention, not proof of no applicable rule."
+  },
+  "index_saved_locally_outside_git": true,
+  "index_sha256": "5e930f652fea98811c00286382630af36858234ffce2244d34e027a0a3c2d9b6",
+  "promotion_decision": "experimental_only",
+  "remaining": [
+    "Broader independent Russian/Kazakh reference queries, exceptions and internal-policy/no-rule cases.",
+    "Review ambiguous query targets before optimizing retrieval.",
+    "Hierarchical subparagraph retrieval and explicit definition/cross-reference expansion.",
+    "Calibrate candidate rejection separately from legal applicability.",
+    "Persistent actor and transaction-phase facts before legal mapping."
+  ],
+  "lifecycle": "Same bounded GPU session as model-size diagnostic; deleted, zero VMs/volumes.",
+  "runtime": {
+    "vllm": "0.31.0",
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "cuda": "13.0"
+  }
+}

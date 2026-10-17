@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "release": "2026-10-17",
+  "manifest_sha256": "2d91e147f55c9bee54bae22e64126ed0fd00d35bbac3715aeda96075862400a1",
+  "sources": [
+    {
+      "act_id": "V1900019680",
+      "version_id": "c4cd4052-63e3-475b-ba9e-93f23de13fdb",
+      "revision_date_raw": "2026-07-11T18:00:00.000Z",
+      "source_sha256": "1798a349b2326ba4c32a007a62db532ea6de906e71f0249a9de8dc81aa915de8",
+      "main_clause_records": 154,
+      "repealed": 2,
+      "main_integer_range": [
+        1,
+        133
+      ],
+      "main_integer_gaps": []
+    },
+    {
+      "act_id": "V2000020075",
+      "version_id": "4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c",
+      "revision_date_raw": "2024-12-23T18:00:00.000Z",
+      "source_sha256": "89b91567941acfa3d4fca1d374f04b1716cdf20fab43bd4d50ca7074b17ee16d",
+      "main_clause_records": 24,
+      "repealed": 1,
+      "main_integer_range": [
+        1,
+        24
+      ],
+      "main_integer_gaps": []
+    },
+    {
+      "act_id": "V1900018545",
+      "version_id": "0d776d3e-1c76-40f2-90ea-64f6de7868dc",
+      "revision_date_raw": "2026-06-29T18:00:00.000Z",
+      "source_sha256": "af565d20ba223ad1230180e2c6656f020101c590da06aa538c249a709300a089",
+      "main_clause_records": 94,
+      "repealed": 3,
+      "main_integer_range": [
+        1,
+        77
+      ],
+      "main_integer_gaps": []
+    }
+  ],
+  "main_records": 272,
+  "live_records": 266,
+  "full_raw_sources_verified": true,
+  "index_reconstructed_from_raw": true,
+  "annexes": "raw-preserved, not indexed",
+  "coverage": "three scoped seed acts, not exhaustive RK-law coverage",
+  "historical_applicability": "unresolved without recording dates",
+  "default_cli_smoke": true,
+  "dense_index_binding_verified": true
+}
