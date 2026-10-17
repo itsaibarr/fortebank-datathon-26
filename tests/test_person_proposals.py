@@ -219,7 +219,7 @@ def test_review_cli_preserves_proposals_and_refreshes_revision_receipts(tmp_path
             return [(1, b, s) for b, s in boxes]
 
     original = tmp_path / "original"
-    prepare_clip(record, template, original, Detector(), Tracker())
+    prepare_clip(record, template, original, Detector(), Tracker(), extra_frame_ids=["f000001"])
     original_bytes = (original / "tracks.json").read_bytes()
     operations = tmp_path / "operations.json"
     operations.write_text(json.dumps([{"operation": "review", "segment_id": "s00001"}]))
@@ -251,6 +251,9 @@ def test_review_cli_preserves_proposals_and_refreshes_revision_receipts(tmp_path
         == hashlib.sha256((revised / "tracks.json").read_bytes()).hexdigest()
     )
     assert (revised / "review-operations.json").read_bytes() == operations.read_bytes()
+    old_frames = {a["frame_id"] for a in json.loads((original / "review-assets.json").read_text())}
+    new_frames = {a["frame_id"] for a in json.loads((revised / "review-assets.json").read_text())}
+    assert old_frames <= new_frames
     m = json.loads((revised / "tracks.json").read_text())
     for name, digest in m["provenance"]["review_media"].items():
         assert hashlib.sha256((revised / name).read_bytes()).hexdigest() == digest

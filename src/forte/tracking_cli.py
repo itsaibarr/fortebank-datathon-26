@@ -92,6 +92,20 @@ def aggregate(records, annotations=None):
             f.target_kind == "abstention" and f.review_status == "confirmed" for f in facts
         ),
         people_reviewed=None,
+        confirmed_role_mappings=sum(
+            b.review.status == "confirmed" for m in manifests for b in m.role_bindings
+        ),
+        physical_people_with_role_mapping=len(
+            {
+                (m.source_sha256, b.canonical_person_id)
+                for m in manifests
+                for b in m.role_bindings
+                if b.review.status == "confirmed"
+            }
+        ),
+        confirmed_reflection_relations=sum(
+            v.review.status == "confirmed" for m in manifests for v in m.view_relations
+        ),
         human_unreviewed_sec=sum(m.duration_sec for m in manifests),
         training_targets=0,
         source_frames=sum(len(m.frames) for m in manifests),
@@ -149,6 +163,10 @@ def refresh_index(args):
             pending=sum(x == "draft" for x in statuses),
             rejected=sum(x == "rejected" for x in statuses),
             training_eligible=bool(training_targets(m, a)),
+            confirmed_role_mappings=sum(b.review.status == "confirmed" for b in m.role_bindings),
+            confirmed_reflection_relations=sum(
+                v.review.status == "confirmed" for v in m.view_relations
+            ),
             excluded=m.exclusion_reasons,
         )
         rows.append(row)
@@ -472,7 +490,13 @@ def run_command(args):
         from forte.person_proposals import build_packet
 
         shutil.rmtree(args.output / "frames")
-        build_packet(args.source, args.output, revised)
+        previous_assets = json.loads((args.directory / "review-assets.json").read_bytes())
+        build_packet(
+            args.source,
+            args.output,
+            revised,
+            extra_frame_ids=[a["frame_id"] for a in previous_assets],
+        )
         revised.provenance["review_media"] = {
             name: sha256(args.output / name)
             for name in (

@@ -12,8 +12,10 @@ from forte.tracking import (
     Correction,
     Join,
     Review,
+    RoleBinding,
     Segment,
     TrackManifest,
+    ViewRelation,
     WorkArea,
     validate_pair,
 )
@@ -359,6 +361,18 @@ def apply_corrections(
             area.review = reviewed
             m.work_areas = [x for x in m.work_areas if x.id != area.id] + [area]
             affected = [area.id]
+        elif kind == "role_binding":
+            binding = RoleBinding.model_validate(op["binding"])
+            binding.review = reviewed
+            m.schema_version = 2
+            m.role_bindings = [b for b in m.role_bindings if b.id != binding.id] + [binding]
+            affected = [binding.id, binding.segment_id]
+        elif kind == "view_relation":
+            relation = ViewRelation.model_validate(op["relation"])
+            relation.review = reviewed
+            m.schema_version = 2
+            m.view_relations = [v for v in m.view_relations if v.id != relation.id] + [relation]
+            affected = [relation.id, relation.direct_segment_id, relation.reflected_segment_id]
         elif kind == "fact":
             f = VisualFact.model_validate(op["fact"])
             f.reviewer, f.reviewed_at, f.origin = reviewer, at, "human"
