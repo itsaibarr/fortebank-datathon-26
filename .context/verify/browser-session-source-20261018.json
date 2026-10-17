@@ -1,0 +1,105 @@
+{
+  "schema_version": "forte.browser-session-source-verification/1",
+  "observed_at_utc": "2026-10-17T23:54:06.221061+00:00",
+  "source_checkpoint": "e55c0773ea74e2745ea33512d19bfaa38b32d7fb",
+  "core_ownership_checkpoint": "bdf3173eef230b4def5ea0bbcd0a5b60ce998a6f",
+  "scope": "Public source and generated synthetic media only; actual modified FastAPI and loopback TLS gateway, explicit fake model runner",
+  "checks": {
+    "python": {
+      "passed": 378,
+      "skipped": 1,
+      "warnings": 4,
+      "duration_seconds": 48.56,
+      "skip": "Optional Docker deployment transport check"
+    },
+    "ruff_check": "passed",
+    "ruff_format": {
+      "passed": true,
+      "files": 135
+    },
+    "diff_whitespace": "passed",
+    "actual_https_integration_tests": 6,
+    "frontend": {
+      "lint": "passed",
+      "typecheck": "passed",
+      "node_tests_passed": 8,
+      "static_export": "passed",
+      "detector_findings": 0,
+      "receipt": "web/qa/hosted-label-source-checks-20261018.json"
+    }
+  },
+  "security_coverage": [
+    "persisted v1/v2 admission owner",
+    "generic cross-owner and ownerless404",
+    "job/source/evidence/correction and fresh range enforcement",
+    "forged incoming auth headers stripped",
+    "reviewer bound to session principal",
+    "exact Origin and CSRF",
+    "protected cookie, rotation and revocation",
+    "idle and absolute expiry, password reset, disable, restart",
+    "same-TCP authenticated capability and marker before API response bytes",
+    "legacy core refused before upload",
+    "bounded streaming and framing/duplicate/encoded-path rejection",
+    "upstream authentication and cookie response headers withheld",
+    "private state and delayed/buffered response invalidation",
+    "hosted/private label cannot activate uploads or bypass readiness"
+  ],
+  "source_sha256": {
+    "src/forte/api.py": "a03e183c411748a539e84632b57bc609682f4c98631bc71eda03224b36560f25",
+    "src/forte/settings.py": "4c100d1d6ef16d22607c294e6bbd8eb21fdc87098a90b92a5e408c38ac6ea335",
+    "tools/forte-session/session_gateway.py": "f55d093e2ccce99035044f261f9d6a3c099e474bff67b0a628af6d35fe5b4e5b",
+    "tools/forte-session/session_store.py": "ae87d82a9e93b8f3bc48dbaf28b6c98f959b2cbb5c4e5bd0157604d8f58a8bfb",
+    "tests/test_gateway_ownership.py": "1b5bdb6672230518f6ac583fe9f11b51515973f4d541e7157d7581ccff2a73fc",
+    "tests/test_session_store.py": "b4770421b72414a2674666694ea5757db964a02c11183a8e47a31f3fd80fe5f8",
+    "tests/test_session_gateway.py": "7b83dabf38672ed6e45c1095469932b769a011442a49c9613c3cba08f754146b",
+    "tests/test_browser_session_integration.py": "ed76c9354647258eb9dad64163776e4b4bac916184dd548843c59e496edcf0a6",
+    "contracts/browser-session-contract-v1.json": "3cc3f16715bdf82d2ad1ac4cb541af76832bf16a326d154aba70113f090c066e",
+    "web/app/page.tsx": "90c3705b5309317552d465d403f0bb1837862150a03c0ecfa0091886eb7cb949",
+    "web/components/review-access.tsx": "770f648989f82bed540639497a7c81191e3b0987e555ca0fabb16f685c6d8880",
+    "web/hooks/use-browser-access.ts": "32deb91655e32a88361ab29182e54227ac5df04c06f35c7d5f5fc4ad91fc94bb",
+    "web/lib/browser-session.ts": "9c31fe472b20682d6e000a4868a45570588448d390a8083c3ad37713ce300eab",
+    "web/lib/browser-session.test.mjs": "44cca5ed5f0dc14736ce5aed181d483e3dbc46dc4f086b244dd09b280e6ae2e9",
+    "web/qa/hosted-label-source-checks-20261018.json": "e6455f49c5730e1a431bf95689c1e624fade566920f97523e25d2b8c1db9ded9"
+  },
+  "historical_manifests_preserved": {
+    "contracts/frozen-runtime-manifest-v1.json": "b28c6f6043d252701165552cb2a1c95a5ced5971b591ee5eb24378bdd8ce7a0b",
+    "contracts/frozen-assets-v1.json": "2f858a24955c95f9655d91cc9e70badfc2ba9cc51e05af4058f16dfe19b84cf0",
+    "contracts/frozen-model-hashes-v1.json": "d6cf043a326f8cb5b1f6e31ef37c4d650f6fda342b262029c30968174431459b",
+    "contracts/frozen-effective-config-v1.json": "33ec93ba546f7ae836cbcf9270831e701038c9174c5b7200162e907c7899366a"
+  },
+  "historical_frontend_receipt_verified_against": "7fa153f",
+  "deployment_lane_changes": [],
+  "browser": {
+    "full_workflow_verified": false,
+    "reason": "Native certificate exception completed by human; actual sign-in and deployment notices verified. Native file chooser is blocked by ScreenCaptureKit -3812; upload/result interaction awaits human selection of the generated MOV.",
+    "generated_media_only": true,
+    "private_media_opened": false,
+    "system_trust_store_changed": false,
+    "global_certificate_bypass_enabled": false,
+    "native_browser_sign_in_verified": true,
+    "native_deployment_notices_verified": true,
+    "certificate_exception_performed_by_human": true,
+    "native_fixture_gateway_started_before_hosted_label_change": true,
+    "native_frontend_export_checkpoint": "e55c0773ea74e2745ea33512d19bfaa38b32d7fb"
+  },
+  "operations": {
+    "new_vm": false,
+    "new_paid_resources": false,
+    "new_gpu_inference": false,
+    "live_attach": false,
+    "external_hostname_activation": false
+  },
+  "acceptance": {
+    "new_runtime_image": false,
+    "external_https": false,
+    "production_session_activation": false,
+    "publication": false,
+    "recognition_quality": false,
+    "legal_quality": false
+  },
+  "limitations": [
+    "This source is newer than the historical verified GPU image.",
+    "Interactive browser and external deployment checks remain incomplete.",
+    "Synthetic runners do not establish recognition, legal accuracy or workload SLA."
+  ]
+}

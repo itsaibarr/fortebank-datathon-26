@@ -1,5 +1,18 @@
 # ForteBank Datathon 26 execution checklist
 
+## Browser-session source continuation
+
+- [x] Apply principal ownership and authenticated core capability at `bdf3173`; preserve legacy key-only v1 behavior when trusted mode is absent. Ownerless history denies access rather than receiving an inferred owner.
+- [x] Add the host-loopback session gateway and explicit local account CLI at `5be7d78`, with protected cookies, Origin/CSRF, expiry/revocation, bounded transport and per-forward core verification on the same TCP connection.
+- [x] Add the approved UI's sign-in/logout/session cleanup and verified destination, readiness, limits, manual-retention and no-training notices at `7fa153f`. No service credential enters browser storage or assets.
+- [x] Verify source checkpoint `e55c077` with 378 passing Python tests, one optional Docker skip and four existing warnings; all 135 Python files pass Ruff lint/format. Frontend lint, types, eight contract/body tests and static export pass. Six actual local HTTPS tests use generated MOV and a fake inference runner through the modified core and gateway.
+- [x] Add validated optional `deployment_mode: private|hosted` (default private) and matching UI labels at `e55c077`; keep actual destination and security/upload/readiness gates unchanged. This label is independent of installer `private|attach` ownership and activates no host.
+- [x] Independently review and fix encoded-path upload-gate bypass, control-response framing and late-body session invalidation; keep regressions. Record the test fixture's umask dependency and explicitly set its intended broad permissions.
+- [x] Preserve the historical GPU image/manifests without relabeling them as the new security source. Deployment lane files remain untouched in this continuation.
+- [x] Agree capability-based new-host qualification, separate from production release gates; no named GPU/VM requirement, manufactured approval or new paid resource.
+- [ ] Finish interactive browser workflow QA: human certificate exception completed; actual sign-in and notices verified. The native file chooser's ScreenCaptureKit `-3812` automation error requires the human to select the generated test MOV before upload/result checks continue.
+- [ ] Build/qualify the exact new image and verify the integrated session deployment and external HTTPS boundary. No replacement host/public hostname is recorded; no new GPU or paid resource has been started.
+
 ## Current frozen-inference integration
 
 The latest user instruction supersedes earlier training proposals below. Current
@@ -17,8 +30,8 @@ research are retained as history. Details and commands:
 - [x] Account for forty canonical private recordings as 31 development and nine reserved without opening reserved media. Session, recording-date and camera-continuity metadata remain unresolved; preserve the diagnostic exclusion and human corrections.
 - [x] Reuse the existing authorized A10080 and verify 27B readiness at October 17 22:03 UTC. Later 16K synthetic visual smoke checks passed 2/2 with sixteen images; no additional VM rented. The final 23:07:34 UTC inventory reports zero VMs/volumes and credit $24.92737; observed session reduction was about $2.62299, within the $3 cap/original $30 authorization and subject to settlement.
 - [x] Record the user's approved UI libraries: Next.js/TypeScript, Tailwind, shadcn preset `b3d6mT4h6m`, Lucide. The earlier library-selection gate is satisfied.
-- [x] Implement the approved product UI; lint, TypeScript and static export pass. Synthetic browser QA verifies authenticated upload/poll/source/JPEG requests, key in page memory only, source seeking, overlays, correction history, failed retry recovery and mobile 390px without overflow. Receipt `.context/verify/frozen-timeline-ui-synthetic.json`; these are mechanics checks, not private-video quality.
-- [x] Latest confirmed Python check: 201 tests pass with four existing warnings. These are software checks, not quality metrics.
+- [x] Historical image UI: lint, TypeScript and static export passed. Synthetic browser QA verified upload/poll/source/JPEG requests with a key in page memory, source seeking, overlays, correction history, failed retry recovery and mobile 390px without overflow. Receipt `.context/verify/frozen-timeline-ui-synthetic.json`; the newer source above replaces browser keys with sessions. These are mechanics checks, not private-video quality.
+- [x] Image checkpoint Python check: 201 tests passed with four existing warnings. These are software checks, not quality metrics; newer source counts appear above.
 - [x] Record real-run failures rather than treating them as negatives: initial 8K attempt failed `visual_context_exceeded` after 33.7s; compacted first prompt still measured 9,692 tokens. Explicitly select 16,384 tokens for frozen27b, retaining baseline8b at 8,192. First real 16K attempt failed `ReadTimeout` after 85.55s overall.
 - [x] Record the intermediate 640-token output-cap failure without accepting truncated output. Current profile: sixteen images, 1,200 visual output tokens, 100-second local request timeout, about 55% of remaining time for timeline work and two legal calls ending ten seconds before the overall deadline. No weights were updated.
 - [x] Preserve validated observations before stopping a crossed stage deadline and when a later pass fails; exclude unvalidated replies. Track `capacity_limited` and skipped/incomplete coverage explicitly. Fingerprint nineteen shipped application modules separately from weights, laws and configuration.
@@ -30,7 +43,7 @@ research are retained as history. Details and commands:
 - [x] Complete the latest final application image build.
 - [x] Verify final-image cold start at October 17 22:54:31 UTC: pinned model hashes, actual 2/2 16K visual warmups, live/ready health and UI HTTP 200. Nineteen installed module hashes match core commit `111234c885f0a23d323fe72a81450dfca5aa7e60`; the public runtime manifest pins the local image and limits. No registry image was published.
 - [x] Verify the real application-only host bridge and SSH loopback forward: health/UI HTTP 200 and unauthenticated API 401. Keep the model port and container egress unavailable.
-- [x] Record the explicit single-reviewer-private security mode: shared key/no principals; block multi-user private uploads and public browser uploads until session and per-principal authorization are implemented. Deployment/admin CLI tooling is integrated from `codex/deployment-private-cli`: 31 independent synthetic checks pass, but the patch is not applied to core or included in the verified image; the unapplied proposal passes formatting; gateway integration remains separate.
+- [x] Record the historical image's single-reviewer-private security mode: shared key/no principals, with multi-user/private and public browser uploads blocked. The later source applies ownership and sessions separately; those changes are absent from the verified GPU image.
 - [x] Verify base private backup payload hashes and restore outside Git; open the human packet through the local OS. Keep case-bearing backup paths and contents private.
 - [ ] Verify the UI against the deployed real v2 workflow and record end-to-end timing without using remote browser tools on private footage.
 - [ ] Implement explicit reviewed-correction replay into later inference. Immutable sidecars/history are preserved now, but are not automatically model context.
@@ -141,4 +154,4 @@ No training, legal classification, production detector change or product fronten
 - [ ] Use the approved Next.js/TypeScript, Tailwind, shadcn preset `b3d6mT4h6m` and Lucide stack, with browser/API verification before product-completion claims.
 - [ ] Use configuration changes and measured errors before proposing another model/framework/infrastructure layer.
 
-- [x] Integrate the independent deployment/admin tooling; combined suite 320 passed, one optional Docker check skipped. Keep current installer candidate unapproved, all five verification gates false and resource minimums null; ownership proposal remains unapplied.
+- [x] At `131463f`, integrate the independent deployment/admin tooling; combined suite 320 passed, one optional Docker check skipped. That installer candidate remains unapproved with all five verification gates false and resource minimums null. Ownership is applied only in the newer source continuation above.

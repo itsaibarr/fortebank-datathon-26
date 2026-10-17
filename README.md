@@ -1,12 +1,31 @@
 # ForteBank Datathon 26
 
-Local video review service under development. The approved design uses Qwen3-VL-8B, source-timed evidence and the case's asynchronous FastAPI contract. The frontend will use Next.js after backend mechanics work and the user chooses exact UI libraries.
+Local video evidence review with a frozen 27B tracking, timeline and legal-retrieval
+pipeline. The exact v1 asynchronous FastAPI contract and explicit 8B baseline remain
+available. The review UI uses Next.js, TypeScript, Tailwind, shadcn preset
+`b3d6mT4h6m` and Lucide.
 
 ## Current setup
 
-The backend implements authenticated asynchronous MOV jobs and source-timed JPEG evidence, with 69 local tests passing. Real offline GPU calls work, but detection quality fails acceptance and no grounded real positive is confirmed. The actor guard rerun was rejected on local review. A later controlled 8B/27B diagnostic still makes confident conflicting role assignments; neither model is promoted. There is no trained adapter or UI. See [development results](docs/development-rehearsal.md) and [the model diagnostic](docs/model-size-diagnostic.md).
+The backend accepts MOV uploads, produces bounded timeline proposals and serves
+source-timed original JPEGs with immutable correction history. Real offline GPU
+runs completed with partial coverage and insufficient evidence. Recognition and
+legal quality remain unaccepted; no model weights were trained or adapted. See
+[the frozen execution record](docs/frozen-inference.md) for actual timings,
+resource deletion and the incomplete final-backup limitation.
 
-The revised experimental preparation adds [three verified official-law snapshots](legal/README.md), 272 main-clause records, a coverage register, twelve draft operational cards, local lexical/dense/reranked retrieval and [separate visual/legal annotation validation](docs/legal-and-annotation.md). Retrieval quality and legal coverage remain incomplete, and these additions are not integrated into the legacy three-rule detector. Private review files and 31 development templates remain outside Git. All rented resources are deleted; latest credit is $27.55, with billing possibly still settling.
+The current source adds protected browser sessions and per-principal authorization
+for jobs, media, corrections and fresh range requests. Credentials remain on the
+server; the browser shows destination, readiness, limits, manual retention and
+no-training notices. [The browser/session contract](docs/browser-session-plan.md)
+and [machine-readable interface](contracts/browser-session-contract-v1.json)
+describe deployment integration. This source is newer than the historical verified
+GPU image; a new image and external deployment still need qualification.
+
+[Three official-law snapshots](legal/README.md), 272 main-clause records and twelve
+draft operational cards support local retrieval. Interpretations, coverage and
+human review remain independent. Private recordings, annotations and review files
+stay outside Git and external inference services.
 
 ```bash
 uv sync --frozen
@@ -35,4 +54,10 @@ Obsidian notes are in `/Users/itsaibarr/Documents/Obsidian Vault/Projects/ForteB
 - `Case requirements and implementation checks.md`
 - `Computer vision stack and a 30 dollar GPU budget.md`
 
-The GPU smoke scripts run on an already-authorized machine; they do not rent hardware or call a paid AI API. The first synthetic check used about $0.23. The separate development rehearsal, its billing receipt and remaining quality work are recorded in `docs/development-rehearsal.md`. User acceptance is a working end-to-end service with reviewed evidence, not the completion of training.
+The GPU smoke scripts require an already-authorized compatible CUDA host; they do
+not rent hardware or call a paid AI API. The previously observed A100 host is a
+measurement, not a required GPU brand or VM. New-host qualification must verify
+immutable resources and real bounded visual warmup, keeping measured limits
+separate from unmeasured capacity. Local qualification does not approve publication
+or detection quality. Deployment and guided installation are maintained in the
+independent deployment lane; current release acceptance remains gated.
