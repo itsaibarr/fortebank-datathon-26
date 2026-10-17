@@ -278,6 +278,13 @@ revisions. One additional human response remains explicitly unclear, with its
 role, view kind and identity unresolved; it supplies no abstention training target.
 The aggregate separates proposed, confirmed and rejected joins.
 
+Identity continuity has subsequently been confirmed for two segment ranges in one
+pilot. Their box geometry remains draft; this does not approve the complete
+recording, other people, reflection continuity, role/action intervals or training
+targets. The source-bound request, exact response and earlier correction inputs
+are preserved in the nested private revision. See the additional aggregate
+checkpoint `.context/verify/person-continuity-review-20261017.json`.
+
 Review regeneration now retains all previously cited source-frame images,
 including diagnostic reference views, before adding new candidate views. The
 packet displays recorded mappings beside pending interval/geometry gates rather
