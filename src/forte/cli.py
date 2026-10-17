@@ -27,6 +27,16 @@ def main(argv: list[str] | None = None) -> int:
     evaluation = commands.add_parser("evaluate", help="Aggregate completed development API results")
     evaluation.add_argument("--manifest", type=Path, required=True)
     evaluation.add_argument("--results", type=Path, required=True)
+    scan = commands.add_parser("scan", help="Run actual frozen local timeline/legal inference")
+    scan.add_argument("--source", type=Path, required=True)
+    scan.add_argument("--config", type=Path, required=True)
+    scan.add_argument("--private-output", type=Path, required=True)
+    scan.add_argument("--model-url", default="http://127.0.0.1:8001")
+    scan.add_argument("--model-name", default="forte-vlm")
+    scan.add_argument("--deadline-seconds", type=float, default=270)
+    snapshot = commands.add_parser("model-check", help="Verify frozen local model asset hashes")
+    snapshot.add_argument("--root", type=Path, required=True)
+    snapshot.add_argument("--profile", choices=["baseline8b", "frozen27b"], required=True)
     legal = commands.add_parser("legal-search", help="Verify and search an offline law release")
     legal.add_argument("--release", type=Path, required=True)
     legal.add_argument("--query", required=True)
@@ -46,6 +56,50 @@ def main(argv: list[str] | None = None) -> int:
 
     add_commands(commands)
     args = parser.parse_args(argv)
+    if args.command == "model-check":
+        from forte.model_profile import verify_snapshot
+
+        try:
+            report = verify_snapshot(args.root, args.profile)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print(f"model-check: verification failed ({type(exc).__name__})", file=sys.stderr)
+            return 1
+        print(json.dumps(report, ensure_ascii=False, allow_nan=False))
+        return 0
+    if args.command == "scan":
+        from forte.reasoning_pipeline import analyze_reasoning
+        from forte.settings import Settings
+
+        try:
+            config = json.loads(args.config.read_text())
+            if not 1 <= args.deadline_seconds <= 270:
+                raise ValueError("Scan deadline must be within the service budget")
+            settings = Settings(
+                "unused-local-scan-key",
+                args.private_output,
+                args.model_url,
+                args.model_name,
+                job_timeout=args.deadline_seconds,
+                model_revision=config["model"]["revision"],
+                max_context_tokens=config["model"].get("max_context_tokens", 8192),
+                reasoning_config=args.config,
+            )
+            result = analyze_reasoning(args.source, args.private_output, settings)
+        except Exception as exc:
+            print(f"scan: local analysis failed ({type(exc).__name__})", file=sys.stderr)
+            return 1
+        print(
+            json.dumps(
+                {
+                    "execution": result["execution"]["status"],
+                    "assessment": result["assessment"],
+                    "events": len(result["events"]),
+                    "weights_frozen": True,
+                },
+                allow_nan=False,
+            )
+        )
+        return 0
     if args.command.startswith("tracks-"):
         return run_command(args)
     if args.command == "annotations-check":

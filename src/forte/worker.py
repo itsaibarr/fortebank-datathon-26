@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import sys
+import time
 from collections import Counter
 from pathlib import Path
 from uuid import UUID
@@ -12,6 +13,7 @@ from uuid import UUID
 import httpx
 from pydantic import ValidationError
 
+from forte.contracts_v2 import ReasoningDoneJob
 from forte.inference import LocalVLM
 from forte.jobs import atomic_json, failure
 from forte.pipeline import analyze_video
@@ -45,6 +47,9 @@ def main():
     parser.add_argument("--deadline", type=float)
     parser.add_argument("--model-url", default="http://127.0.0.1:8001")
     parser.add_argument("--model", default="forte-vlm")
+    parser.add_argument("--model-revision", default="0c351dd01ed87e9c1b53cbc748cba10e6187ff3b")
+    parser.add_argument("--max-context-tokens", type=int, default=8192)
+    parser.add_argument("--reasoning-config", type=Path)
     args = parser.parse_args()
     os.umask(0o077)
     if sys.platform == "linux":
@@ -53,7 +58,9 @@ def main():
         import signal
 
         ctypes.CDLL(None).prctl(1, signal.SIGKILL)
-        resource.setrlimit(resource.RLIMIT_AS, (3 * 1024**3, 3 * 1024**3))
+        # ONNX tracking libraries need a larger address space than the legacy decoder.
+        limit = (12 if args.reasoning_config else 3) * 1024**3
+        resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
     if args.probe:
         try:
             print(json.dumps(probe_video(args.probe)))
@@ -65,10 +72,39 @@ def main():
         parser.error("A job, ID and deadline are required")
     stats = {}
     try:
-        backend = LocalVLM(args.model_url, args.model)
-        result = analyze_video(
-            args.job / "input.mov", args.job, args.job_id, backend, args.deadline, stats
+        backend = LocalVLM(
+            args.model_url,
+            args.model,
+            expected_revision=args.model_revision,
+            max_context_tokens=args.max_context_tokens,
+            enable_thinking=False if args.reasoning_config else None,
+            request_timeout=100 if args.reasoning_config else 60,
         )
+        if args.reasoning_config:
+            from forte.reasoning_pipeline import analyze_reasoning
+            from forte.settings import Settings
+
+            settings = Settings(
+                "worker-internal-unused-key",
+                args.job.parent,
+                args.model_url,
+                args.model,
+                model_revision=args.model_revision,
+                max_context_tokens=args.max_context_tokens,
+                reasoning_config=args.reasoning_config,
+            )
+            report = analyze_reasoning(
+                args.job / "input.mov",
+                args.job,
+                settings,
+                deadline=max(time.monotonic(), args.deadline - 5),
+                backend=backend,
+            )
+            result = ReasoningDoneJob(job_id=args.job_id, result=report)
+        else:
+            result = analyze_video(
+                args.job / "input.mov", args.job, args.job_id, backend, args.deadline, stats
+            )
     except Exception as exc:
         stats.update(failure_diagnostics(exc))
         code = (

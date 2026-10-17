@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "scope": "Synthetic mechanics only; no private recordings or scene data inspected",
+  "runtime": {
+    "new_modules": ["forte.timeline", "forte.reasoning_pipeline"],
+    "synthetic_timeline_tests": 13,
+    "synthetic_orchestration_tests": 3,
+    "real_local_legal_corpus_used_by_synthetic_orchestration": true,
+    "actual_model_inference_executed_by_this_check": false
+  },
+  "frontend": {
+    "path": "web",
+    "preset": "b3d6mT4h6m",
+    "typescript": "passed",
+    "eslint": "passed",
+    "static_build": "passed",
+    "synthetic_browser_flow": [
+      "generated MOV upload",
+      "authenticated v2 submission and polling",
+      "authenticated source video blob",
+      "authenticated evidence JPEG blob",
+      "event marker seeks source to 1 second",
+      "recording-local participant overlay",
+      "condition and official-link navigation",
+      "scoped human correction and history",
+      "failed same-file rerun preserves a valid original video blob and error state"
+    ],
+    "all_synthetic_api_requests_carried_header": true,
+    "browser_storage_keys": [],
+    "console_errors": [],
+    "mobile_viewport_width": 390,
+    "mobile_document_width": 390,
+    "browser_fallback_reason": "T3 preview snapshot timed out twice after 15000ms; local browse used with synthetic data only",
+    "screenshots": "/tmp/forte-review-*.png (local synthetic artifacts, not release files)"
+  },
+  "not_established": [
+    "27B visual accuracy",
+    "participant continuity or role accuracy on development recordings",
+    "event precision or recall",
+    "legal interpretation accuracy",
+    "full real API/UI under-300-second workflow"
+  ]
+}

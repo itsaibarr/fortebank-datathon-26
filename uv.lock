@@ -238,6 +238,15 @@ dependencies = [
     { name = "uvicorn" },
 ]
 
+[package.optional-dependencies]
+inference-tracking = [
+    { name = "numpy" },
+    { name = "onnxruntime" },
+    { name = "pyyaml" },
+    { name = "supervision" },
+    { name = "trackers" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "build" },
@@ -247,8 +256,10 @@ dev = [
     { name = "ruff" },
 ]
 tracking = [
+    { name = "numpy" },
     { name = "onnxruntime" },
     { name = "pyyaml" },
+    { name = "supervision" },
     { name = "trackers" },
 ]
 
@@ -257,11 +268,17 @@ requires-dist = [
     { name = "av", specifier = ">=16,<18" },
     { name = "fastapi", specifier = ">=0.115,<1" },
     { name = "httpx", specifier = ">=0.28,<1" },
+    { name = "numpy", marker = "extra == 'inference-tracking'", specifier = "==2.5.4" },
+    { name = "onnxruntime", marker = "extra == 'inference-tracking'", specifier = "==1.31.0" },
     { name = "pillow", specifier = ">=12,<13" },
     { name = "pydantic", specifier = ">=2.10,<3" },
     { name = "python-multipart", specifier = ">=0.0.20,<1" },
+    { name = "pyyaml", marker = "extra == 'inference-tracking'", specifier = "==6.0.3" },
+    { name = "supervision", marker = "extra == 'inference-tracking'", specifier = "==0.31.0" },
+    { name = "trackers", marker = "extra == 'inference-tracking'", specifier = "==2.6.1" },
     { name = "uvicorn", specifier = ">=0.34,<1" },
 ]
+provides-extras = ["inference-tracking"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -272,8 +289,10 @@ dev = [
     { name = "ruff", specifier = ">=0.11,<1" },
 ]
 tracking = [
+    { name = "numpy", specifier = "==2.5.4" },
     { name = "onnxruntime", specifier = "==1.31.0" },
     { name = "pyyaml", specifier = "==6.0.3" },
+    { name = "supervision", specifier = "==0.31.0" },
     { name = "trackers", specifier = "==2.6.1" },
 ]
 

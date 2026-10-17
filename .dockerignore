@@ -14,4 +14,5 @@ adapters
 *.key
 *.pem
 .env*
-web
+web/node_modules
+web/.next

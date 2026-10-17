@@ -1,0 +1,29 @@
+{
+  "scope": "public_assets_and_synthetic_inputs_only",
+  "date": "2026-10-18",
+  "private_media_used": false,
+  "source_model": "kaiyangzhou/osnet",
+  "source_revision": "a5c5cc037c24235cda3b21085b93ad77c9616224",
+  "architecture": "osnet_x0_25",
+  "pretraining": "official author MSMT17 combineall checkpoint",
+  "checkpoint_sha256": "cf55163d78fc44c62c82f85ab62d39f10438679b5abe8c698ae08cfa84aa6e18",
+  "code_repository": "KaiyangZhou/deep-person-reid",
+  "code_revision": "f8cd150fdf77e8d9e1ed143b7f308c2c609ded50",
+  "onnx_sha256": "b20223157278fbe918b945f3bb0b76c09e6fc1bf7b133a9ecdb9450443f46978",
+  "onnx_input": [1, 3, 256, 128],
+  "onnx_output": [1, 512],
+  "frozen_eval_export": true,
+  "all_feature_body_parameters_loaded": true,
+  "training_updates": 0,
+  "pytorch_onnx_synthetic_max_absolute_feature_difference": 0.0000476837158203125,
+  "pytorch_onnx_tolerance": {"rtol": 0.001, "atol": 0.0001, "minimum_cosine": 0.99999},
+  "genuine_pretrained_adapter_executed": true,
+  "runtime_container_network": "none",
+  "runtime_mount_scope": "public_assets_only",
+  "network_isolation_probe": {
+    "outbound_probe": "os_denied", "errno": 101,
+    "families": [{"family": 2, "errno": 101}, {"family": 10, "errno": 101}]
+  },
+  "synthetic_red_blue_crop_cosine": 0.39749051202748353,
+  "quality_claim": "No private-data continuity gain or role accuracy measured"
+}

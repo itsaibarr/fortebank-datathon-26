@@ -2,6 +2,8 @@
 
 import base64
 import json
+import time
+from pathlib import Path
 from urllib.parse import urlsplit
 
 import httpx
@@ -30,14 +32,42 @@ def constrain_references(properties, frames, conditions):
 
 
 class LocalVLM:
-    def __init__(self, url: str, model="forte-vlm", client=None):
+    def __init__(
+        self,
+        url: str,
+        model="forte-vlm",
+        client=None,
+        *,
+        expected_revision="0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+        max_context_tokens=8192,
+        enable_thinking=None,
+        request_timeout=60,
+    ):
         parsed = urlsplit(url)
         if parsed.scheme != "http" or parsed.hostname not in {"127.0.0.1", "localhost", "::1"}:
             raise ValueError("Inference must use the controlled loopback service")
-        if parsed.username or parsed.password or parsed.path not in {"", "/"}:
+        if (
+            parsed.username
+            or parsed.password
+            or parsed.path not in {"", "/"}
+            or parsed.query
+            or parsed.fragment
+        ):
             raise ValueError("Use a plain loopback origin")
         self.url = url.rstrip("/")
         self.model = model
+        if len(expected_revision) != 40 or any(
+            c not in "0123456789abcdef" for c in expected_revision
+        ):
+            raise ValueError("A pinned model revision is required")
+        if not 1024 <= max_context_tokens <= 32768:
+            raise ValueError("Unsupported bounded model context")
+        self.expected_revision = expected_revision
+        self.max_context_tokens = max_context_tokens
+        self.enable_thinking = enable_thinking
+        self.loaded = None
+        self.request_timeout = request_timeout
+        self.deadline = None
         self.client = client or httpx.Client(timeout=60, trust_env=False, follow_redirects=False)
         self.last_usage = {}
         self.last_finish_reason = None
@@ -50,12 +80,32 @@ class LocalVLM:
                 return False
             models = self.client.get(self.url + "/v1/models", timeout=2)
             models.raise_for_status()
-            return any(
-                m["id"] == self.model
-                and "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b" in m.get("root", "")
-                for m in models.json()["data"]
+            matched = next(
+                (
+                    m
+                    for m in models.json()["data"]
+                    if m["id"] == self.model
+                    and m.get("root", "").rstrip("/").split("/")[-1] == self.expected_revision
+                    and m.get("parent") is None
+                ),
+                None,
             )
-        except (httpx.HTTPError, ValueError, KeyError):
+            if matched:
+                self.loaded = {
+                    "route": matched["id"],
+                    "root": matched["root"],
+                    "revision": self.expected_revision,
+                    "max_model_len": matched.get("max_model_len"),
+                    "enable_thinking": self.enable_thinking,
+                }
+                if self.expected_revision == "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0":
+                    from forte.model_profile import verify_snapshot
+
+                    self.loaded["snapshot"] = verify_snapshot(
+                        Path(matched["root"]), "frozen27b", verify_weights=False
+                    )
+            return matched is not None
+        except (httpx.HTTPError, OSError, ValueError, KeyError):
             return False
 
     def request(self, registry, frames, instruction, schema, pixels, max_tokens):
@@ -80,9 +130,21 @@ class LocalVLM:
             )
         messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": content}]
         body = {"model": self.model, "messages": messages, "add_generation_prompt": True}
-        count = self.client.post(self.url + "/tokenize", json=body)
+        if self.enable_thinking is not None:
+            body["chat_template_kwargs"] = {"enable_thinking": self.enable_thinking}
+
+        def timeout():
+            remaining = self.deadline - time.monotonic() if self.deadline else self.request_timeout
+            return min(self.request_timeout, max(0.001, remaining))
+
+        count = self.client.post(self.url + "/tokenize", json=body, timeout=timeout())
         count.raise_for_status()
-        if count.json()["count"] + max_tokens > 8192:
+        if self.enable_thinking is not None:
+            self.last_usage = {
+                "counted_prompt_tokens": count.json()["count"],
+                "input_images": len(frames),
+            }
+        if count.json()["count"] + max_tokens > self.max_context_tokens:
             raise ValueError("Visual input exceeds context budget")
         response = self.client.post(
             self.url + "/v1/chat/completions",
@@ -93,12 +155,22 @@ class LocalVLM:
                 "seed": 0,
                 "max_tokens": max_tokens,
                 "structured_outputs": {"json": schema},
+                **(
+                    {"chat_template_kwargs": {"enable_thinking": self.enable_thinking}}
+                    if self.enable_thinking is not None
+                    else {}
+                ),
             },
+            timeout=timeout(),
         )
         response.raise_for_status()
         payload = response.json()
         choice = payload["choices"][0]
         self.last_usage = payload.get("usage", {})
+        if self.enable_thinking is not None:
+            self.last_usage.update(
+                counted_prompt_tokens=count.json()["count"], input_images=len(frames)
+            )
         self.last_finish_reason = choice["finish_reason"]
         if choice["finish_reason"] != "stop":
             raise ValueError("Model answer was incomplete")

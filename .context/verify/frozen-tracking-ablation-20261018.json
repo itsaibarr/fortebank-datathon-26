@@ -1,0 +1,22 @@
+{
+  "status": "completed_report_counts_compared",
+  "source_hash_and_development_split_verified_before_decode": true,
+  "compatibility_checks": {
+    "identical_source_sha256": true,
+    "identical_sampled_source_frame_ids": true,
+    "identical_cadence_sec": true,
+    "identical_detector_provenance": true,
+    "identical_full_source_frame_ledger": true,
+    "actual_pretrained_reid_executed": true,
+    "both_weights_frozen": true,
+    "same_explicit_tracking_configuration_except_mode": true
+  },
+  "quality_measured": false,
+  "weights_updated": false,
+  "additional_vlm_calls": 0,
+  "pretrained_reid_weights_sha256": "b20223157278fbe918b945f3bb0b76c09e6fc1bf7b133a9ecdb9450443f46978",
+  "private_reports_retained": true,
+  "timing_limitation": "Timings are NOT comparable: fresh ByteTrack used two-CPU affinity during concurrent API workload; ReID timing is from a prior completed API tracking stage with different affinity/contention. No speed comparison is claimed.",
+  "quality_limitation": "Counts describe model proposals. They establish no physical-person count, ID-switch accuracy, identity/role accuracy or continuity improvement without reviewed pairs.",
+  "scope": "mechanical_development_tracking_ablation_checks_only; recording-specific measurements remain outside Git"
+}

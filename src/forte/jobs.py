@@ -1,6 +1,7 @@
 """One service process, two admitted jobs, atomic private filesystem records."""
 
 import asyncio
+import copy
 import fcntl
 import json
 import os
@@ -14,8 +15,9 @@ from uuid import UUID
 from pydantic import TypeAdapter
 
 from forte.contracts import DoneJob, ErrorDetail, FailedJob, ProcessingJob
+from forte.contracts_v2 import ReasoningDoneJob
 
-RESPONSE = TypeAdapter(ProcessingJob | DoneJob | FailedJob)
+RESPONSE = TypeAdapter(ProcessingJob | DoneJob | ReasoningDoneJob | FailedJob)
 
 
 def atomic_json(path: Path, data):
@@ -117,7 +119,31 @@ async def probe(path: Path):
     return json.loads(await child(["--probe", str(path)], 10))
 
 
-async def run_worker(directory, id, deadline, settings):
+async def run_worker(directory, id, deadline, settings, *, reasoning=False):
+    extra = [
+        "--model-revision",
+        settings.model_revision,
+        "--max-context-tokens",
+        str(settings.max_context_tokens),
+    ]
+    if reasoning:
+        configuration = settings.reasoning_config
+        if isinstance(configuration, dict):
+            from forte.reasoning_pipeline import load_reasoning_config
+
+            # Validation supplies defaults; do not mutate the caller's dictionary
+            # while freezing the exact worker request into this private job.
+            snapshot_settings = copy.copy(settings)
+            snapshot_settings.reasoning_config = copy.deepcopy(configuration)
+            validated = load_reasoning_config(snapshot_settings)
+            immutable = directory / "immutable"
+            immutable.mkdir(mode=0o700)
+            configuration = immutable / "request-config.json"
+            atomic_json(configuration, validated)
+            configuration.chmod(0o400)
+        if not isinstance(configuration, Path):
+            raise ValueError("A persisted reasoning configuration is required")
+        extra += ["--reasoning-config", str(configuration)]
     await child(
         [
             "--job",
@@ -130,6 +156,7 @@ async def run_worker(directory, id, deadline, settings):
             settings.model_url,
             "--model",
             settings.model_name,
+            *extra,
         ],
         max(0.001, deadline - time.monotonic()),
     )

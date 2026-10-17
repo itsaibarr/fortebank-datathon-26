@@ -20,6 +20,15 @@ dependencies = [
 [project.scripts]
 forte = "forte.cli:main"
 
+[project.optional-dependencies]
+inference-tracking = [
+  "numpy==2.5.4",
+  "onnxruntime==1.31.0",
+  "pyyaml==6.0.3",
+  "supervision==0.31.0",
+  "trackers==2.6.1",
+]
+
 [dependency-groups]
 dev = [
     "pytest>=8,<10",
@@ -30,9 +39,11 @@ dev = [
 ]
 
 tracking = [
+    "numpy==2.5.4",
     "onnxruntime==1.31.0",
     "pyyaml==6.0.3",
     "trackers==2.6.1",
+    "supervision==0.31.0",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -40,6 +51,7 @@ packages = ["src/forte"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "contracts/api-contract.json" = "forte/data/api-contract.json"
+"configs/person-tracking.json" = "forte/data/person-tracking.json"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
