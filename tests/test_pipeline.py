@@ -12,7 +12,7 @@ class Observations:
     def __init__(self, uncertain=False):
         self.uncertain = uncertain
 
-    def analyze(self, registry, frames, rules, pixels, max_tokens):
+    def analyze(self, registry, frames, rules, pixels, max_tokens, phase="refine"):
         rule = rules[0]
         event = EventObservation(
             rule_id=rule["id"],
@@ -73,7 +73,7 @@ def test_expanded_verification_retains_original_candidate_context(tmp_path):
         coarse_calls = 0
         checks = 0
 
-        def analyze(self, registry, frames, rules, pixels, max_tokens):
+        def analyze(self, registry, frames, rules, pixels, max_tokens, phase="refine"):
             if pixels == 196608:
                 self.coarse_calls += 1
                 if self.coarse_calls > 1:

@@ -27,8 +27,8 @@
     "timestamps": "source_pts"
   },
   "outputs": {
-    "coarse_max_tokens": 256,
-    "fine_max_tokens": 384,
+    "coarse_max_tokens": 512,
+    "fine_max_tokens": 768,
     "verify_max_tokens": 192,
     "evidence_frames_min": 1,
     "evidence_frames_max": 3

@@ -45,18 +45,19 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
     stats["calls"] = []
     stats["verification_calls"] = []
 
-    def inspect(frames, pixels, tokens):
+    def inspect(frames, pixels, tokens, phase):
         if time.monotonic() >= deadline:
             raise ValueError("processing_timeout")
         t = time.monotonic()
         answer = None
         try:
-            answer = backend.analyze(registry, frames, rules, pixels, tokens)
+            answer = backend.analyze(registry, frames, rules, pixels, tokens, phase)
         finally:
             stats["calls"].append(
                 {
                     "frames": len(frames),
                     "pixels": pixels,
+                    "phase": phase,
                     "seconds": time.monotonic() - t,
                     "usage": getattr(backend, "last_usage", {}),
                     "finish_reason": getattr(backend, "last_finish_reason", None),
@@ -76,6 +77,9 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
                 "frames": len(frames),
                 "seconds": time.monotonic() - t,
                 "verdict": check.verdict,
+                "required_conditions": len(rule["required"]),
+                "matched_conditions": len(set(rule["required"]) & set(check.preconditions)),
+                "unrecognized_conditions": len(set(check.preconditions) - set(rule["required"])),
                 "usage": getattr(backend, "last_usage", {}),
             }
         )
@@ -83,14 +87,14 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
 
     for start, end in make_windows(registry.duration, 16, 12):
         frames = sample_window(registry, start, end, 1)
-        observation = inspect(frames, 196608, 256)
+        observation = inspect(frames, 196608, 512, "propose")
         unclear |= not observation.complete
         candidates.extend(observation.events)
     for candidate in merge_candidates(candidates, by_id):
         _, center, _ = event_times(candidate, by_id)
         start, end = max(0, center - 4), min(registry.duration, center + 4)
         frames = sample_window(registry, start, end, 2)
-        fine = inspect(frames, 393216, 384)
+        fine = inspect(frames, 393216, 768, "refine")
         unclear |= not fine.complete
         for event in fine.events:
             a, _, b = event_times(event, by_id)
