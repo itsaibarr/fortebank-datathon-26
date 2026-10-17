@@ -22,3 +22,9 @@ Preserve source PTS, human corrections, immutable review revisions and proposed
 joins. Unreviewed geometry, unresolved identity, drafts, unfrozen session splits
 and the diagnostic regression recording cannot become training truth. Keep
 visual facts separate from legal claims and preserve the public API/detector.
+
+Human-reviewed mirror views may share a canonical recording-local person ID.
+Store them as view relationships, not temporal joins or additional physical
+people. Segment/role mapping approval does not establish complete role intervals,
+approve geometry or release training targets. Preserve prior cited frames when
+regenerating a review revision.

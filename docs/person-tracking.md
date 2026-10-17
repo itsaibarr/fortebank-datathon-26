@@ -3,7 +3,9 @@
 The steps 1–2 workflow is implemented. A CPU run processed all 31 allowlisted
 development recordings offline and prepared local review packets. **No complete
 person/role/action pilot is approved, and no training targets are released.**
-The three original review cases are priority items. Their narrative corrections
+The three original review cases are priority items. One subsequent human response
+has supplied role/view mappings; full interval and geometry review remains open.
+Their narrative corrections
 are preserved, with explicit pending bindings to outlined segments/source frames.
 A local human must finish those bindings and review the tracks, areas and actions.
 
@@ -75,7 +77,9 @@ inspect these private views.
 
 Per-recording artifacts:
 
-- `tracks.json`: version 1 track sidecar, linked by path/hash to `annotation.json`.
+- `tracks.json`: version 1 proposal sidecar, linked by path/hash to `annotation.json`.
+  A human view/role review explicitly migrates its copied revision to version 2;
+  old version 1 files remain readable and unchanged.
   Source dimensions/rotation, normalized full-frame XYXY boxes, original PTS,
   track/person/segment IDs, gaps, proposed joins, independent geometry/identity
   reviews, work-area outlines, origins, scores and correction history are explicit.
@@ -169,7 +173,13 @@ uv run forte tracks-review --directory /private/run/revisions/clipNNN-v1 \
 Operations are a JSON list. Supported operations are `split` (segment/frame),
 `join` (from/to segments), `box` (segment plus full Box record), `review` (segment,
 explicit status, optional `resolve_identity: true` and `approve_boxes: true`), `area` (full WorkArea record)
-and `fact` (full VisualFact record with explicit review status). See the synthetic
+and `fact` (full VisualFact record with explicit review status). Version 2 also
+accepts `role_binding` (human segment/role mapping with candidate versus actually
+reviewed source frames) and `view_relation` (direct/reflected views sharing a
+recording-local canonical person ID). These mappings are review constraints, not
+complete role-interval facts or training targets. Mirror relationships do not
+create temporal joins or approve boxes. Reflected views cannot silently acquire
+a different role from their reviewed canonical person. See the synthetic
 examples in `tests/test_track_review.py` and `tests/test_tracking.py`. A split
 keeps the old person before the cut and creates a fresh person after it. Facts
 are not moved automatically; a split that invalidates old facts requires explicit
@@ -235,3 +245,19 @@ all retained diagnostic reference views. It checks pixels and transforms locally
 without displaying media to the remote coding agent. It proves source association,
 not actor correctness. Aggregate measurements and remaining gates are in
 `.context/verify/person-tracking-20261017.json`.
+
+## Human view-mapping follow-up
+
+The first received response is preserved privately with its verbatim wording,
+reviewer source and receipt time. Four named view mappings are associated with
+two canonical people, with two reviewed reflection relationships. This does not
+assert that only two people occur in the complete clip, nor approve a continuous
+track, work-area outline, action or full role interval. The canonical annotation
+still has no released role/action training target. The historical regression
+exclusion remains. The original review packet and baseline proposals are intact;
+the private index points to a new immutable reviewed revision.
+
+Review regeneration now retains all previously cited source-frame images,
+including diagnostic reference views, before adding new candidate views. The
+packet displays recorded mappings beside pending interval/geometry gates rather
+than treating mirror detections as additional physical people.

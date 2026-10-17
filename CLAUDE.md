@@ -1,7 +1,7 @@
 # ForteBank Datathon 26 orientation
 
 ## What this is
-Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 93 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. The revised preparation adds three verified official law snapshots, 272 main-clause records, a coverage register, twelve draft rule cards, optional offline hybrid retrieval/reranking, and separate visual/legal review contracts. The one-recording 8B/27B role diagnostic still fails reliable actor agreement; no model is promoted. No human-confirmed positive control, trained adapter or UI exists. Read `docs/development-rehearsal.md`, `docs/legal-and-annotation.md` and `docs/model-size-diagnostic.md` before further experiments.
+Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 97 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. The revised preparation adds three verified official law snapshots, 272 main-clause records, a coverage register, twelve draft rule cards, optional offline hybrid retrieval/reranking, and separate visual/legal review contracts. The one-recording 8B/27B role diagnostic still fails reliable actor agreement; no model is promoted. No human-confirmed positive control, trained adapter or UI exists. Read `docs/development-rehearsal.md`, `docs/legal-and-annotation.md` and `docs/model-size-diagnostic.md` before further experiments.
 
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
@@ -69,3 +69,9 @@ Use Octarin for relevant team decisions and write back durable setup facts, anch
 
 ## Doc index
 See `.context/DOC-INDEX.md`. Regenerate with `bash /Users/itsaibarr/harness/agent/core/gen-doc-index.sh .`, then omit ignored `.venv`, cache and `dist` entries. The existing generator does not exclude Python environments; do not modify Harness to fix that here.
+
+- Human role/view review follow-up: the copied private sidecar can migrate to v2
+  for `role_bindings` and `view_relations`. Reflections share a canonical local
+  person and remain separate from temporal joins. One human response supplies
+  mappings; full role/action intervals, boxes, areas and training gates remain
+  pending. Do not place private role/scene corrections in Git or shared memory.
