@@ -1,7 +1,7 @@
 # ForteBank Datathon 26 orientation
 
 ## What this is
-Local cash-operation video review service, initialized after the user approved setup on 17 October 2026. Current implementation is the local project foundation and read-only supplied-dataset check; inference/API/UI remain pending.
+Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 26 local tests pass. Full GPU-backed development-video verification is pending; no trained adapter or UI exists.
 
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
@@ -16,7 +16,7 @@ Local cash-operation video review service, initialized after the user approved s
 - `uv run pytest -q` runs setup behavior tests.
 - `uv run ruff check .` and `uv run ruff format --check .` check Python.
 - `uv run python -m build` checks package build.
-- No analysis server or frontend exists yet. Do not present setup checks as model benchmarks.
+- `uv run forte serve` starts the API with `FORTE_API_KEY_FILE` and `FORTE_PRIVATE_ROOT`; the resident local model must be healthy before POST acceptance. See `docs/backend.md`. There is no frontend yet. Do not present synthetic checks as task benchmarks.
 
 ## Load-bearing files
 - `SPEC.md` defines scope, fixed API, privacy and runtime acceptance.
@@ -25,6 +25,8 @@ Local cash-operation video review service, initialized after the user approved s
 - `configs/provenance.json` records original case/archive fingerprints and verified audit counts.
 - `src/forte/dataset.py` performs read-only archive checks.
 - `src/forte/cli.py` exposes the dataset check.
+- `src/forte/{api,jobs,worker}.py` own admission, atomic state, subprocess deadlines and sanitized failures.
+- `src/forte/{video,inference,pipeline,rules}.py` own source PTS, loopback model calls, evidence verification and the provisional public-rule catalog.
 - `tests/test_dataset.py` checks wrong inputs, integrity failures and CLI behavior.
 - `tasks/todo.md` records actual completed tasks; do not mark future GPU/UI work done.
 - `docs/case-requirements.md` maps the complete case to submission checks.

@@ -9,7 +9,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Create isolated Python 3.12 dependencies and a lockfile; no CUDA frameworks, model weights or UI packages installed.
 - [x] Add a tested read-only dataset provenance/integrity command and run it on the actual `open.zip`.
 - [x] Reread the complete attached case and write the Obsidian GPU, training and requirements guides.
-- [ ] Model inference, complete API mechanics and final UI are still pending; setup success does not satisfy product acceptance.
+- [ ] Backend mechanics pass local tests; actual GPU integration, task quality and final UI remain pending. Setup success does not satisfy product acceptance.
 
 ## Hyperstack delegation
 
@@ -25,7 +25,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Task 0: Orient the clean product checkout and preserve unrelated changes.
 - [ ] Task 1: Review private recordings locally, resolve/flag duplicate time conflict, freeze recording groups/split and approved observable rules.
 - [ ] Task 2: Resolve rented-processor permission and spending separately, then run the one-hour bounded local model compatibility check.
-- [x] Task 2 public/synthetic portion: pinned model, CUDA compatibility, structured output and both planned image sizes passed. The private-data hosting interpretation and full video/concurrency measurements remain open, so the parent task is not complete.
+- [x] Task 2 public/synthetic portion: pinned model, CUDA compatibility, structured output and both planned image sizes passed. Organizer permission for development hosting is confirmed. Full video/concurrency measurements remain open, so the parent task is not complete.
 - [ ] Checkpoint: exact ≥8B model, licenses, local inference, token/memory bounds and dataset exclusions are explicit; no paid resource without authorization.
 
 ## Phase 1

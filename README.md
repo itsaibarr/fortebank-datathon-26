@@ -4,7 +4,7 @@ Local video review service under development. The approved design uses Qwen3-VL-
 
 ## Current setup
 
-This repository is initialized through `/Users/itsaibarr/harness/bootstrap.sh`. Local Python dependencies and a read-only dataset verification command are in place. A funded Hyperstack A10080 ran the pinned Qwen3-VL-8B model successfully on synthetic frames with networking disabled, then was deleted. There is no full video-analysis server, trained adapter or UI yet. No model weights or competition files belong in this repository.
+The backend implements authenticated asynchronous MOV jobs, source-timed decoding, local VLM calls, candidate refinement, evidence verification and public-rule mapping. Its 26 local tests pass. The first GPU check proved the pinned model on synthetic images; complete development-video API verification is still pending. There is no trained adapter or UI. Keep model weights and competition files outside this repository.
 
 ```bash
 uv sync --frozen
@@ -18,12 +18,13 @@ The dataset command checks the expected original archive SHA256, ZIP integrity a
 
 ## Read before implementation
 
-- `SPEC.md` holds the approved requirements and explicit unresolved hosting/runtime gates.
+- `SPEC.md` holds the approved requirements and remaining runtime checks. The user confirmed organizer permission for development footage on the dedicated Hyperstack VM in Canada.
 - `contracts/api-contract.json` preserves the required jury API.
 - `configs/baseline.json` holds the model and pipeline settings, with no adapter enabled.
 - `tasks/plan.md` and `tasks/todo.md` are the Harness execution handoff.
 - `docs/case-requirements.md` maps the supplied case to acceptance checks.
 - `docs/gpu-runbook.md` and `.context/verify/gpu-setup.json` record the actual GPU check, reproducible commands, measurements and cleanup.
+- `docs/backend.md` explains the implemented pipeline, startup and private API rehearsal.
 
 Obsidian notes are in `/Users/itsaibarr/Documents/Obsidian Vault/Projects/ForteBank Datathon 26`:
 

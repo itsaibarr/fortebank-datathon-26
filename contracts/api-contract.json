@@ -3,7 +3,7 @@
   "info": {
     "title": "ForteBank Datathon 26 jury API",
     "version": "1.0.0",
-    "description": "Normative implementation specification derived from case section 10. No product server exists in this research package."
+    "description": "Normative jury contract derived from case section 10. Implemented by the local asynchronous video-review backend."
   },
   "security": [
     {

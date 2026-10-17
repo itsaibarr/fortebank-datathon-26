@@ -61,7 +61,7 @@ The case permits event types absent from the supplied training set. Candidate ob
 
 ## These conditions remain unresolved
 
-The case defines local inference as models running inside the team's deployed service, which fits our own model on a rented VM. Section 10 separately prohibits passing jury videos to third parties. It does not explicitly settle whether an infrastructure provider is allowed. Confirm that interpretation before private competition footage is transferred to an overseas rented machine. Public-weight and synthetic-input compatibility tests can proceed without that footage. Team-owned or bank-owned GPU hardware can host the same application if rented hosting is disallowed.
+The case defines local inference as models running inside the team's deployed service, which fits our own model on a rented VM. Section 10 separately prohibits passing jury videos to third parties. It does not explicitly settle whether an infrastructure provider is allowed. The user confirmed organizer permission on 17 October 2026 for development footage on our dedicated Hyperstack VM in Canada. That development hosting gate is resolved. Jury videos remain excluded from training and model selection.
 
 The case gives a submission time of 12:00 but does not establish a date or timezone in the attached text. Record the organizer's actual event deadline before scheduling the final deployment. Neither GPU speed, cross-angle accuracy nor adapter improvement has been measured yet.
 
