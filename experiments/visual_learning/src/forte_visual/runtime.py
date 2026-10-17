@@ -232,10 +232,19 @@ def tensor_hash(model, *, frozen_only=True):
     return h.hexdigest()
 
 
-def train_offline(model_path, key, inputs, references, output, *, max_updates=1):
+def train_offline(
+    model_path, key, inputs, references, output, *, max_updates=1, dataset_provenance=None
+):
     """One pass, max 30 updates; 27B requires its own measured compatibility receipt."""
     if not 1 <= max_updates <= 30:
         raise ValueError("Initial run limited to one pass / 30 updates")
+    if not dataset_provenance or any(
+        not re.fullmatch(r"[a-f0-9]{64}", dataset_provenance.get(name, ""))
+        for name in ("release_sha256", "selection_sha256", "pilot_sha256", "split_sha256")
+    ):
+        raise ValueError(
+            "Training requires bound release, split, selection and independent pilot receipts"
+        )
     offline()
     import torch
     from peft import LoraConfig, get_peft_model
@@ -380,6 +389,7 @@ def train_offline(model_path, key, inputs, references, output, *, max_updates=1)
         raise ValueError("Training memory measurement unavailable")
     report = {
         "candidate": CANDIDATES[key],
+        "dataset_provenance": dataset_provenance,
         "multimodal_step_passed": True,
         "freeze_boundary_verified": True,
         "base_hash_manifest": base_hash,

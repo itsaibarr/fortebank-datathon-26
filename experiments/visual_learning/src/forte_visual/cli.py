@@ -13,7 +13,7 @@ from forte_visual.benchmark import CANDIDATES, POLICY, MockExecutor, run_model, 
 from forte_visual.evaluation import scan_metrics, track_metrics
 from forte_visual.gates import data_gate, resource
 from forte_visual.inputs import export, validate_pack
-from forte_visual.io import digest, local, private_dir, read, write
+from forte_visual.io import canonical, digest, local, private_dir, read, write
 from forte_visual.release import snapshot, verify
 from forte_visual.scan import scan
 from forte_visual.synthetic import create
@@ -45,6 +45,7 @@ def worker(job):
             Path(job["references"]),
             Path(job["output"]),
             max_updates=job["updates"],
+            dataset_provenance=job["dataset_provenance"],
         )
 
 
@@ -194,6 +195,7 @@ def train(args):
     if not args.models or not args.references or not args.runtime_python:
         raise ValueError("Explicit offline models, references and runtime Python required")
     with resource(args.resource, seconds=args.seconds):
+        _, pairs, receipt = verify(args.release)
         isolated_worker(
             {
                 "kind": "training",
@@ -203,6 +205,18 @@ def train(args):
                 "references": str(args.references.resolve()),
                 "output": str(args.output.resolve()),
                 "updates": args.updates,
+                "dataset_provenance": {
+                    "release_sha256": receipt["release_sha256"],
+                    "producer_code_commit": receipt["producer_code_commit"],
+                    "selection_sha256": digest(args.selection),
+                    "pilot_sha256": digest(args.pilot),
+                    "split_sha256": canonical(
+                        [
+                            [m.source_sha256, m.session_group, m.split, m.split_frozen]
+                            for _, m, _ in pairs
+                        ]
+                    ),
+                },
             },
             args.output,
             args.runtime_python,
