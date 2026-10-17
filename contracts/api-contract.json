@@ -1,0 +1,472 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ForteBank Datathon 26 jury API",
+    "version": "1.0.0",
+    "description": "Normative implementation specification derived from case section 10. No product server exists in this research package."
+  },
+  "security": [
+    {
+      "ApiKey": []
+    }
+  ],
+  "paths": {
+    "/api/v1/analyze": {
+      "post": {
+        "operationId": "analyzeVideo",
+        "summary": "Upload a MOV and create an asynchronous job.",
+        "description": "Authenticate/admit before multipart buffering. Stream at most 256 MiB in 30 seconds. Require .mov and actual video-container validation; duration (0,180] seconds, dimensions <=4096 each and <=8.4M pixels. Ignore audio. Two admitted jobs maximum, no unbounded queue. Total accepted job deadline is 270 seconds from upload start.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "One .mov file. Server validates bytes/container independently of filename/MIME."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "Upload body exceeded 30-second deadline.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Body exceeded 256 MiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported or corrupt video/container.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing/duplicate file part, invalid duration/dimensions or invalid job ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Two admission slots occupied. Retry-After: 5.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "const": 5
+                },
+                "description": "Seconds before retry."
+              }
+            }
+          },
+          "503": {
+            "description": "Local model is not warmed or healthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for asynchronous analysis after bounded upload/probe; POST is not idempotent.",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Relative or absolute job-status URL."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptedJob"
+                },
+                "example": {
+                  "job_id": "6ac31f2e-9ff2-4ab1-9d15-6c27c0ddc459"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs/{job_id}": {
+      "get": {
+        "operationId": "getJob",
+        "summary": "Read status and immutable completed result.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/JobId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Known job: processing, done, or failed. Failure never carries a fabricated verdict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                },
+                "examples": {
+                  "processing": {
+                    "value": {
+                      "job_id": "6ac31f2e-9ff2-4ab1-9d15-6c27c0ddc459",
+                      "status": "processing"
+                    }
+                  },
+                  "negative": {
+                    "value": {
+                      "job_id": "6ac31f2e-9ff2-4ab1-9d15-6c27c0ddc459",
+                      "status": "done",
+                      "verdict": "no_violation",
+                      "violations": []
+                    }
+                  },
+                  "failed": {
+                    "value": {
+                      "job_id": "6ac31f2e-9ff2-4ab1-9d15-6c27c0ddc459",
+                      "status": "failed",
+                      "error": {
+                        "code": "processing_timeout",
+                        "message": "Analysis could not finish within the processing limit."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key. Check before revealing job existence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown or purged job.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid job ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "schemas": {
+      "JobId": {
+        "type": "string",
+        "format": "uuid",
+        "description": "Opaque UUID generated by the service."
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "field": {
+            "type": "string"
+          }
+        }
+      },
+      "HTTPError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        }
+      },
+      "AcceptedJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id"
+        ],
+        "properties": {
+          "job_id": {
+            "$ref": "#/components/schemas/JobId"
+          }
+        }
+      },
+      "ProcessingJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "status"
+        ],
+        "properties": {
+          "job_id": {
+            "$ref": "#/components/schemas/JobId"
+          },
+          "status": {
+            "const": "processing"
+          }
+        }
+      },
+      "EvidenceFrame": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "timestamp_sec",
+          "image_base64"
+        ],
+        "properties": {
+          "timestamp_sec": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Actual normalized source presentation timestamp. Runtime verifies finite value and video bounds."
+          },
+          "image_base64": {
+            "type": "string",
+            "minLength": 16,
+            "pattern": "^/9j/[A-Za-z0-9+/]*={0,2}$",
+            "contentEncoding": "base64",
+            "contentMediaType": "image/jpeg",
+            "description": "JPEG bytes in standard base64, without data URL prefix. Runtime must decode and check source provenance."
+          }
+        }
+      },
+      "Violation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "timecode_sec",
+          "description",
+          "evidence_frames"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "timecode_sec": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Source seconds; decisive supplied frame, finite and inside duration."
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2400,
+            "description": "Visible facts, cautious interpretation, exact approved document/provision/URL and uncertainty. No additional legal field."
+          },
+          "evidence_frames": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": {
+              "$ref": "#/components/schemas/EvidenceFrame"
+            }
+          }
+        }
+      },
+      "DoneJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "status",
+          "verdict",
+          "violations"
+        ],
+        "properties": {
+          "job_id": {
+            "$ref": "#/components/schemas/JobId"
+          },
+          "status": {
+            "const": "done"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "no_violation",
+              "violation"
+            ]
+          },
+          "violations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Violation"
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "verdict": {
+                  "const": "violation"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "violations": {
+                  "minItems": 1
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "violations": {
+                  "maxItems": 0
+                }
+              }
+            }
+          }
+        ]
+      },
+      "FailedJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "status",
+          "error"
+        ],
+        "properties": {
+          "job_id": {
+            "$ref": "#/components/schemas/JobId"
+          },
+          "status": {
+            "const": "failed"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        }
+      },
+      "JobResponse": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ProcessingJob"
+          },
+          {
+            "$ref": "#/components/schemas/DoneJob"
+          },
+          {
+            "$ref": "#/components/schemas/FailedJob"
+          }
+        ]
+      }
+    }
+  },
+  "x-runtime-invariants": [
+    "Nonfinite numbers are never serialized.",
+    "All returned times reference normalized source PTS and are within the decoded video duration.",
+    "Each event has 1-3 decodable real source JPEGs in PTS order.",
+    "A positive verdict requires at least one supported event; a negative requires zero events.",
+    "Descriptions use only approved rule IDs, exact catalog citation text and visible facts.",
+    "Completed/failed states are immutable; late inference cannot overwrite timeout.",
+    "Key applies to POST and GET; no unauthenticated media/file-serving route.",
+    "Processing/failed are job states, never extra verdicts."
+  ]
+}

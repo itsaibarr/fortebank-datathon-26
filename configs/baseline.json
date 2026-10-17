@@ -1,0 +1,51 @@
+{
+  "model": {
+    "checkpoint": "Qwen/Qwen3-VL-8B-Instruct",
+    "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "precision": "bfloat16",
+    "adapter_path": null,
+    "engine": "vllm",
+    "engine_version": "0.31.0",
+    "max_context_tokens": 8192,
+    "max_active_sequences": 2
+  },
+  "video": {
+    "coarse_window_seconds": 16,
+    "coarse_stride_seconds": 12,
+    "coarse_fps": 1,
+    "coarse_max_pixels": 196608,
+    "fine_window_seconds": 8,
+    "fine_fps": 2,
+    "fine_max_pixels": 393216,
+    "max_images_per_call": 16,
+    "use_audio": false,
+    "identify_faces": false,
+    "timestamps": "source_pts"
+  },
+  "outputs": {
+    "coarse_max_tokens": 256,
+    "fine_max_tokens": 384,
+    "verify_max_tokens": 192,
+    "evidence_frames_min": 1,
+    "evidence_frames_max": 3
+  },
+  "jobs": {
+    "max_admitted": 2,
+    "total_deadline_seconds": 270,
+    "upload_max_bytes": 268435456,
+    "upload_deadline_seconds": 30,
+    "max_video_seconds": 180
+  },
+  "training": {
+    "enabled": false,
+    "method_if_gate_passes": "language_attention_bf16_lora",
+    "rank": 8,
+    "alpha": 16,
+    "learning_rate": 5e-05,
+    "batch_size": 1,
+    "gradient_accumulation": 8,
+    "initial_max_updates": 30,
+    "absolute_max_updates": 60
+  },
+  "status": "approved initial settings; GPU compatibility, latency and semantic accuracy unmeasured"
+}

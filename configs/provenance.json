@@ -1,0 +1,11 @@
+{
+  "case_sha256": "f73a951c87aca9d540076aacc5b4fd8a688810a4ec827b1a382512c770d278a0",
+  "archive_sha256": "c01ee47563620f9cef14cc42fd23d81f4f58600e5d1eae39d97bb85b57961867",
+  "expected_mov_files": 42,
+  "expected_annotation_files": 1,
+  "unique_recordings_in_prior_hash_audit": 40,
+  "positive_unique_recordings_in_prior_audit": 21,
+  "negative_unique_recordings_in_prior_audit": 19,
+  "checked_date": "2026-10-17",
+  "no_media_in_repository": true
+}

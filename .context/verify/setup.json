@@ -1,0 +1,70 @@
+{
+  "status": "passed_setup_only",
+  "date": "2026-10-17",
+  "workflow": "Existing Harness bootstrap, approved incremental local setup, behavior tests before implementation",
+  "harness_root": "/Users/itsaibarr/harness",
+  "harness_commit": "a22a10d9969d7a43f82ffe4f82a822fbb4b5091b",
+  "tests_passed": 6,
+  "test_red_observed": "Initial pytest collection failed because forte.cli did not exist; implementation then passed six tests",
+  "lint": "ruff check passed",
+  "format": "ruff format --check passed",
+  "package_build": "sdist and wheel passed, hatchling pinned to 1.32.4",
+  "python": "3.12.13",
+  "lockfile": "uv.lock",
+  "real_archive_check": {
+    "archive": "/Users/itsaibarr/Downloads/open.zip",
+    "sha256": "c01ee47563620f9cef14cc42fd23d81f4f58600e5d1eae39d97bb85b57961867",
+    "archive_bytes": 292563667,
+    "uncompressed_bytes": 292876695,
+    "files": 43,
+    "mov_files": 42,
+    "annotation_files": 1,
+    "other_files": 0,
+    "crc_valid": true,
+    "extracted_or_modified": false
+  },
+  "case_docx_sha256": "f73a951c87aca9d540076aacc5b4fd8a688810a4ec827b1a382512c770d278a0",
+  "case_read": "All sections, API example, scoring table and all 35 FAQ answers; same bytes as prior supplied case",
+  "api_contract_unchanged": true,
+  "orientation_under_150_lines": true,
+  "private_media_in_candidate_git_files": false,
+  "notes": [
+    {
+      "path": "/Users/itsaibarr/Documents/Obsidian Vault/Projects/ForteBank Datathon 26/GPU rental and access guide.md",
+      "sha256": "1c4c1f79bfa12d46919c8712b03dac2a954cb251d3e124b6dd9aa15523bc71af",
+      "words": 1386
+    },
+    {
+      "path": "/Users/itsaibarr/Documents/Obsidian Vault/Projects/ForteBank Datathon 26/Training process and expected results.md",
+      "sha256": "9efafa9f5951ff1d0eaa5a00f48e2b9c1f81abc2393b903c8fde80fc79d49b15",
+      "words": 1618
+    },
+    {
+      "path": "/Users/itsaibarr/Documents/Obsidian Vault/Projects/ForteBank Datathon 26/Case requirements and implementation checks.md",
+      "sha256": "59bd99df141467f84bb99f44ed60f6c6a0d3b51a4604027850a5e5ba14a783a8",
+      "words": 1266
+    }
+  ],
+  "not_performed": [
+    "GPU rental or payment",
+    "Model download or inference",
+    "Training",
+    "Full API implementation",
+    "UI implementation or UI library selection",
+    "Private-media upload",
+    "Jury-data use"
+  ],
+  "remaining_gates": [
+    "Local semantic annotation and session grouping",
+    "Permitted rented hosting of competition footage",
+    "Actual GPU stock/payment/driver/memory/latency verification",
+    "UI-library discussion after working backend",
+    "Final full-product case acceptance"
+  ],
+  "review": {
+    "correctness": "Read hash/ZIP/CLI code and tests; no setup blocker found",
+    "privacy": "No source videos, spreadsheets, model weights, credentials or private scene descriptions staged",
+    "minimal_scope": "One read-only dataset command; no custom orchestration, model engine, queue or UI implemented",
+    "harness_gap_workaround": "Existing doc-index generator includes Python vendor docs; filtered ignored .venv/cache/dist entries after running it, without modifying Harness"
+  }
+}

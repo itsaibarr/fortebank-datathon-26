@@ -1,0 +1,11 @@
+# Doc index — generated 2026-10-17, 10 files
+- .context/DOC-INDEX.md — # Doc index — generated 2026-10-17, 21 files
+- AGENTS.md — # Agent instructions
+- CLAUDE.md — # ForteBank Datathon 26 orientation
+- README.md — # ForteBank Datathon 26
+- SPEC.md — # ForteBank Datathon 26 product specification
+- docs/case-requirements.md — # The plan covers the case but the product still has to pass its checks
+- docs/setup-sources.md — # Setup source checks on 17 October 2026
+- tasks/plan.md — # Implementation plan for ForteBank Datathon 26
+- tasks/todo.md — # ForteBank Datathon 26 execution checklist
+- web/README.md — # Frontend work starts after the backend works

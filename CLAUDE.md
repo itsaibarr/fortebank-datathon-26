@@ -1,0 +1,58 @@
+# ForteBank Datathon 26 orientation
+
+## What this is
+Local cash-operation video review service, initialized after the user approved setup on 17 October 2026. Current implementation is the local project foundation and read-only supplied-dataset check; inference/API/UI remain pending.
+
+## Workflow
+- Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
+- Harness category 5 implementation after plan approval, bounded to local setup in this session. Use incremental implementation and meaningful behavior tests. Guides use category 7 research with Agent-Reach and concrete-answers.
+- User approved setup. Do not ask for the same approval again. No paid rental, external deployment or final training is authorized by setup alone.
+- Read `SPEC.md`, `tasks/plan.md`, `tasks/todo.md` and `docs/case-requirements.md` before extending the product.
+
+## Stack and commands
+- Python 3.12 and uv; dependencies isolated in `.venv` and pinned by `uv.lock`.
+- `uv sync --frozen` installs the local foundation, without CUDA frameworks or model weights.
+- `uv run forte dataset-check --archive /absolute/path/to/open.zip` verifies source provenance and ZIP integrity without extraction.
+- `uv run pytest -q` runs setup behavior tests.
+- `uv run ruff check .` and `uv run ruff format --check .` check Python.
+- `uv run python -m build` checks package build.
+- No analysis server or frontend exists yet. Do not present setup checks as model benchmarks.
+
+## Load-bearing files
+- `SPEC.md` defines scope, fixed API, privacy and runtime acceptance.
+- `contracts/api-contract.json` is the approved exact jury contract.
+- `configs/baseline.json` holds proposed model, video, job and optional training settings.
+- `configs/provenance.json` records original case/archive fingerprints and verified audit counts.
+- `src/forte/dataset.py` performs read-only archive checks.
+- `src/forte/cli.py` exposes the dataset check.
+- `tests/test_dataset.py` checks wrong inputs, integrity failures and CLI behavior.
+- `tasks/todo.md` records actual completed tasks; do not mark future GPU/UI work done.
+- `docs/case-requirements.md` maps the complete case to submission checks.
+
+## Settled decisions
+- Qwen/Qwen3-VL-8B-Instruct BF16, exact revision in configuration; InternVL3_5-8B fallback. Main VLM remains at least 8B.
+- Pretrained pipeline first; optional language-attention LoRA only after reviewed supervision and measured errors. No adapter is enabled now.
+- PyAV/FFmpeg source timestamps, overlapping coarse/fine windows, source-frame evidence and local public-rule mapping.
+- FastAPI public API with required file/header/field names, asynchronous jobs, one GPU host/container and atomic filesystem records.
+- No cloud AI, audio analysis, identification, hidden-accounting claims or use of jury data for selection.
+- Next.js App Router with TypeScript comes after working backend mechanics. Ask the user for exact UI libraries and screen/state brief before frontend work. No UI packages selected now.
+- Future primary GPU is Hyperstack A10080 at advertised $1.35/hour, fallback Runpod Secure A10080 at $1.79/hour. $30 experiment cap; actual stock/fees/speed remain unverified.
+
+## Data and access gotchas
+- Original archive is `/Users/itsaibarr/Downloads/open.zip`; never change or commit it.
+- 42 MOV files and one XLSX, 40 unique recordings. Exact duplicates must stay in one split.
+- Duplicate positive `Х-4`/`Х-47` has 57/68-second points. No category/interval targets are supplied.
+- Private footage, frames, annotations, descriptions, outputs and adapters stay outside Git and remote AI tooling. Use synthetic test fixtures in code.
+- Local humans review private semantics. Keep holdout and jury footage out of tuning/training.
+- Resolve permitted rented hosting before transferring competition footage. Synthetic/public compatibility checks can run first.
+- Agent access uses a local SSH key path and host details. Never request private key contents, passphrases or provider passwords.
+- Stopped Hyperstack VMs still bill; user controls resource deletion unless separately delegated.
+
+## Where not to look
+Ignore `.venv`, caches, generated `dist`, private runs, downloaded weights and future `web/out` for code orientation.
+
+## Durable context
+Use Octarin for relevant team decisions and write back durable setup facts, anchored to this product repo. Do not inherit unrelated `bank_mvp` implementation history.
+
+## Doc index
+See `.context/DOC-INDEX.md`. Regenerate with `bash /Users/itsaibarr/harness/agent/core/gen-doc-index.sh .`, then omit ignored `.venv`, cache and `dist` entries. The existing generator does not exclude Python environments; do not modify Harness to fix that here.
