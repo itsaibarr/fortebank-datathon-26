@@ -217,8 +217,10 @@ def coarse_case(m, registry, output, start, end, seed):
     frames = sample_window(registry, start, end, fps=1)
     people = aliases(m, seed)
     views = []
-    for f in frames:
-        raw = base64.b64decode(registry.evidence([f.frame_id])[0].image_base64)
+    # One verified extraction pass per window, not one full decode per image.
+    extracted = registry.evidence([f.frame_id for f in frames])
+    for f, evidence in zip(frames, extracted, strict=True):
+        raw = base64.b64decode(evidence.image_base64)
         import io
 
         from forte.video import jpeg_bytes
