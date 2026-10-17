@@ -199,12 +199,27 @@ def assemble(facts):
             and other["segments"] == item["segments"]
             and other["actor_id"] == item["actor_id"]
             and other["kind"] == item["kind"]
-            and item["kind"] in {"role", "context"}
+            and (
+                item["kind"] == "role"
+                or (
+                    item["kind"] == "context"
+                    and context_family(item["value"]) is not None
+                    and context_family(item["value"]) == context_family(other["value"])
+                )
+            )
             and other["value"] != item["value"]
             and max(other["start_sec"], item["start_sec"]) <= min(other["end_sec"], item["end_sec"])
             for other in result
         )
     return result
+
+
+def context_family(value):
+    if value in {"cash_acceptance", "cash_payout", "collection_handoff", "cash_processing"}:
+        return "operation_phase"
+    if value in {"service_ongoing", "service_complete"}:
+        return "service_state"
+    return None
 
 
 class MockScanExecutor:

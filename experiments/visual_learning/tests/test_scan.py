@@ -125,3 +125,24 @@ def test_complete_long_clip_scan_keeps_ids_and_last_source_frame(tmp_path):
         len(c.views) == 16 and len(c.frames) == 8 for c in executor.requests if c.task == "action"
     )
     assert result["coverage"]["unresolved_ranges"] == [[0, 30]]
+
+
+def test_context_can_support_both_operation_and_service_state_without_a_role_swap():
+    assert not any(
+        f["contradiction"]
+        for f in assemble(
+            [
+                fact(kind="context", value="cash_acceptance"),
+                fact(kind="context", value="service_ongoing"),
+            ]
+        )
+    )
+    assert all(
+        f["contradiction"]
+        for f in assemble(
+            [
+                fact(kind="context", value="cash_acceptance"),
+                fact(kind="context", value="cash_payout"),
+            ]
+        )
+    )

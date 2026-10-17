@@ -58,7 +58,7 @@ def temporal_checks(report, config):
             for f in linked
             if f["kind"] == "role"
             and f["value"] == card.actor_role
-            and f["start_sec"] <= event["start_sec"] <= f["end_sec"]
+            and f["start_sec"] <= event["start_sec"] <= event["end_sec"] <= f["end_sec"]
             and len(set(f["evidence_frame_ids"])) >= 2
         ]
 
@@ -66,7 +66,9 @@ def temporal_checks(report, config):
             return [
                 f
                 for f in linked
-                if f["kind"] == "context" and f["value"] == value and overlaps(f, event)
+                if f["kind"] == "context"
+                and f["value"] == value
+                and f["start_sec"] <= event["start_sec"] <= event["end_sec"] <= f["end_sec"]
             ]
 
         conflicts = any(

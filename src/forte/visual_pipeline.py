@@ -61,6 +61,7 @@ def analyze_visual(path, work, job_id, backend, deadline, stats=None, *, trackin
         report["status"] != "complete_schedule"
         or bool(report["role_conflicts"])
         or bool(report["coverage"]["unresolved_ranges"])
+        or not report["coverage"]["continuous_visibility_validated"]
     )
     accepted = [c for c in legal["checks"] if c["decision"] == "supported"]
     stats.update(
