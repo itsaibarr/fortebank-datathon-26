@@ -18,7 +18,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Create the dedicated project environment and import the public half of a dedicated local SSH key. No paid VM or storage created while credit is zero.
 - [x] Recheck funding and price, establish cleanup/time controls, then provision one A10080 and verify SSH/driver/Docker using public or synthetic inputs.
 - [x] Run the exact BF16 model on two 16-image synthetic sequences with container networking disabled; preserve artifacts locally and delete the VM. Provider inventory and dashboard reported zero VMs/volumes afterward. Receipt: `.context/verify/gpu-setup.json`.
-- [ ] Keep competition-data hosting permission and reviewed-data training gates separate from infrastructure authorization.
+- [x] Organizer hosting clarification: user confirmed development videos from open.zip may run on our dedicated Hyperstack VM in Canada. Training still requires reviewed supervision and measured errors; jury exclusions remain.
 
 ## Phase 0
 
@@ -30,7 +30,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 
 ## Phase 1
 
-- [ ] Task 3: Implement exact public/internal contracts and semantic invariants.
+- [x] Task 3: Implement exact public/internal contracts and semantic invariants; strict verdict, JPEG and supplied-frame/rule checks are covered by tests.
 - [ ] Task 4: Decode MOV video only, retain PTS, implement coverage/fine windows and source evidence extraction.
 - [ ] Task 5: Wrap resident local Qwen/vLLM with structured outputs and adapter slot.
 - [ ] Task 6: Produce one real locally verified positive/negative result through the full temporal/rule/evidence pipeline.

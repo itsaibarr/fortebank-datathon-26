@@ -8,7 +8,10 @@ version = "0.1.0"
 description = "Local video evidence review for ForteBank Datathon 26"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+  "av>=16,<18",
   "fastapi>=0.115,<1",
+  "httpx>=0.28,<1",
+  "pillow>=12,<13",
   "pydantic>=2.10,<3",
   "python-multipart>=0.0.20,<1",
   "uvicorn>=0.34,<1",
@@ -18,7 +21,12 @@ dependencies = [
 forte = "forte.cli:main"
 
 [dependency-groups]
-dev = ["pytest>=8,<10", "ruff>=0.11,<1", "build>=1.2,<2"]
+dev = [
+    "pytest>=8,<10",
+    "ruff>=0.11,<1",
+    "build>=1.2,<2",
+    "jsonschema>=4.23,<5",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/forte"]

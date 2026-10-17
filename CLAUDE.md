@@ -44,7 +44,7 @@ Local cash-operation video review service, initialized after the user approved s
 - Duplicate positive `Х-4`/`Х-47` has 57/68-second points. No category/interval targets are supplied.
 - Private footage, frames, annotations, descriptions, outputs and adapters stay outside Git and remote AI tooling. Use synthetic test fixtures in code.
 - Local humans review private semantics. Keep holdout and jury footage out of tuning/training.
-- Resolve permitted rented hosting before transferring competition footage. Synthetic/public compatibility checks can run first.
+- User confirmed organizer permission for development footage on the dedicated Hyperstack VM in Canada. Private videos/results never enter Git or remote AI chat. Jury data remains excluded from training and model selection.
 - Hyperstack credential and SSH private key live outside Git under `~/.config/forte26`; never print/copy their contents into logs, Obsidian or memory. API request headers must come from the private header file, not command arguments.
 - Dedicated project environment and public keypair remain available. After the user funded the account, one VM passed the public/synthetic offline check and was deleted; the provider then reported zero VMs and volumes. Private provisioning state records its lifecycle and IDs outside Git. About $29.77 remained at the post-deletion snapshot. See `docs/gpu-runbook.md` before another rental.
 - HTTP-reflection and SSH source IPs differed on the old connection; the modem connection matched. Use a current `/32` SSH rule, the dedicated known-host file and a project control socket. Initial host trust used TOFU because provider console-log retrieval failed; do not claim independent console verification.
