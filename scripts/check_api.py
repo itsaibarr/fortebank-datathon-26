@@ -4,6 +4,7 @@ import argparse
 import base64
 import hashlib
 import json
+import shutil
 import time
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -93,6 +94,7 @@ def main():
         metrics["evidence_frames_checked"] = len(ids)
         metrics["source_evidence_verified"] = True if ids else None
         assert elapsed < 300
+        shutil.rmtree(args.output / "verification-frames")
     (args.output / "summary.json").write_text(json.dumps(metrics, indent=2) + "\n")
     print(json.dumps({key: value for key, value in metrics.items() if key != "source_sha256"}))
     return 0 if result.status == "done" else 1
