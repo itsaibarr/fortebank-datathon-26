@@ -113,7 +113,19 @@ class WorkArea(Strict):
 
 
 class Correction(Strict):
-    operation: Literal["split", "join", "box", "fact", "area", "review", "cvat_import"]
+    operation: Literal[
+        "split",
+        "join",
+        "box",
+        "box_review",
+        "fact",
+        "area",
+        "review",
+        "cvat_import",
+        "role_binding",
+        "view_relation",
+        "view_observation",
+    ]
     reviewer: str = Field(min_length=1)
     reviewed_at: datetime
     before_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -128,8 +140,71 @@ class Correction(Strict):
         return self
 
 
+class RoleBinding(Strict):
+    """Human segment/role mapping, pending complete interval/work-area evidence.
+
+    This review record is not a VisualFact or an eligible training target.
+    Candidate frames are source anchors, not claims of human frame approval.
+    """
+
+    id: str
+    segment_id: str
+    canonical_person_id: str | None
+    role: Literal["cashier", "customer", "unclear"]
+    view_kind: Literal["direct", "reflection"]
+    candidate_frame_ids: list[str] = Field(min_length=1)
+    reviewed_frame_ids: list[str] = Field(default_factory=list)
+    review_scope: str
+    review: Review = Field(default_factory=Review)
+    interval_review_status: Literal["pending"] = "pending"
+    work_area_review_status: Literal["pending"] = "pending"
+    visible_basis_review_status: Literal["pending"] = "pending"
+
+
+class ViewRelation(Strict):
+    """Same person's direct/reflected views, independent of temporal joins."""
+
+    id: str
+    direct_segment_id: str
+    reflected_segment_id: str
+    canonical_person_id: str
+    kind: Literal["reflection"] = "reflection"
+    review: Review = Field(default_factory=Review)
+    temporal_continuity_review: Review = Field(default_factory=Review)
+
+
+class ViewObservation(Strict):
+    """View kind alone, without a role, reflection owner or continuity claim."""
+
+    id: str
+    segment_id: str
+    view_kind: Literal["direct", "reflection", "unclear"]
+    candidate_frame_ids: list[str] = Field(min_length=1)
+    reviewed_frame_ids: list[str] = Field(default_factory=list)
+    review_scope: str
+    review: Review = Field(default_factory=Review)
+
+
+def confirmed_person_groups(segments, joins):
+    """Resolve local identity groups using confirmed temporal joins only."""
+    people = {s.id: s.person_id for s in segments}
+    parent = {person: person for person in people.values()}
+
+    def root(person):
+        while person != parent[person]:
+            parent[person] = parent[parent[person]]
+            person = parent[person]
+        return person
+
+    for join in joins:
+        if join.review.status == "confirmed":
+            first, second = root(people[join.from_segment]), root(people[join.to_segment])
+            parent[max(first, second)] = min(first, second)
+    return {person: root(person) for person in parent}
+
+
 class TrackManifest(Strict):
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 1
     clip_id: str = Field(pattern=r"^clip\d{3}$")
     source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     annotation_file: str
@@ -151,6 +226,9 @@ class TrackManifest(Strict):
     joins: list[Join] = Field(default_factory=list)
     gaps: list[Gap] = Field(default_factory=list)
     work_areas: list[WorkArea] = Field(default_factory=list)
+    role_bindings: list[RoleBinding] = Field(default_factory=list)
+    view_relations: list[ViewRelation] = Field(default_factory=list)
+    view_observations: list[ViewObservation] = Field(default_factory=list)
     corrections: list[Correction] = Field(default_factory=list)
     recording_group: str
     session_group: str | None = None
@@ -208,11 +286,73 @@ class TrackManifest(Strict):
                 raise ValueError("Out of order segment boxes")
         if len({j.id for j in self.joins}) != len(self.joins):
             raise ValueError("Duplicate join")
+        if (
+            self.role_bindings or self.view_relations or self.view_observations
+        ) and self.schema_version != 2:
+            raise ValueError("View/role review bindings require explicit sidecar v2 migration")
+        if len({b.id for b in self.role_bindings}) != len(self.role_bindings) or len(
+            {v.id for v in self.view_relations}
+        ) != len(self.view_relations):
+            raise ValueError("Duplicate role binding or view relation")
+        if len({v.id for v in self.view_observations}) != len(self.view_observations):
+            raise ValueError("Duplicate view observation")
+        for relation in self.view_relations:
+            direct, reflected = relation.direct_segment_id, relation.reflected_segment_id
+            if (
+                direct not in segments
+                or reflected not in segments
+                or direct == reflected
+                or segments[direct].person_id != relation.canonical_person_id
+            ):
+                raise ValueError("Invalid source segment in view relation")
+        for binding in [*self.role_bindings, *self.view_observations]:
+            if binding.segment_id not in segments:
+                raise ValueError("Unknown view/role binding segment")
+            segment = segments[binding.segment_id]
+            actual = {b.frame_id for b in segment.boxes if not b.outside}
+            if not set(binding.candidate_frame_ids) <= actual or not set(
+                binding.reviewed_frame_ids
+            ) <= set(binding.candidate_frame_ids):
+                raise ValueError("View/role binding frame has no source box or candidate anchor")
+        for binding in self.role_bindings:
+            segment = segments[binding.segment_id]
+            if binding.view_kind == "direct":
+                if segment.person_id != binding.canonical_person_id:
+                    raise ValueError("Direct role binding identity mismatch")
+            elif binding.canonical_person_id is None:
+                if not any(
+                    v.segment_id == binding.segment_id
+                    and v.view_kind == "reflection"
+                    and v.review.status == "confirmed"
+                    for v in self.view_observations
+                ):
+                    raise ValueError("Unknown reflection owner requires reviewed view observation")
+            elif not any(
+                v.reflected_segment_id == binding.segment_id
+                and v.canonical_person_id == binding.canonical_person_id
+                and v.review.status == "confirmed"
+                for v in self.view_relations
+            ):
+                raise ValueError("Reflected role binding requires a reviewed view relation")
         for join in self.joins:
             if not {join.from_segment, join.to_segment} <= segments.keys() or (
                 join.from_segment == join.to_segment
             ):
                 raise ValueError("Invalid segment join")
+        groups = confirmed_person_groups(self.segments, self.joins)
+        accepted = [
+            b
+            for b in self.role_bindings
+            if b.review.status == "confirmed" and b.canonical_person_id is not None
+        ]
+        for first in accepted:
+            if any(
+                groups[other.canonical_person_id] == groups[first.canonical_person_id]
+                and other.role not in {first.role, "unclear"}
+                and first.role != "unclear"
+                for other in accepted
+            ):
+                raise ValueError("Conflicting human role bindings for the same physical person")
         for gap in self.gaps:
             if not 0 <= gap.start_sec <= gap.end_sec <= self.duration_sec:
                 raise ValueError("Gap outside recording")
@@ -256,6 +396,18 @@ def validate_pair(manifest: TrackManifest, annotation: Annotation):
             for id in merged:
                 components[id] = merged
     for f in a.facts:
+        if f.kind == "role" and f.value != "unclear" and f.review_status != "rejected":
+            for binding in m.role_bindings:
+                if (
+                    binding.review.status == "confirmed"
+                    and binding.role != "unclear"
+                    and binding.role != f.value
+                    and binding.segment_id in f.segment_ids
+                    and any(
+                        f.start_sec <= frames[id] <= f.end_sec for id in binding.reviewed_frame_ids
+                    )
+                ):
+                    raise ValueError("Role fact conflicts with an existing human role mapping")
         if f.work_area_id and f.work_area_id not in areas:
             raise ValueError("Unknown work area")
         if f.counterpart_actor_id and f.counterpart_actor_id not in people:

@@ -12,8 +12,11 @@ from forte.tracking import (
     Correction,
     Join,
     Review,
+    RoleBinding,
     Segment,
     TrackManifest,
+    ViewObservation,
+    ViewRelation,
     WorkArea,
     validate_pair,
 )
@@ -340,6 +343,22 @@ def apply_corrections(
             )
             segment.review = Review()
             affected = [segment.id, replacement.frame_id]
+        elif kind == "box_review":
+            segment = next(s for s in m.segments if s.id == op["segment_id"])
+            frame_ids = op["frame_ids"]
+            if (
+                not isinstance(frame_ids, list)
+                or not frame_ids
+                or len(set(frame_ids)) != len(frame_ids)
+                or not set(frame_ids) <= {b.frame_id for b in segment.boxes}
+            ):
+                raise ValueError("Box review requires unique, existing source box frames")
+            for box in segment.boxes:
+                if box.frame_id in frame_ids:
+                    box.review = reviewed.model_copy(update=dict(status=op["status"]))
+            # Acceptance preserves detector/interpolation origin and scores.
+            # It never approves the identity segment or any other source box.
+            affected = [segment.id, *frame_ids]
         elif kind == "review":
             segment = next(s for s in m.segments if s.id == op["segment_id"])
             status = op.get("status", "confirmed")
@@ -359,6 +378,26 @@ def apply_corrections(
             area.review = reviewed
             m.work_areas = [x for x in m.work_areas if x.id != area.id] + [area]
             affected = [area.id]
+        elif kind == "role_binding":
+            binding = RoleBinding.model_validate(op["binding"])
+            binding.review = reviewed
+            m.schema_version = 2
+            m.role_bindings = [b for b in m.role_bindings if b.id != binding.id] + [binding]
+            affected = [binding.id, binding.segment_id]
+        elif kind == "view_relation":
+            relation = ViewRelation.model_validate(op["relation"])
+            relation.review = reviewed
+            m.schema_version = 2
+            m.view_relations = [v for v in m.view_relations if v.id != relation.id] + [relation]
+            affected = [relation.id, relation.direct_segment_id, relation.reflected_segment_id]
+        elif kind == "view_observation":
+            observation = ViewObservation.model_validate(op["observation"])
+            observation.review = reviewed
+            m.schema_version = 2
+            m.view_observations = [v for v in m.view_observations if v.id != observation.id] + [
+                observation
+            ]
+            affected = [observation.id, observation.segment_id]
         elif kind == "fact":
             f = VisualFact.model_validate(op["fact"])
             f.reviewer, f.reviewed_at, f.origin = reviewer, at, "human"

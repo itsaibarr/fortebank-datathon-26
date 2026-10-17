@@ -10,12 +10,30 @@
 - [x] Compare pinned 8B/27B models on the same three context variants of one user-corrected role error. 27B fits but neither reliably agrees with the correction; no promotion or training.
 - [x] Update the steps 1–2 handoff with direct GitHub search commands and verified local annotation/tracking projects, excluding Agent Reach at the user's request.
 - [x] Research steps 3–4 and document the proposed supervised role/action experiment, video-classifier baseline, scan cadence and evaluation gates in `docs/role-action-training-research.md`. Research only: no training, installation or GPU rental.
-- [ ] Execute the reviewed person/role/action and tracking pilot from `docs/handoffs/01-visual-labeling-and-person-tracking.md`; prepare reviewed targets and a session-bound split before the training experiment.
+- [ ] Finish the reviewed person/role/action and tracking pilot from `docs/handoffs/01-visual-labeling-and-person-tracking.md`; prepare reviewed targets and a session-bound split before the training experiment.
 - [ ] Establish genuine reviewed positive controls, recording-date applicability and approved operational cards; complete visible-fact review and resolve split continuity.
 - [ ] Implement and evaluate persistent actor correspondence, transaction phase and production RAG integration against reviewed reference cases.
 - [ ] Reopen optional supervised training only after independent reviewed targets and the existing evaluation gates are satisfied.
 
 Ordered task list following Harness's plan convention. Details, dependencies, file scope and verification are in [plan.md](plan.md). No product tasks are checked off by the architecture research.
+
+## Steps 1–2 implementation checkpoint
+
+- [x] Pin local YOLOX-s ONNX and ByteTrack release/artifact hashes after direct GitHub inspection; separate public setup from network-disabled CPU inference.
+- [x] Add versioned source-bound tracks linked to the existing visual/legal annotations, independent geometry/identity/role review, explicit uncertainty and immutable correction revisions.
+- [x] Run the three priority proposal cases, then prepare drafts/local packets for all 31 development groups; preserve original reviews, templates and the regression exclusion. No holdout/jury media included.
+- [x] Re-decode all 29,546 source frames and verify both playback derivatives (59,092 frames); privately re-extract/check 122 source images and 286 crops. These are provenance checks, not semantic approval.
+- [x] Test CVAT XML person boxes/area polygons, mutable roles, occlusion/outside/keyframe flags, actual source bindings, crossing/gap uncertainty, selected source-box review and rejection of unreviewed training targets. 107 tests, lint, format and build pass.
+- [x] Record human role/view responses for all three pilot recordings in immutable v2 revisions: fourteen mappings, six local identity groups, seven reflection relationships and one explicit same-person join; retain one explicitly unclear review item and independent interval, geometry and training gates.
+- [x] Record stable identity for six complete proposed segment ranges across all three pilots, without approving boxes, additional joins or role/action intervals. Preserve the explicit clarification of an ambiguous response and prior correction inputs across nested revisions. Accept twelve explicitly selected source boxes in immutable revisions; preserve detector geometry/origin/scores and all other review scopes. Work areas and role/action intervals remain pending.
+- [x] Start pinned local CVAT Community after a bounded image-pull retry; verify a native synthetic video round trip, including source frame order/count, IDs, occlusion/outside/keyframe flags, mutable roles and area polygons. Keep annotation backends internal and publish only the loopback proxy.
+- [ ] Finish actual human bindings for the three cases, check people/segments, work areas and role/action intervals, and measure ID switches/fragments. All three have initial human role/view responses; one item remains unclear, complete interval/geometry review is pending and no training target is released.
+- [ ] Resolve the role-reference/current-review receipt mismatch and freeze reviewed recording/session groups before later training. Do not infer sessions from filenames.
+
+Runbook: [person-tracking.md](../docs/person-tracking.md). Aggregate receipt:
+[person-tracking-20261017.json](../.context/verify/person-tracking-20261017.json).
+Successful per-clip CPU runtime totals 548.77 seconds; new paid compute spend is $0.
+No training, legal classification, production detector change or product frontend.
 
 ## Local setup approved on 17 October 2026
 

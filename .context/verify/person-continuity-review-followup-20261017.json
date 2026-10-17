@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-10-17T18:31:58.011463+00:00",
+  "implementation_commit": "ad6d0796bf0889744ab655a651b7c98bc95531a6",
+  "human_review_progress": {
+    "recordings_with_initial_role_view_mappings": 3,
+    "confirmed_role_view_mappings": 14,
+    "canonical_role_mapping_groups": 6,
+    "confirmed_reflection_relations": 7,
+    "confirmed_identity_joins": 1,
+    "identity_reviewed_segments": 4,
+    "recordings_with_partial_identity_review": 2,
+    "fully_geometry_approved_segments": 0,
+    "fully_reviewed_recordings": 0,
+    "boxes_approved": 0,
+    "role_intervals_approved": 0,
+    "action_intervals_approved": 0,
+    "unresolved_view_review_items": 1,
+    "human_reported_id_switches_within_the_four_reviewed_ranges": 0,
+    "global_id_switches_measured": false,
+    "global_fragments_measured": false,
+    "training_targets_released": 0
+  },
+  "changed_revision_source_verification": {
+    "recordings_verified": 1,
+    "source_frames_verified": 442,
+    "playback_frames_verified": 884,
+    "source_images_reextracted": 24,
+    "source_crops_reextracted": 71,
+    "source_binding_verified": true,
+    "prior_correction_inputs_preserved": true,
+    "identity_reviewed_ranges": 2,
+    "geometry_unchanged": true,
+    "boxes_approved": 0,
+    "additional_joins_approved": 0,
+    "confirmed_role_intervals": 0,
+    "confirmed_action_intervals": 0,
+    "training_targets": 0,
+    "full_recording_quality_established": false
+  },
+  "prior_full_run_source_verification": {
+    "recordings_verified": 31,
+    "source_frames_verified": 29546,
+    "playback_frames_verified": 59092,
+    "source_images_reextracted": 122,
+    "source_crops_reextracted": 286,
+    "semantic_quality_established": false
+  },
+  "artifact_contract": {
+    "original_media_and_reviews_preserved": true,
+    "source_bound_identity_scope": true,
+    "exact_response_preserved": true,
+    "earlier_correction_inputs_archived_and_hash_verified": true,
+    "geometry_unchanged": true,
+    "joins_unchanged": true,
+    "regression_exclusion_retained": true,
+    "split_frozen": false
+  },
+  "software_checks": {
+    "pytest_passed": 101,
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "package_build": "passed",
+    "nested_review_regression": "failed_before_fix_passed_after_fix"
+  },
+  "software_check_scope": "Code unchanged since prior verified implementation; this response changes private review data and aggregate documentation only",
+  "quality_limits": {
+    "complete_pilot_approved": false,
+    "role_action_interval_quality_measured": false,
+    "camera_generalization_evaluated": false,
+    "native_cvat_server_roundtrip": "pending_image_download_failure",
+    "regression_reference_review_receipt": "pending_mismatch_adjudication"
+  },
+  "new_paid_compute_spend_usd": 0,
+  "training_performed": false,
+  "reserved_or_jury_recordings_included": 0,
+  "public_api_changed": false,
+  "production_detector_changed": false,
+  "private_visual_inspection_by_remote_agent": false
+}

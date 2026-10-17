@@ -25,7 +25,11 @@ def write_overview(directory):
                 if row.get("pilot")
                 else ""
             )
-            + " · draft / training excluded</li>"
+            + (
+                " · role/view mapping recorded; interval review pending</li>"
+                if row.get("confirmed_role_mappings")
+                else " · draft / training excluded</li>"
+            )
         )
         if not row.get("pilot"):
             continue
@@ -50,6 +54,19 @@ def write_overview(directory):
                 for t in [start, (start + end) / 2, end]
             ]
         middle = selected[1]
+        # Keep newly identified views visible even if they occur outside the
+        # original three-frame request. Candidate images are not auto-reviewed.
+        existing = {a["frame_id"] for a in selected}
+        for binding in [*m.role_bindings, *m.view_observations]:
+            if binding.review.status != "confirmed":
+                continue
+            candidates = [a for a in assets if a["frame_id"] in binding.candidate_frame_ids]
+            if candidates:
+                asset = candidates[len(candidates) // 2]
+                if asset["frame_id"] not in existing:
+                    selected.append(asset)
+                    existing.add(asset["frame_id"])
+        selected.sort(key=lambda a: a["timestamp_sec"])
         candidates = [s.id for s, _, _ in boxes_at(m, int(middle["frame_id"][1:]))]
         start = max(0, selected[0]["timestamp_sec"] - 5)
         end = min(m.duration_sec, selected[-1]["timestamp_sec"] + 5)
@@ -94,6 +111,37 @@ def write_overview(directory):
         page = (
             HEADER + f"<h1>Local human check — {m.clip_id}</h1><p>At <b>{middle['frame_id']}</b>, "
         )
+        mapping_panel = ""
+        if m.role_bindings:
+            mapping_panel = (
+                "<h2>Recorded human role/view mapping</h2><ul>"
+                + "".join(
+                    "<li>"
+                    + html.escape(
+                        f"{b.segment_id}: {b.role}; {b.view_kind}; "
+                        f"canonical person {b.canonical_person_id or 'unresolved'}; "
+                        f"{b.review.status}"
+                    )
+                    + "</li>"
+                    for b in m.role_bindings
+                )
+                + "</ul><p>Temporal role intervals, work areas, "
+                "visible basis, geometry and temporal joins remain separately reviewed gates.</p>"
+            )
+        if m.view_observations:
+            mapping_panel += (
+                "<h2>Recorded human view observations</h2><ul>"
+                + "".join(
+                    "<li>"
+                    + html.escape(
+                        f"{v.segment_id}: {v.view_kind}; {v.review.status}; "
+                        "view observation alone does not establish role or reflection owner"
+                    )
+                    + "</li>"
+                    for v in m.view_observations
+                )
+                + "</ul>"
+            )
         page += (
             "outlined choices: <b>"
             + html.escape(", ".join(candidates) or "no detector box")
@@ -105,6 +153,7 @@ These IDs/boxes are proposals. A role answer does not approve all geometry or jo
 <h2>Preserved human correction</h2><dl>"""
             + notes
             + "</dl>"
+            + mapping_panel
         )
         page += f"""<p><a href="legacy-review.json">Original review</a> ·
 <a href="correction-binding-pending.json">Preserved reference and pending binding</a></p>

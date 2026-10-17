@@ -20,7 +20,13 @@ from forte.person_proposals import (
     write_json,
 )
 from forte.track_review import apply_corrections, import_cvat
-from forte.tracking import Correction, TrackManifest, training_targets, validate_pair
+from forte.tracking import (
+    Correction,
+    TrackManifest,
+    confirmed_person_groups,
+    training_targets,
+    validate_pair,
+)
 
 
 def add_commands(commands):
@@ -77,13 +83,23 @@ def aggregate(records, annotations=None):
     manifests = [m for _, m in records]
     annotations = annotations or []
     facts = [f for a in annotations for f in a.facts]
+    boxes = [b for m in manifests for s in m.segments for b in s.boxes]
+    groups = {m.source_sha256: confirmed_person_groups(m.segments, m.joins) for m in manifests}
     return dict(
         recordings_processed=len(manifests),
         proposed_segments=sum(len(m.segments) for m in manifests),
-        proposed_joins=sum(len(m.joins) for m in manifests),
+        recorded_join_decisions=sum(len(m.joins) for m in manifests),
+        proposed_joins=sum(j.review.status == "draft" for m in manifests for j in m.joins),
+        confirmed_identity_joins=sum(
+            j.review.status == "confirmed" for m in manifests for j in m.joins
+        ),
+        rejected_joins=sum(j.review.status == "rejected" for m in manifests for j in m.joins),
         human_reviewed_segments=sum(
             s.review.status == "confirmed" for m in manifests for s in m.segments
         ),
+        confirmed_boxes=sum(b.review.status == "confirmed" for b in boxes),
+        rejected_boxes=sum(b.review.status == "rejected" for b in boxes),
+        pending_boxes=sum(b.review.status == "draft" for b in boxes),
         confirmed_roles=sum(f.kind == "role" and f.review_status == "confirmed" for f in facts),
         confirmed_actions=sum(f.kind == "action" and f.review_status == "confirmed" for f in facts),
         pending_roles=sum(f.kind == "role" and f.review_status == "draft" for f in facts),
@@ -92,6 +108,28 @@ def aggregate(records, annotations=None):
             f.target_kind == "abstention" and f.review_status == "confirmed" for f in facts
         ),
         people_reviewed=None,
+        confirmed_role_mappings=sum(
+            b.review.status == "confirmed" for m in manifests for b in m.role_bindings
+        ),
+        canonical_role_mapping_groups=len(
+            {
+                (m.source_sha256, groups[m.source_sha256][b.canonical_person_id])
+                for m in manifests
+                for b in m.role_bindings
+                if b.review.status == "confirmed" and b.canonical_person_id is not None
+            }
+        ),
+        role_mappings_with_unresolved_identity=sum(
+            b.review.status == "confirmed" and b.canonical_person_id is None
+            for m in manifests
+            for b in m.role_bindings
+        ),
+        confirmed_view_observations=sum(
+            v.review.status == "confirmed" for m in manifests for v in m.view_observations
+        ),
+        confirmed_reflection_relations=sum(
+            v.review.status == "confirmed" for m in manifests for v in m.view_relations
+        ),
         human_unreviewed_sec=sum(m.duration_sec for m in manifests),
         training_targets=0,
         source_frames=sum(len(m.frames) for m in manifests),
@@ -140,6 +178,7 @@ def refresh_index(args):
         records.append((record, m))
         annotations.append(a)
         statuses = [s.review.status for s in m.segments] + [f.review_status for f in a.facts]
+        box_statuses = [b.review.status for s in m.segments for b in s.boxes]
         row.update(
             manifest=str(path / "tracks.json"),
             status="confirmed"
@@ -148,7 +187,17 @@ def refresh_index(args):
             confirmed=sum(x == "confirmed" for x in statuses),
             pending=sum(x == "draft" for x in statuses),
             rejected=sum(x == "rejected" for x in statuses),
+            confirmed_boxes=box_statuses.count("confirmed"),
+            pending_boxes=box_statuses.count("draft"),
+            rejected_boxes=box_statuses.count("rejected"),
             training_eligible=bool(training_targets(m, a)),
+            confirmed_role_mappings=sum(b.review.status == "confirmed" for b in m.role_bindings),
+            confirmed_reflection_relations=sum(
+                v.review.status == "confirmed" for v in m.view_relations
+            ),
+            confirmed_view_observations=sum(
+                v.review.status == "confirmed" for v in m.view_observations
+            ),
             excluded=m.exclusion_reasons,
         )
         rows.append(row)
@@ -458,6 +507,25 @@ def run_command(args):
             )
             validate_pair(revised, annotation)
         shutil.copytree(args.directory, args.output)
+        # Earlier corrections must keep their exact input even when the newest
+        # review reuses the same operation/XML filename in this revision.
+        preserved_artifacts = {}
+        for correction in revised.corrections[: len(m.corrections)]:
+            original_artifact = correction.artifact
+            artifact = (args.directory / original_artifact).resolve()
+            if not artifact.is_relative_to(args.directory.resolve()) or not artifact.is_file():
+                raise ValueError("Previous correction artifact is missing or outside its revision")
+            digest = sha256(artifact)
+            relative = Path("review-history") / digest / artifact.name
+            archived = args.output / relative
+            archived.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(artifact, archived)
+            correction.artifact = relative.as_posix()
+            preserved_artifacts[original_artifact] = dict(
+                original_artifact=original_artifact,
+                archived_artifact=correction.artifact,
+                sha256=digest,
+            )
         if args.command == "tracks-review":
             shutil.copyfile(args.operations, args.output / "review-operations.json")
         else:
@@ -472,7 +540,13 @@ def run_command(args):
         from forte.person_proposals import build_packet
 
         shutil.rmtree(args.output / "frames")
-        build_packet(args.source, args.output, revised)
+        previous_assets = json.loads((args.directory / "review-assets.json").read_bytes())
+        build_packet(
+            args.source,
+            args.output,
+            revised,
+            extra_frame_ids=[a["frame_id"] for a in previous_assets],
+        )
         revised.provenance["review_media"] = {
             name: sha256(args.output / name)
             for name in (
@@ -498,6 +572,7 @@ def run_command(args):
                 parent=str(args.directory),
                 parent_manifest_sha256=sha256(args.directory / "tracks.json"),
                 manifest_sha256=sha256(args.output / "tracks.json"),
+                preserved_review_artifacts=list(preserved_artifacts.values()),
             ),
         )
         print(json.dumps(dict(revision_created=True, training_eligible=False)))

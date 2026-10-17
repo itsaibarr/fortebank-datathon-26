@@ -1,7 +1,7 @@
 # ForteBank Datathon 26 orientation
 
 ## What this is
-Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 69 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. The revised preparation adds three verified official law snapshots, 272 main-clause records, a coverage register, twelve draft rule cards, optional offline hybrid retrieval/reranking, and separate visual/legal review contracts. The one-recording 8B/27B role diagnostic still fails reliable actor agreement; no model is promoted. No human-confirmed positive control, trained adapter or UI exists. Read `docs/development-rehearsal.md`, `docs/legal-and-annotation.md` and `docs/model-size-diagnostic.md` before further experiments.
+Local cash-operation video review service. Contracts, MOV decoding, loopback VLM adapter, temporal/evidence pipeline and authenticated asynchronous API are implemented. All 107 local tests pass. Real offline GPU API calls and source-JPEG provenance work, but exploratory detection quality fails acceptance. The revised preparation adds three verified official law snapshots, 272 main-clause records, a coverage register, twelve draft rule cards, optional offline hybrid retrieval/reranking, and separate visual/legal review contracts. The one-recording 8B/27B role diagnostic still fails reliable actor agreement; no model is promoted. No human-confirmed positive control, trained adapter or UI exists. Read `docs/development-rehearsal.md`, `docs/legal-and-annotation.md` and `docs/model-size-diagnostic.md` before further experiments.
 
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
@@ -28,16 +28,17 @@ Local cash-operation video review service. Contracts, MOV decoding, loopback VLM
 - `src/forte/{api,jobs,worker}.py` own admission, atomic state, subprocess deadlines and sanitized failures.
 - `src/forte/{video,inference,pipeline,rules}.py` own source PTS, loopback model calls, evidence verification and the provisional public-rule catalog.
 - `src/forte/{legal,retrieval,annotations}.py`, `legal/` and their preparation scripts own verified experimental law retrieval and separate review layers; these are not integrated into the legacy detector.
+- `src/forte/{tracking,person_proposals,track_review,tracking_cli,review_packet}.py` implement private source-bound person proposals and independent human-review gates. `scripts/person_tracking.sh` separates public setup from network-disabled private inference; see `docs/person-tracking.md`.
 - `tests/test_dataset.py` checks wrong inputs, integrity failures and CLI behavior.
 - `tasks/todo.md` records actual completed tasks; do not mark future GPU/UI work done.
 - `docs/case-requirements.md` maps the complete case to submission checks.
 - `docs/development-rehearsal.md` records actual development runs, quality blockers and the private human-review procedure.
 
 ## Settled decisions
-- The user requested domain/open-source/model research, then authorized proceeding. See `docs/domain-research.md`. Official ingestion, experimental local retrieval, draft rule cards and two-layer annotation validation are implemented. The 27B role diagnostic fits A10080 but agrees with the existing correction in only one of three context variants; both models still make a confident conflicting assignment. Neither is promoted. Persistent visual tracking and production RAG integration remain open. The legacy detector still has only three provisional rules; neither it nor the three-act corpus constitutes full RK-law coverage. The user is not responsible for researching legislation to label visible facts.
+- The user requested domain/open-source/model research, then authorized proceeding. See `docs/domain-research.md`. Official ingestion, experimental local retrieval, draft rule cards and two-layer annotation validation are implemented. The 27B role diagnostic fits A10080 but agrees with the existing correction in only one of three context variants; both models still make a confident conflicting assignment. Neither is promoted. Persistent visual tracking proposals now exist; reviewed continuity and production RAG integration remain open. The legacy detector still has only three provisional rules; neither it nor the three-act corpus constitutes full RK-law coverage. The user is not responsible for researching legislation to label visible facts.
 - Qwen/Qwen3-VL-8B-Instruct BF16, exact revision in configuration; InternVL3_5-8B fallback. Main VLM remains at least 8B.
 - Pretrained pipeline first; optional language-attention LoRA only after reviewed supervision and measured errors. No adapter is enabled now.
-- Steps 1–2 have an execution handoff in `docs/handoffs/01-visual-labeling-and-person-tracking.md`: direct GitHub CLI search, local YOLOX/ByteTrack proposals and self-hosted CVAT review, with standalone SAM 2 corrections. The user explicitly excludes Agent Reach for this work, overriding older research defaults. Nothing from this shortlist is installed yet.
+- Steps 1–2 have an execution handoff in `docs/handoffs/01-visual-labeling-and-person-tracking.md`: direct GitHub CLI search, local YOLOX/ByteTrack proposals and self-hosted CVAT review, with standalone SAM 2 corrections. The user explicitly excludes Agent Reach for this work, overriding older research defaults. YOLOX-s ONNX and roboflow/trackers ByteTrack now run in an isolated private CPU environment. All 31 development groups have drafts and local review packets; human pilot approval and the session split remain pending. Local CVAT Community 2.79.0 now runs on loopback, with annotation backends on an internal network. Native synthetic video import/export passes; full human annotation remains pending. See `docs/person-tracking.md`.
 - Steps 3–4 research is in `docs/role-action-training-research.md`: propose a bounded supervised Qwen3-VL-8B attention-LoRA experiment on reviewed actor/action targets, compare identical-input untuned 8B and a frozen VideoPrism classifier baseline, then evaluate a full-clip scan. RL is deferred; no recognizer, training or runtime change has been implemented by the research.
 - PyAV/FFmpeg source timestamps, overlapping coarse/fine windows, source-frame evidence and local public-rule mapping.
 - FastAPI public API with required file/header/field names, asynchronous jobs, one GPU host/container and atomic filesystem records.
@@ -68,3 +69,14 @@ Use Octarin for relevant team decisions and write back durable setup facts, anch
 
 ## Doc index
 See `.context/DOC-INDEX.md`. Regenerate with `bash /Users/itsaibarr/harness/agent/core/gen-doc-index.sh .`, then omit ignored `.venv`, cache and `dist` entries. The existing generator does not exclude Python environments; do not modify Harness to fix that here.
+
+- Human role/view review follow-up: the copied private sidecar can migrate to v2
+  for `role_bindings`, `view_relations` and partial `view_observations`. Reflections
+  share a canonical local person only when a human identifies the owner. Responses
+  for all three pilots supply initial mappings and one independent same-person join;
+  one item remains unclear. Six segment ranges across all three pilots now have
+  identity-only confirmation. Nested revisions retain prior correction inputs.
+  Selected source-box acceptance preserves detector origin and approves only named
+  frames. Twelve selected boxes across the three pilots are accepted; the other
+  boxes, full role/action intervals, areas and training gates remain pending.
+  Do not place private role/scene corrections in Git or shared memory.

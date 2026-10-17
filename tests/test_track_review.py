@@ -124,3 +124,269 @@ def test_cvat_work_area_polygons_are_source_bound_and_import_as_unreviewed(tmp_p
     assert restored.work_areas[0].frame_ids == ["f000000"]
     assert restored.work_areas[0].review.status == "draft"
     assert ET.parse(xml).find("track[@label='work_area']/polygon") is not None
+
+
+def reflection_fixture():
+    raw, annotation = pair()
+    for number in range(2, 5):
+        raw["segments"].append(
+            dict(
+                id=f"s{number:04d}",
+                person_id=f"p{number:04d}",
+                upstream_id=number,
+                boxes=[
+                    dict(frame_id="f000000", xyxy=[0.5, 0.1, 0.8, 0.9]),
+                    dict(frame_id="f000001", xyxy=[0.5, 0.1, 0.8, 0.9]),
+                ],
+            )
+        )
+    mappings = []
+    for i, role, canonical, kind in [
+        (1, "cashier", 1, "direct"),
+        (2, "customer", 2, "direct"),
+        (3, "cashier", 1, "reflection"),
+        (4, "customer", 2, "reflection"),
+    ]:
+        mappings.append(
+            dict(
+                operation="role_binding",
+                binding=dict(
+                    id=f"rb{i}",
+                    segment_id=f"s{i:04d}",
+                    canonical_person_id=f"p{canonical:04d}",
+                    role=role,
+                    view_kind=kind,
+                    candidate_frame_ids=["f000000", "f000001"],
+                    reviewed_frame_ids=["f000000"],
+                    review_scope="anchor_mapping_only",
+                ),
+            )
+        )
+    for primary, mirror in [(1, 3), (2, 4)]:
+        mappings.append(
+            dict(
+                operation="view_relation",
+                relation=dict(
+                    id=f"vr{primary}",
+                    direct_segment_id=f"s{primary:04d}",
+                    reflected_segment_id=f"s{mirror:04d}",
+                    canonical_person_id=f"p{primary:04d}",
+                ),
+            )
+        )
+    return TrackManifest.model_validate(raw), annotation, mappings
+
+
+def test_reviewed_reflections_are_same_entity_views_not_temporal_joins_or_training_truth():
+    from forte.tracking import training_targets
+
+    m, a, operations = reflection_fixture()
+    revised, annotation = apply_corrections(
+        m,
+        a,
+        operations,
+        reviewer="synthetic human",
+        reason="Synthetic view/role mapping; intervals and geometry unreviewed",
+    )
+    assert m.schema_version == 1 and len(m.segments) == 4
+    assert revised.schema_version == 2
+    assert len(revised.role_bindings) == 4 and len(revised.view_relations) == 2
+    assert len({b.canonical_person_id for b in revised.role_bindings}) == 2
+    assert all(b.review.status == "confirmed" for b in revised.role_bindings)
+    assert revised.joins == []
+    assert all(s.review.status == "draft" for s in revised.segments)
+    assert all(b.review.status == "draft" for s in revised.segments for b in s.boxes)
+    assert annotation.facts == [] and training_targets(revised, annotation) == []
+    assert not revised.training_eligible
+
+
+def test_reflection_mapping_rejects_missing_sources_and_conflicting_roles():
+    import copy
+
+    m, a, operations = reflection_fixture()
+    bad = copy.deepcopy(operations)
+    bad[2]["binding"]["role"] = "customer"
+    with pytest.raises(ValueError, match="role"):
+        apply_corrections(m, a, bad, reviewer="synthetic human", reason="synthetic")
+    bad = copy.deepcopy(operations)
+    bad[0]["binding"]["reviewed_frame_ids"] = ["f999999"]
+    with pytest.raises(ValueError, match="frame"):
+        apply_corrections(m, a, bad, reviewer="synthetic human", reason="synthetic")
+    bad = copy.deepcopy(operations)
+    bad[-1]["relation"]["reflected_segment_id"] = "missing"
+    with pytest.raises(ValueError, match="segment"):
+        apply_corrections(m, a, bad, reviewer="synthetic human", reason="synthetic")
+
+
+def test_reflection_review_counts_mapped_entities_without_claiming_reviewed_tracks():
+    from forte.tracking_cli import aggregate
+
+    m, a, operations = reflection_fixture()
+    m, a = apply_corrections(
+        m, a, operations, reviewer="synthetic human", reason="synthetic mapping"
+    )
+    report = aggregate([({"clip_id": "clip000"}, m)], annotations=[a])
+    assert report["confirmed_role_mappings"] == 4
+    assert report["canonical_role_mapping_groups"] == 2
+    assert report["confirmed_reflection_relations"] == 2
+    assert report["human_reviewed_segments"] == 0
+    assert report["confirmed_roles"] == 0 and report["training_targets"] == 0
+
+
+def test_later_conflicting_role_fact_cannot_override_the_reviewed_mapping():
+    from forte.annotations import VisualFact
+    from forte.tracking import validate_pair
+
+    m, a, operations = reflection_fixture()
+    m, a = apply_corrections(
+        m, a, operations, reviewer="synthetic human", reason="synthetic mapping"
+    )
+    a.facts = [
+        VisualFact(
+            id="conflict",
+            kind="role",
+            actor_id="p0001",
+            value="customer",
+            start_sec=0,
+            end_sec=1,
+            frame_ids=["f000000", "f000001"],
+            continuity_supported=True,
+            segment_ids=["s0001"],
+        )
+    ]
+    with pytest.raises(ValueError, match="human role mapping"):
+        validate_pair(m, a)
+
+
+def test_reflection_observation_and_role_do_not_invent_an_owner_or_abstention():
+    from forte.tracking import training_targets
+    from forte.tracking_cli import aggregate
+
+    m, a, mappings = reflection_fixture()
+    operations = mappings[:2]
+    for number in (3, 4):
+        operations.append(
+            dict(
+                operation="view_observation",
+                observation=dict(
+                    id=f"vo{number}",
+                    segment_id=f"s{number:04d}",
+                    view_kind="reflection",
+                    candidate_frame_ids=["f000000", "f000001"],
+                    reviewed_frame_ids=["f000000"],
+                    review_scope="view_kind_only; owner not supplied",
+                ),
+            )
+        )
+    # A human can recognize a role in a reflected view without establishing
+    # which direct-view segment is the same person.
+    reflected_role = mappings[2]
+    reflected_role["binding"]["canonical_person_id"] = None
+    operations.append(reflected_role)
+    revised, annotation = apply_corrections(
+        m, a, operations, reviewer="synthetic human", reason="partial synthetic response"
+    )
+    assert revised.schema_version == 2 and m.schema_version == 1
+    assert len(revised.view_observations) == 2 and revised.view_relations == []
+    assert len(revised.role_bindings) == 3
+    assert revised.role_bindings[-1].canonical_person_id is None
+    assert not any(b.segment_id == "s0004" for b in revised.role_bindings)
+    assert revised.joins == [] and annotation.facts == []
+    assert training_targets(revised, annotation) == []
+    assert all(s.review.status == "draft" for s in revised.segments)
+    assert all(b.review.status == "draft" for s in revised.segments for b in s.boxes)
+    report = aggregate([({"clip_id": "clip000"}, revised)], annotations=[annotation])
+    assert report["canonical_role_mapping_groups"] == 2
+    assert report["role_mappings_with_unresolved_identity"] == 1
+    assert report["confirmed_view_observations"] == 2
+    assert report["people_reviewed"] is None
+    assert report["confirmed_abstentions"] == 0
+
+
+def test_partial_view_observations_require_real_source_anchors_and_do_not_imply_roles():
+    m, a, _ = reflection_fixture()
+    operation = dict(
+        operation="view_observation",
+        observation=dict(
+            id="vo1",
+            segment_id="s0004",
+            view_kind="reflection",
+            candidate_frame_ids=["f999999"],
+            review_scope="synthetic partial view",
+        ),
+    )
+    with pytest.raises(ValueError, match="frame"):
+        apply_corrections(m, a, [operation], reviewer="synthetic human", reason="synthetic")
+
+
+def test_human_join_groups_repeated_role_mappings_without_approving_geometry():
+    from forte.tracking_cli import aggregate
+
+    m, a, operations = reflection_fixture()
+    for op in operations:
+        if op["operation"] == "role_binding":
+            op["binding"]["role"] = "cashier"
+    operations.append(dict(operation="join", from_segment="s0001", to_segment="s0002"))
+    revised, annotation = apply_corrections(
+        m, a, operations, reviewer="synthetic human", reason="synthetic same-person response"
+    )
+    report = aggregate([({"clip_id": "clip000"}, revised)], annotations=[annotation])
+    assert report["canonical_role_mapping_groups"] == 1
+    assert report["confirmed_role_mappings"] == 4
+    assert report["proposed_joins"] == 0
+    assert report["confirmed_identity_joins"] == 1
+    assert report["recorded_join_decisions"] == 1
+    assert report["human_reviewed_segments"] == 0 and report["training_targets"] == 0
+    assert all(b.review.status == "draft" for s in revised.segments for b in s.boxes)
+
+
+def test_human_join_cannot_make_conflicting_role_mappings_consistent():
+    m, a, operations = reflection_fixture()
+    operations.append(dict(operation="join", from_segment="s0001", to_segment="s0002"))
+    with pytest.raises(ValueError, match="role"):
+        apply_corrections(m, a, operations, reviewer="synthetic human", reason="synthetic")
+
+
+@pytest.mark.parametrize("status", ["confirmed", "rejected"])
+def test_box_review_changes_only_selected_review_state_and_keeps_detector_origin(status):
+    from forte.tracking import training_targets
+    from forte.tracking_cli import aggregate
+
+    raw, annotation = pair()
+    m = TrackManifest.model_validate(raw)
+    before = m.segments[0].boxes[0].model_dump(exclude={"review"})
+    revised, annotation = apply_corrections(
+        m,
+        annotation,
+        [dict(operation="box_review", segment_id="s0001", frame_ids=["f000000"], status=status)],
+        reviewer="synthetic human",
+        reason="Synthetic source-box geometry review only",
+    )
+    assert revised.segments[0].boxes[0].review.status == status
+    assert revised.segments[0].boxes[0].model_dump(exclude={"review"}) == before
+    assert revised.segments[0].boxes[1].review.status == "draft"
+    assert revised.segments[0].review.status == "draft"
+    assert m.segments[0].boxes[0].review.status == "draft"
+    assert revised.joins == [] and annotation.facts == []
+    assert training_targets(revised, annotation) == []
+    report = aggregate([({}, revised)], annotations=[annotation])
+    assert report["confirmed_boxes"] == int(status == "confirmed")
+    assert report["rejected_boxes"] == int(status == "rejected")
+    assert report["pending_boxes"] == 1
+
+
+@pytest.mark.parametrize("frames", [[], ["f000000", "f000000"], ["f999999"]])
+def test_box_review_rejects_missing_duplicate_or_unknown_source_frames(frames):
+    raw, annotation = pair()
+    with pytest.raises(ValueError, match="frame"):
+        apply_corrections(
+            TrackManifest.model_validate(raw),
+            annotation,
+            [
+                dict(
+                    operation="box_review", segment_id="s0001", frame_ids=frames, status="confirmed"
+                )
+            ],
+            reviewer="synthetic human",
+            reason="synthetic",
+        )

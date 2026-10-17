@@ -369,5 +369,29 @@
       "minimum_iou_threshold": 0.1
     },
     "automatic_role_assignment": false
+  },
+  "selected_tracker_release": {
+    "tracker_repository": "https://github.com/roboflow/trackers",
+    "tracker_revision": "3666546420b0fd564c8e63157a6621efffdfa01a",
+    "tracker_license": "Apache-2.0",
+    "tracker": "ByteTrackTracker",
+    "tracker_parameters": {
+      "track_activation_threshold": 0.5,
+      "high_conf_det_threshold": 0.5,
+      "lost_track_buffer": 30,
+      "minimum_consecutive_frames": 1,
+      "minimum_iou_threshold": 0.1
+    },
+    "tracker_version": "2.6.1",
+    "tracker_artifacts": [
+      {
+        "filename": "trackers-2.6.1-py3-none-any.whl",
+        "sha256": "b5188de630f449958be3ce787fbb0375c69cfde094b6e4b4329cd79a98108501"
+      },
+      {
+        "filename": "trackers-2.6.1.tar.gz",
+        "sha256": "e8363838384cea25967b4501fff2565cc9c0e234a6f7eaea3ba5343b65a30561"
+      }
+    ]
   }
 }

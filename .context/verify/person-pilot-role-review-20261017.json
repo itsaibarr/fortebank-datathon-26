@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-10-17T18:11:43.189086+00:00",
+  "implementation_commit": "1f780fc0cb5d39992198f11d697561c0321971d1",
+  "human_review_progress": {
+    "recordings_with_role_view_mapping": 3,
+    "role_view_mappings_recorded": 14,
+    "canonical_identity_groups_with_role_mapping": 6,
+    "verified_distinct_people": null,
+    "reflection_relations_recorded": 7,
+    "identity_joins_confirmed": 1,
+    "explicit_unclear_review_items": 1,
+    "approved_abstention_targets": 0,
+    "full_role_intervals_approved": 0,
+    "action_intervals_approved": 0,
+    "full_segments_approved": 0,
+    "boxes_approved": 0,
+    "training_targets_released": 0
+  },
+  "aggregate_proposals": {
+    "recordings_processed": 31,
+    "proposed_segments": 3567,
+    "proposed_joins": 7745,
+    "confirmed_identity_joins": 1,
+    "rejected_joins": 0,
+    "source_frames": 29546,
+    "detection_frames": 4973,
+    "duration_sec": 987.1,
+    "runtime_sec": 548.7677207890665,
+    "undecodable_ranges": 0
+  },
+  "artifact_contract": {
+    "private_track_sidecar_version": 2,
+    "original_reviews_and_media_preserved": true,
+    "verbatim_human_feedback_preserved": true,
+    "geometry_unchanged": true,
+    "temporal_joins_unchanged_in_new_revision": true,
+    "source_hash_and_frame_bindings_verified": true,
+    "regression_exclusion_retained": true,
+    "session_split_frozen": false
+  },
+  "prior_full_run_source_verification": {
+    "recordings_verified": 31,
+    "source_frames_verified": 29546,
+    "playback_frames_verified": 59092,
+    "source_images_reextracted": 122,
+    "source_crops_reextracted": 286,
+    "semantic_quality_established": false
+  },
+  "changed_revision_source_verification": {
+    "recordings_verified": 1,
+    "source_frames_verified": 599,
+    "playback_frames_verified": 1198,
+    "source_images_reextracted": 11,
+    "source_crops_reextracted": 43,
+    "source_hash_and_bindings_verified": true,
+    "original_manifest_preserved": true,
+    "geometry_unchanged": true,
+    "temporal_joins_unchanged": true,
+    "training_targets": 0,
+    "independent_semantic_quality_established": false
+  },
+  "software_checks": {
+    "pytest_passed": 101,
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "package_build": "passed"
+  },
+  "software_check_scope": "Implementation unchanged since prior verified checkpoint; this follow-up changes private review data and aggregate documentation only",
+  "quality_limits": {
+    "complete_pilot_approved": false,
+    "role_action_interval_quality_measured": false,
+    "observed_id_switches": null,
+    "observed_fragments": null,
+    "camera_generalization_evaluated": false,
+    "native_cvat_server_roundtrip": "pending_image_download_failure",
+    "regression_reference_review_receipt": "pending_mismatch_adjudication"
+  },
+  "new_paid_compute_spend_usd": 0,
+  "training_performed": false,
+  "reserved_or_jury_recordings_included": 0,
+  "public_api_changed": false,
+  "production_detector_changed": false,
+  "private_visual_inspection_by_remote_agent": false
+}
