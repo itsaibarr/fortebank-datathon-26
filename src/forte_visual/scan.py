@@ -399,6 +399,7 @@ def scan(
     roles = RoleCache()
     status = "complete_schedule"
     visibility, areas = [], []
+    participant_pairs = {}
 
     def assess(case, response):
         from forte_visual.live import validate_response
@@ -450,6 +451,17 @@ def scan(
                 for observation in observations:
                     if observation["kind"] == "role":
                         roles.add(m.clip_id, observation["segments"], observation)
+                    elif observation["kind"] == "action" and observation["value"] != "unclear":
+                        segment = observation["segments"][0]
+                        proposals.append(
+                            (
+                                (observation["start_sec"] + observation["end_sec"]) / 2,
+                                segment,
+                                "coarse_visual_action",
+                            )
+                        )
+                        if observation["other_actor_id"]:
+                            participant_pairs[segment] = case.actors[observation["other_actor_id"]]
                 for p in response.get("proposals", []):
                     if p["frame_id"] not in case.frames or p["actor_id"] not in case.actors:
                         raise ValueError("Invalid proposal source/track")
@@ -553,6 +565,15 @@ def scan(
                         segments=component,
                         seed=seed,
                         max_pixels=393216,
+                        counterpart_segments=participant_pairs.get(segment),
+                        counterpart=next(
+                            (
+                                s.person_id
+                                for s in m.segments
+                                if s.id in participant_pairs.get(segment, [])
+                            ),
+                            None,
+                        ),
                     )
                     case.predicted_roles = role_hints(roles, case, m)
                     response = bounds.invoke(executor, case, output)
