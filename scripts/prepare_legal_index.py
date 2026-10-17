@@ -7,7 +7,16 @@ import time
 from pathlib import Path
 
 from forte.legal import load_release
-from forte.retrieval import DenseIndex, LocalBGE, corpus_digest, hybrid_search, live_clauses
+from forte.retrieval import (
+    RERANKER_REVISION,
+    DenseIndex,
+    LocalBGE,
+    LocalReranker,
+    corpus_digest,
+    hybrid_search,
+    live_clauses,
+    rerank_hits,
+)
 
 
 def main():
@@ -17,6 +26,7 @@ def main():
     parser.add_argument("--cases", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
+    parser.add_argument("--reranker", type=Path)
     args = parser.parse_args()
     if args.output.exists():
         raise ValueError("Use a new index directory")
@@ -32,9 +42,14 @@ def main():
     build_seconds = time.perf_counter() - start
     cases = json.loads(args.cases.read_text())["cases"]
     vectors = encoder.encode([c["query"] for c in cases])
+    reranker = LocalReranker(args.reranker, args.device) if args.reranker else None
     rows = []
     for case, vector in zip(cases, vectors, strict=True):
-        hits = hybrid_search(corpus, index, case["query"], vector, act_id=case["act_id"], limit=3)
+        hits = hybrid_search(
+            corpus, index, case["query"], vector, act_id=case["act_id"], limit=20 if reranker else 3
+        )
+        if reranker:
+            hits = rerank_hits(case["query"], hits, reranker.score, limit=3)
         provisions = [h["clause"]["provision"] for h in hits]
         expected = case["expected_provision"]
         rows.append(
@@ -59,11 +74,13 @@ def main():
         "negative_queries": sum(c["expected_provision"] is None for c in cases),
         "negative_passes": sum(r["no_match_correct"] is True for r in rows),
         "torch": encoder.torch.__version__,
+        "reranker_revision": RERANKER_REVISION if reranker else None,
         "results": rows,
         "limitations": [
             "Small agent-prepared development query set, not independent QA.",
             "Fixed uncalibrated dense floor 0.35; similarity is not applicability.",
-            "No reranker, automatic cross-reference expansion or legal adjudication.",
+            "No automatic cross-reference expansion or legal adjudication.",
+            "Reranker logit floor zero is not calibrated on independent legal queries.",
         ],
     }
     args.output.mkdir(parents=True)

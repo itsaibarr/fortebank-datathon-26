@@ -3,7 +3,7 @@ from test_legal import HTML, snapshot
 
 from forte.cli import main
 from forte.legal import Corpus, extract_clauses
-from forte.retrieval import DenseIndex, corpus_digest, hybrid_search
+from forte.retrieval import DenseIndex, corpus_digest, hybrid_search, rerank_hits
 
 
 def fixture():
@@ -57,3 +57,13 @@ def test_dense_cli_requires_a_local_model_and_matching_index(tmp_path, capsys):
     )
     output = capsys.readouterr()
     assert not output.out and "invalid" in output.err
+
+
+def test_reranker_reorders_relevant_candidates_and_can_reject_all_candidates():
+    corpus, index = fixture()
+    hits = hybrid_search(corpus, index, "synthetic paraphrase", [1, 0])
+    ranked = rerank_hits("synthetic paraphrase", hits, lambda q, texts: [-5, 3])
+    assert len(ranked) == 1 and ranked[0]["clause"] == hits[1]["clause"]
+    assert rerank_hits("unrelated", hits, lambda q, texts: [-5, -3]) == []
+    with pytest.raises(ValueError, match="scores"):
+        rerank_hits("query", hits, lambda q, texts: [float("nan"), 1])

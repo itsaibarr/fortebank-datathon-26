@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, model_validator
 from forte.legal import Corpus
 
 BGE_REVISION = "5617a9f61b028005a4858fdac845db406aefb181"
+RERANKER_REVISION = "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"
 
 
 def corpus_digest(corpus):
@@ -134,3 +135,56 @@ class LocalBGE:
                 )
             result.append(vector[0].float().cpu().tolist())
         return result
+
+
+def rerank_hits(query, hits, scorer, *, limit=5):
+    if not 1 <= limit <= 20:
+        raise ValueError("Use a limit 1–20")
+    if not hits or re.search(r"(?:пункт(?:а|у|ом)?|п\.|§)\s*\d", query, re.I):
+        return hits[:limit]
+    scores = scorer(
+        query, ["\n".join(h["clause"]["headings"]) + "\n" + h["clause"]["text"] for h in hits]
+    )
+    if len(scores) != len(hits) or not all(math.isfinite(s) for s in scores):
+        raise ValueError("Invalid reranker scores")
+    # Raw logit zero is a fixed development floor, not a calibrated legal probability.
+    ranked = [
+        dict(hit, reranker_logit=score)
+        for hit, score in zip(hits, scores, strict=True)
+        if score >= 0
+    ]
+    return sorted(ranked, key=lambda h: (-h["reranker_logit"], h["clause"]["url"]))[:limit]
+
+
+class LocalReranker:
+    def __init__(self, path: Path, device="cpu"):
+        if path.name != RERANKER_REVISION or not path.is_dir():
+            raise ValueError("Mount the pinned BGE reranker snapshot directory")
+        import torch
+        from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+        self.torch, self.device = torch, device
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            path, local_files_only=True, trust_remote_code=False
+        )
+        self.model = (
+            AutoModelForSequenceClassification.from_pretrained(
+                path,
+                local_files_only=True,
+                trust_remote_code=False,
+                use_safetensors=True,
+            )
+            .to(device)
+            .eval()
+        )
+
+    def score(self, query, passages):
+        scores = []
+        for passage in passages:
+            inputs = self.tokenizer(query, passage, return_tensors="pt", truncation=False)
+            if inputs["input_ids"].shape[1] > 8192:
+                raise ValueError("Clause exceeds reranker context; hierarchical split required")
+            with self.torch.inference_mode():
+                result = self.model(**{k: v.to(self.device) for k, v in inputs.items()})
+            scores.append(float(result.logits.float().reshape(-1)[0]))
+        return scores

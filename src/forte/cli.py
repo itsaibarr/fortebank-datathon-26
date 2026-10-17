@@ -35,6 +35,7 @@ def main(argv: list[str] | None = None) -> int:
     legal.add_argument("--dense-index", type=Path)
     legal.add_argument("--embedding-model", type=Path)
     legal.add_argument("--embedding-device", default="cpu", choices=["cpu", "cuda"])
+    legal.add_argument("--reranker-model", type=Path)
     annotation = commands.add_parser(
         "annotations-check", help="Validate private visual/legal annotation structure"
     )
@@ -73,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
         try:
             if bool(args.dense_index) != bool(args.embedding_model):
                 raise ValueError("Dense retrieval requires both local index and model")
+            if args.reranker_model and not args.dense_index:
+                raise ValueError("Reranking requires dense retrieval candidates")
             corpus = load_release(args.release)
             if args.dense_index:
                 from forte.retrieval import DenseIndex, LocalBGE, hybrid_search
@@ -85,8 +88,13 @@ def main(argv: list[str] | None = None) -> int:
                     args.query,
                     encoder.encode([args.query])[0],
                     act_id=args.act,
-                    limit=args.limit,
+                    limit=20 if args.reranker_model else args.limit,
                 )
+                if args.reranker_model:
+                    from forte.retrieval import LocalReranker, rerank_hits
+
+                    reranker = LocalReranker(args.reranker_model, args.embedding_device)
+                    hits = rerank_hits(args.query, hits, reranker.score, limit=args.limit)
             else:
                 hits = corpus.search(args.query, act_id=args.act, limit=args.limit)
         except (OSError, ValueError, KeyError, TypeError, ImportError) as exc:
