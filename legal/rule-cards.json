@@ -1,0 +1,273 @@
+[
+  {
+    "id": "acceptance_cashier_departure",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:2",
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:22"
+    ],
+    "scope": "Cash acceptance: clause 22 lies in Chapter 2, paragraph 2, not a universal departure ban.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "acceptance": "The transaction is cash acceptance, supported independently of departure.",
+      "service_ongoing": "Client service has not finished at the departure boundary.",
+      "departure": "The same role-grounded cashier leaves the established workstation."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "A customer leaving does not satisfy the cashier predicate.",
+      "A disappearance behind occlusion is not a proven departure.",
+      "Role evidence must precede or accompany the movement and preserve continuity."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "acceptance_client_presence",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:2",
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:20"
+    ],
+    "scope": "Cash acceptance and counting in the client presence.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "acceptance_count": "Cash acceptance/counting is visibly occurring.",
+      "client_absent": "The client is demonstrably absent during the relevant activity, with full relevant scene visibility."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "Offscreen or unsampled is not absent.",
+      "Do not transfer the duty to a different actor or transaction phase."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "acceptance_prior_cash_storage",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:20"
+    ],
+    "scope": "Previously accepted cash storage during cash acceptance.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "prior_cash": "The cash has been established as previously accepted, distinct from the current client cash.",
+      "storage_nonconformity": "The visible storage arrangement fails the specified lockable-storage duty."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "A visible pile alone does not establish ownership, prior acceptance or a lock failure.",
+      "Lockable and continuously locked are different claims; do not add a continuous-lock requirement without another source."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "acceptance_counting",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:19",
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:57",
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:58"
+    ],
+    "scope": "Clause 19(2): acceptance counting; authenticity/payment fitness requires separate evidence.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "acceptance": "Cash acceptance and actor roles are established.",
+      "complete_opportunity": "Complete counting opportunity is visible at sufficient resolution.",
+      "count_omitted": "Required banknote/coin counting is demonstrably omitted."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "A few sampled images cannot establish an omitted count.",
+      "Do not claim counterfeit notes or authenticity-check failure from low-resolution CCTV."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "acceptance_confirmation_document",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:19"
+    ],
+    "scope": "Clause 19(6): confirmation of completed cash acceptance.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "acceptance_complete": "Cash acceptance is complete.",
+      "full_handoff_opportunity": "Entire relevant document-issue opportunity is observed.",
+      "confirmation_not_issued": "Confirmation was not issued; relevant alternative delivery/context has been checked."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "An unreadable paper or offscreen/digital delivery does not establish non-issuance.",
+      "Do not infer document contents, signatures or accounting values without legible evidence."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "payout_counting",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:31",
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:32"
+    ],
+    "scope": "Clause 32: required banknote/coin counting method on payout, with packaging qualifications.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "payout": "Cash payout is established separately from acceptance.",
+      "full_opportunity": "Relevant counting opportunity is completely observed.",
+      "counting_method_omitted": "Required leaf-by-leaf or coin-by-coin counting is demonstrably omitted for the relevant packaging condition."
+    },
+    "exceptions": {
+      "packaging_qualification": "Clause 32 permits the relevant intact packaging/label-based method rather than leaf-by-leaf counting."
+    },
+    "visual_limits": [
+      "Distinguish intact packs, incomplete/damaged straps, and incomplete coin bags.",
+      "Do not call absence of leaf counting a violation when clause 32 permits the method."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "payout_confirmation_document",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:31"
+    ],
+    "scope": "Clause 31(6): confirmation of completed cash payout.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "payout_complete": "Cash payout is complete.",
+      "full_handoff_opportunity": "Entire relevant document-issue opportunity is observed.",
+      "confirmation_not_issued": "Confirmation was not issued; relevant alternative delivery/context has been checked."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "Short sampling, an occluded handoff and unreadable documents cannot prove non-issuance."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "cash_processing_controller",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:2",
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:42"
+    ],
+    "scope": "Counting, sorting and packaging in the presence of a controlling employee.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "processing": "The activity is the covered cash counting, sorting or packaging operation.",
+      "controller_absent": "Absence of the controlling employee is established with complete relevant visibility."
+    },
+    "exceptions": {
+      "client_acceptance_or_payout": "The activity is client cash acceptance or payout, which clause 42 expressly excepts."
+    },
+    "visual_limits": [
+      "A lone cashier serving a client is not by itself a clause 42 violation.",
+      "Controller role cannot be inferred from simply seeing another person."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "collector_bag_checks",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:24",
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:25"
+    ],
+    "scope": "Clause 24(3)-(4): bags accepted from a collection unit/organization.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "collection_handoff": "Collection-unit/organization handoff is established, not an ordinary customer transaction.",
+      "full_check_opportunity": "The relevant checking opportunity is completely visible.",
+      "bag_check_omitted": "The specified bag integrity/seal check is demonstrably omitted."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "Do not classify a bag-bearing customer as a collector from appearance.",
+      "Bag/seal condition may be unobservable at the supplied resolution."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "exchange_operating_cash_access",
+    "clause_ids": [
+      "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:41"
+    ],
+    "scope": "Foreign-exchange operating cash room; the institution and room type must be established.",
+    "actor_role": "unclear",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "exchange_room": "The room is an exchange operating cash room covered by clause 41.",
+      "unauthorized_person": "The person is established to be an outsider, not merely unfamiliar in appearance.",
+      "entry": "Their presence inside that room is observed."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "Employee authorization is usually not visible in CCTV.",
+      "A bank teller window is not automatically a licensed exchange office."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "premises_lockable_cash_door",
+    "clause_ids": [
+      "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:16"
+    ],
+    "scope": "Clause 16(1) concerns a separate entrance and lockable door construction.",
+    "actor_role": "unclear",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "cash_room": "The relevant space is an in-scope cash room.",
+      "construction_nonconformity": "A separate entrance with a lockable door is demonstrably lacking."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "An open door does not prove the door is not lockable or must always be closed.",
+      "Construction, security performance and unavailable camera angles need non-video evidence."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  },
+  {
+    "id": "payout_client_presence",
+    "clause_ids": [
+      "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:31"
+    ],
+    "scope": "Clause 31(4): counting prepared payout cash in the client presence.",
+    "actor_role": "cashier",
+    "prerequisites": {
+      "legal_date_applicable": "Recording date and applicable legal edition have been established separately.",
+      "institution_in_scope": "Institution, activity and jurisdiction fall within the cited provision.",
+      "payout": "Cash payout is established separately from acceptance.",
+      "full_opportunity": "Relevant counting opportunity is completely observed.",
+      "client_absent": "The client is demonstrably absent during counting with full relevant visibility."
+    },
+    "exceptions": {},
+    "visual_limits": [
+      "A permitted packaging-based counting method does not waive the client-presence requirement.",
+      "Offscreen or unsampled is not absent."
+    ],
+    "review_status": "draft",
+    "reviewer": null
+  }
+]

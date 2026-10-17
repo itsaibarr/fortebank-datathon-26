@@ -1,0 +1,3191 @@
+{
+  "schema_version": 1,
+  "release": "2026-10-17",
+  "records": [
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z42",
+      "headings": [
+        "Глава 1. Общие положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:2",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z43",
+      "headings": [
+        "Глава 1. Общие положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "acceptance_cashier_departure",
+        "acceptance_client_presence",
+        "cash_processing_controller"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:3",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z62",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:4",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z70",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:5",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z71",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:6",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z72",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:7",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z76",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:8",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z77",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:9",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z78",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:10",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z79",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:10-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z457",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:11",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z80",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:12",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z81",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:13",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z82",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:14",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z83",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:15",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z84",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:16",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z89",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 1. Организация работы по осуществлению кассовых операций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:17",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z91",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:18",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z94",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:19",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z104",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "acceptance_counting",
+        "acceptance_confirmation_document"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:20",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z111",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "acceptance_client_presence",
+        "acceptance_prior_cash_storage"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:21",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z113",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:22",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z114",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "acceptance_cashier_departure"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:23",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z115",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:24",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z117",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "collector_bag_checks"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:25",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z123",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "collector_bag_checks"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:26",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z125",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:27",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z127",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 2. Порядок осуществления кассовых операций по приему наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:28",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z129",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:29",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z130",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:30",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z134",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:31",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z144",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "payout_counting",
+        "payout_confirmation_document",
+        "payout_client_presence"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:32",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z150",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "payout_counting"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:33",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z152",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:34",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z153",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:35",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z154",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:36",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z155",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:37",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z157",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:38",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z158",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:39",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z159",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:40",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z160",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 3. Порядок осуществления кассовых операций по выдаче, размену и обмену наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:41",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z162",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:42",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z163",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "cash_processing_controller"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:43",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z164",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:44",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z167",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:45",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z168",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:46",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z169",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:47",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z171",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:48",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z174",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:49",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z176",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:50",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z179",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:51",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z503",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:52",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z190",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:53",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:53-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z553",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:54",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z192",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:55",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z193",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:56",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z194",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 4. Порядок осуществления кассовых операций по пересчету, сортировке и упаковке наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:57",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z196",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5. Порядок работы с сомнительными, неплатежными, имеющими признаки подделки наличными деньгами"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "acceptance_counting"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:58",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z197",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5. Порядок работы с сомнительными, неплатежными, имеющими признаки подделки наличными деньгами"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "acceptance_counting"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:59",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z198",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5. Порядок работы с сомнительными, неплатежными, имеющими признаки подделки наличными деньгами"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:60",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z202",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5. Порядок работы с сомнительными, неплатежными, имеющими признаки подделки наличными деньгами"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:61",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z204",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5. Порядок работы с сомнительными, неплатежными, имеющими признаки подделки наличными деньгами"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:62",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z205",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5. Порядок работы с сомнительными, неплатежными, имеющими признаки подделки наличными деньгами"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:63",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z206",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5. Порядок работы с сомнительными, неплатежными, имеющими признаки подделки наличными деньгами"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:63-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z463",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5-1. Порядок работы с наличными деньгами, окрашенными специальной краской"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:63-2",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z465",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5-1. Порядок работы с наличными деньгами, окрашенными специальной краской"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:63-3",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z467",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5-1. Порядок работы с наличными деньгами, окрашенными специальной краской"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:63-4",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z469",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5-1. Порядок работы с наличными деньгами, окрашенными специальной краской"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:63-5",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z477",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5-1. Порядок работы с наличными деньгами, окрашенными специальной краской"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:63-6",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z485",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 5-1. Порядок работы с наличными деньгами, окрашенными специальной краской"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:64",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z208",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 6. Порядок завершения дня и формирования кассовых документов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:65",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z209",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 6. Порядок завершения дня и формирования кассовых документов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:66",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z210",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 6. Порядок завершения дня и формирования кассовых документов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:67",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z211",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 6. Порядок завершения дня и формирования кассовых документов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:68",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z212",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 6. Порядок завершения дня и формирования кассовых документов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:69",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z214",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 7. Организация работы устройств, функционирующих в автоматическом режиме"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:70",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z215",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 7. Организация работы устройств, функционирующих в автоматическом режиме"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:71",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z216",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 7. Организация работы устройств, функционирующих в автоматическом режиме"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:72",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z217",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 7. Организация работы устройств, функционирующих в автоматическом режиме"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:73",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z218",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 7. Организация работы устройств, функционирующих в автоматическом режиме"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:74",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z220",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 8. Порядок осуществления кассовых операций по хранению наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:75",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z221",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 8. Порядок осуществления кассовых операций по хранению наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:76",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z222",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 8. Порядок осуществления кассовых операций по хранению наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:77",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z223",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 8. Порядок осуществления кассовых операций по хранению наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:78",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z224",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 8. Порядок осуществления кассовых операций по хранению наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:79",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z225",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 8. Порядок осуществления кассовых операций по хранению наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:80",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z226",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 8. Порядок осуществления кассовых операций по хранению наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:81",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z228",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 9. Порядок осуществления ревизии наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:82",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z229",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 9. Порядок осуществления ревизии наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:83",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z233",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 9. Порядок осуществления ревизии наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:84",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z235",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 9. Порядок осуществления ревизии наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:85",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z236",
+      "headings": [
+        "Глава 2. Порядок осуществления кассовых операций",
+        "Параграф 9. Порядок осуществления ревизии наличных денег"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:86",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z245",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:87",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z248",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:87-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z487",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:88",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z249",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:89",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z250",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:90",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z253",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:90-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z488",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:91",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z256",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:92",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z257",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:93",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z258",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:94",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z263",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:95",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z264",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": true,
+      "rule_card_ids": [],
+      "observability": "repealed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:96",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z266",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:97",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z267",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": true,
+      "rule_card_ids": [],
+      "observability": "repealed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:98",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z268",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:99",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z269",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:100",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z272",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:101",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z273",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:102",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z283",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:103",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z284",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:104",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z285",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 1. Организация осуществления операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:105",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z287",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2. Порядок осуществления приема, сбора, доставки и сдачи банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:106",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z288",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2. Порядок осуществления приема, сбора, доставки и сдачи банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:107",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z298",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2. Порядок осуществления приема, сбора, доставки и сдачи банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:108",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z303",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2. Порядок осуществления приема, сбора, доставки и сдачи банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z565",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2. Порядок осуществления приема, сбора, доставки и сдачи банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z567",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-2",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z570",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-3",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z574",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-4",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z575",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-5",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z576",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-6",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z580",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-7",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z583",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-8",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z586",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-9",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z587",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-10",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z590",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:109-11",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z591",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 2-1. Организация автомобильных инкассаторских перевозок"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:110",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z306",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:111",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z308",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:112",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z309",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:113",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z311",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:114",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z314",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:115",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z318",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:116",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z319",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:117",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z320",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:118",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z321",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:119",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z327",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:120",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z330",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 3. Порядок осуществления перевозки банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:121",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z332",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 4. Порядок осуществления хранения банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:122",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z333",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 4. Порядок осуществления хранения банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:123",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z334",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 4. Порядок осуществления хранения банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:124",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z335",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 4. Порядок осуществления хранения банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:125",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z337",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 5. Порядок осуществления сопровождения клиента с банкнотами, монетами и ценностями"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:126",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z338",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 5. Порядок осуществления сопровождения клиента с банкнотами, монетами и ценностями"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:127",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z341",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 5. Порядок осуществления сопровождения клиента с банкнотами, монетами и ценностями"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:128",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z342",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 5. Порядок осуществления сопровождения клиента с банкнотами, монетами и ценностями"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:129",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z343",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 5. Порядок осуществления сопровождения клиента с банкнотами, монетами и ценностями"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:130",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z345",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 6. Требования к деятельности инкассаторских организаций по пересчету, сортировке, упаковке, хранению банкнот, монет и ценностей, а также их выдаче банкам и их клиентам по поручению банков"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:131",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z350",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 6. Требования к деятельности инкассаторских организаций по пересчету, сортировке, упаковке, хранению банкнот, монет и ценностей, а также их выдаче банкам и их клиентам по поручению банков"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:132",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z355",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 6. Требования к деятельности инкассаторских организаций по пересчету, сортировке, упаковке, хранению банкнот, монет и ценностей, а также их выдаче банкам и их клиентам по поручению банков"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900019680:c4cd4052-63e3-475b-ba9e-93f23de13fdb:133",
+      "url": "https://adilet.zan.kz/rus/docs/V1900019680#z356",
+      "headings": [
+        "Глава 3. Порядок осуществления операций по инкассации банкнот, монет и ценностей",
+        "Параграф 6. Требования к деятельности инкассаторских организаций по пересчету, сортировке, упаковке, хранению банкнот, монет и ценностей, а также их выдаче банкам и их клиентам по поручению банков"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:1",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z22",
+      "headings": [
+        "Глава 1. Общие положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:2",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z23",
+      "headings": [
+        "Глава 1. Общие положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:3",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z37",
+      "headings": [
+        "Глава 2. Порядок организации охраны"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:4",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z40",
+      "headings": [
+        "Глава 2. Порядок организации охраны"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:5",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z41",
+      "headings": [
+        "Глава 2. Порядок организации охраны"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:6",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z43",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:7",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z44",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:8",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z49",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:9",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z51",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:10",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z54",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:11",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:12",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z56",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:13",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z63",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:14",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:15",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z68",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:16",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "premises_lockable_cash_door"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:17",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z78",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": true,
+      "rule_card_ids": [],
+      "observability": "repealed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:18",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z79",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:19",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z80",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:20",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z84",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:21",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z90",
+      "headings": [
+        "Глава 3. Порядок устройства помещений банков, инкассаторских организаций, предназначенных для осуществления кассовых операций, операций по инкассации банкнот, монет и ценностей"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:22",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z93",
+      "headings": [
+        "Глава 4. Порядок устройства помещений уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:23",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z96",
+      "headings": [
+        "Глава 4. Порядок устройства помещений уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V2000020075:4bd1c354-b40c-4b38-ab7d-53aaa7b4f39c:24",
+      "url": "https://adilet.zan.kz/rus/docs/V2000020075#z98",
+      "headings": [
+        "Глава 4. Порядок устройства помещений уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z23",
+      "headings": [
+        "Глава 1. Общие положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:2",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z24",
+      "headings": [
+        "Глава 1. Общие положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:3",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z36",
+      "headings": [
+        "Глава 1. Общие положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:4",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z40",
+      "headings": [
+        "Глава 1. Общие положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:5",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z42",
+      "headings": [
+        "Глава 2. Квалификационные требования к уполномоченным организациям"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:6",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z43",
+      "headings": [
+        "Глава 2. Квалификационные требования к уполномоченным организациям"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:6-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z846",
+      "headings": [
+        "Глава 2. Квалификационные требования к уполномоченным организациям"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:7",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z47",
+      "headings": [
+        "Глава 2. Квалификационные требования к уполномоченным организациям"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:8",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z48",
+      "headings": [
+        "Глава 2. Квалификационные требования к уполномоченным организациям"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:9",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z52",
+      "headings": [
+        "Глава 2. Квалификационные требования к уполномоченным организациям"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:10",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z53",
+      "headings": [
+        "Глава 2. Квалификационные требования к уполномоченным организациям"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:11",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z54",
+      "headings": [
+        "Глава 2. Квалификационные требования к уполномоченным организациям"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:12",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z60",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:13",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z65",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:14",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z71",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:15",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z72",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:16",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z73",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:17",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z75",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:17-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z691",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:17-2",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z692",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:17-3",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z695",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:17-4",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z698",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:17-5",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z699",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:18",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z76",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": true,
+      "rule_card_ids": [],
+      "observability": "repealed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:19",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z77",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:19-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z707",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:19-2",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z711",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:19-3",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z715",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:19-4",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z716",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:19-5",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z719",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:19-6",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z723",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:20",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z85",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": true,
+      "rule_card_ids": [],
+      "observability": "repealed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:21",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z86",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": true,
+      "rule_card_ids": [],
+      "observability": "repealed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:22",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z88",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:23",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z89",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:23-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z1932",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:24",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z92",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:25",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z93",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:26",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z94",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:27",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z97",
+      "headings": [
+        "Глава 3. Порядок лицензирования уполномоченных организаций"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:28",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z103",
+      "headings": [
+        "Глава 4. Порядок уведомления уполномоченным банком о начале или прекращении деятельности обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:29",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z104",
+      "headings": [
+        "Глава 4. Порядок уведомления уполномоченным банком о начале или прекращении деятельности обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:30",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z106",
+      "headings": [
+        "Глава 4. Порядок уведомления уполномоченным банком о начале или прекращении деятельности обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:31",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z108",
+      "headings": [
+        "Глава 4. Порядок уведомления уполномоченным банком о начале или прекращении деятельности обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:32",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z109",
+      "headings": [
+        "Глава 4. Порядок уведомления уполномоченным банком о начале или прекращении деятельности обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:33",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z111",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:33-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z577",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:33-2",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z578",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:34",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z112",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:35",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z113",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:36",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z115",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:37",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z116",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:38",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z120",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:39",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z121",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:40",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z132",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:41",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z138",
+      "headings": [
+        "Глава 5. Требования к деятельности по осуществлению обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [
+        "exchange_operating_cash_access"
+      ],
+      "observability": "requires_context_review",
+      "review_status": "draft"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:42",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z141",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:43",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z144",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:44",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z146",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:45",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z152",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:46",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z155",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:47",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z156",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:48",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z159",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:49",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z160",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:50",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z163",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:51",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z164",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:52",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z169",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:53",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z172",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:54",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z174",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:55",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z175",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:56",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z176",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:57",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z177",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:58",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z178",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:59",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z181",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:60",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z187",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:60-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z1963",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:61",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z199",
+      "headings": [
+        "Глава 6. Условия функционирования обменных пунктов"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:62",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z204",
+      "headings": [
+        "Глава 7. Порядок и сроки представления отчетов юридическим лицом, имеющим право на осуществление обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:63",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z205",
+      "headings": [
+        "Глава 7. Порядок и сроки представления отчетов юридическим лицом, имеющим право на осуществление обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:64",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z206",
+      "headings": [
+        "Глава 7. Порядок и сроки представления отчетов юридическим лицом, имеющим право на осуществление обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:65",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z207",
+      "headings": [
+        "Глава 7. Порядок и сроки представления отчетов юридическим лицом, имеющим право на осуществление обменных операций с наличной иностранной валютой"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:66",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z209",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:67",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z212",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:68",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z213",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:69",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z215",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:70",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z217",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:71",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z218",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:72",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z219",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:73",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z220",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:74",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z226",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:75",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z228",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:76",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z229",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:76-1",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z879",
+      "headings": [
+        "Глава 8. Порядок проведения операций по покупке и (или) продаже аффинированного золота в слитках, выпущенных Национальным Банком"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    },
+    {
+      "clause_id": "V1900018545:0d776d3e-1c76-40f2-90ea-64f6de7868dc:77",
+      "url": "https://adilet.zan.kz/rus/docs/V1900018545#z237",
+      "headings": [
+        "Глава 9. Переходные положения"
+      ],
+      "repealed": false,
+      "rule_card_ids": [],
+      "observability": "unreviewed",
+      "review_status": "unreviewed"
+    }
+  ],
+  "limits": [
+    "Three seed acts only; no exhaustive RK-law claim.",
+    "All operational cards are agent-prepared drafts, not legally approved video labels.",
+    "Annexes are preserved in raw source but not indexed as main clauses.",
+    "Linked definitions and cross-references are retained, not automatically resolved.",
+    "Internal bank procedures, documentary duties, security construction and licensing are not automatically observable.",
+    "Uncollected cross-referenced acts, including Rules 230, remain explicit coverage gaps.",
+    "No recording date has been inferred from a filename; edition applicability remains unresolved."
+  ]
+}

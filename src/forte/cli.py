@@ -32,7 +32,38 @@ def main(argv: list[str] | None = None) -> int:
     legal.add_argument("--query", required=True)
     legal.add_argument("--act")
     legal.add_argument("--limit", type=int, default=5)
+    annotation = commands.add_parser(
+        "annotations-check", help="Validate private visual/legal annotation structure"
+    )
+    annotation.add_argument("--release", type=Path, required=True)
+    annotation.add_argument("--cards", type=Path, required=True)
+    annotation.add_argument("--file", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.command == "annotations-check":
+        from forte.annotations import Annotation, RuleCard, validate_annotation
+        from forte.legal import load_release
+
+        try:
+            cards = [RuleCard.model_validate(c) for c in json.loads(args.cards.read_text())]
+            result = validate_annotation(
+                Annotation.model_validate_json(args.file.read_bytes()),
+                cards,
+                load_release(args.release),
+            )
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print(f"annotations-check: invalid annotation ({type(exc).__name__})", file=sys.stderr)
+            return 1
+        print(
+            json.dumps(
+                {
+                    "structurally_valid": True,
+                    "facts": len(result.facts),
+                    "claims": len(result.claims),
+                    "independent_semantic_adjudication": False,
+                }
+            )
+        )
+        return 0
     if args.command == "legal-search":
         from forte.legal import load_release
 
