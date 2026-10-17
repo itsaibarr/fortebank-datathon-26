@@ -34,7 +34,7 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Task 4: Decode MOV video only, retain normalized source PTS, implement bounded coverage/fine samples and source JPEG re-extraction; VFR, rotation, source mutation and corrupt/duration checks pass.
 - [ ] Task 5: Wrap resident local Qwen/vLLM with structured outputs and adapter slot.
 - [ ] Task 6: Produce one real locally verified positive/negative result through the full temporal/rule/evidence pipeline.
-- [ ] Task 7: Implement authenticated asynchronous POST/GET, admission, atomic state, deadlines and failures.
+- [x] Task 7: Implement authenticated asynchronous POST/GET, two-slot admission, atomic private records, process deadlines/restart failures and bounded upload. Local contract/failure tests pass; actual GPU integration follows in Task 8.
 - [ ] Task 8: Verify upload/poll/result mechanics through the API and decode returned evidence locally. Do not build the UI yet.
 - [ ] **First backend milestone:** real positive/negative development videos complete POST/GET with valid schema, source JPEGs, times, rule references and no manual inference.
 

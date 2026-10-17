@@ -31,6 +31,9 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/forte"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"contracts/api-contract.json" = "forte/data/api-contract.json"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 

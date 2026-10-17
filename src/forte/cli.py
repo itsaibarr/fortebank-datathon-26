@@ -21,7 +21,17 @@ def main(argv: list[str] | None = None) -> int:
         default=EXPECTED_ARCHIVE_SHA256,
         help="Expected fingerprint; override only for explicit synthetic fixtures",
     )
+    server = commands.add_parser("serve", help="Run the single-process private video API")
+    server.add_argument("--host", default="127.0.0.1")
+    server.add_argument("--port", type=int, default=8000)
     args = parser.parse_args(argv)
+    if args.command == "serve":
+        import uvicorn
+
+        from forte.api import create_default_app
+
+        uvicorn.run(create_default_app(), host=args.host, port=args.port, workers=1)
+        return 0
     try:
         result = audit_archive(args.archive, expected_sha256=args.expected_sha256)
     except (OSError, ValueError, BadZipFile, RuntimeError) as error:

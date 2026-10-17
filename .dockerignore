@@ -1,0 +1,17 @@
+.git
+.venv
+dist
+private
+runs
+models
+weights
+adapters
+*.mov
+*.MOV
+*.mp4
+*.zip
+*.xlsx
+*.key
+*.pem
+.env*
+web
