@@ -345,3 +345,43 @@ def test_human_join_cannot_make_conflicting_role_mappings_consistent():
     operations.append(dict(operation="join", from_segment="s0001", to_segment="s0002"))
     with pytest.raises(ValueError, match="role"):
         apply_corrections(m, a, operations, reviewer="synthetic human", reason="synthetic")
+
+
+@pytest.mark.parametrize("status", ["confirmed", "rejected"])
+def test_box_review_changes_only_selected_review_state_and_keeps_detector_origin(status):
+    from forte.tracking import training_targets
+
+    raw, annotation = pair()
+    m = TrackManifest.model_validate(raw)
+    before = m.segments[0].boxes[0].model_dump(exclude={"review"})
+    revised, annotation = apply_corrections(
+        m,
+        annotation,
+        [dict(operation="box_review", segment_id="s0001", frame_ids=["f000000"], status=status)],
+        reviewer="synthetic human",
+        reason="Synthetic source-box geometry review only",
+    )
+    assert revised.segments[0].boxes[0].review.status == status
+    assert revised.segments[0].boxes[0].model_dump(exclude={"review"}) == before
+    assert revised.segments[0].boxes[1].review.status == "draft"
+    assert revised.segments[0].review.status == "draft"
+    assert m.segments[0].boxes[0].review.status == "draft"
+    assert revised.joins == [] and annotation.facts == []
+    assert training_targets(revised, annotation) == []
+
+
+@pytest.mark.parametrize("frames", [[], ["f000000", "f000000"], ["f999999"]])
+def test_box_review_rejects_missing_duplicate_or_unknown_source_frames(frames):
+    raw, annotation = pair()
+    with pytest.raises(ValueError, match="frame"):
+        apply_corrections(
+            TrackManifest.model_validate(raw),
+            annotation,
+            [
+                dict(
+                    operation="box_review", segment_id="s0001", frame_ids=frames, status="confirmed"
+                )
+            ],
+            reviewer="synthetic human",
+            reason="synthetic",
+        )

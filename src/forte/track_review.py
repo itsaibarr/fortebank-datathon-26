@@ -343,6 +343,22 @@ def apply_corrections(
             )
             segment.review = Review()
             affected = [segment.id, replacement.frame_id]
+        elif kind == "box_review":
+            segment = next(s for s in m.segments if s.id == op["segment_id"])
+            frame_ids = op["frame_ids"]
+            if (
+                not isinstance(frame_ids, list)
+                or not frame_ids
+                or len(set(frame_ids)) != len(frame_ids)
+                or not set(frame_ids) <= {b.frame_id for b in segment.boxes}
+            ):
+                raise ValueError("Box review requires unique, existing source box frames")
+            for box in segment.boxes:
+                if box.frame_id in frame_ids:
+                    box.review = reviewed.model_copy(update=dict(status=op["status"]))
+            # Acceptance preserves detector/interpolation origin and scores.
+            # It never approves the identity segment or any other source box.
+            affected = [segment.id, *frame_ids]
         elif kind == "review":
             segment = next(s for s in m.segments if s.id == op["segment_id"])
             status = op.get("status", "confirmed")

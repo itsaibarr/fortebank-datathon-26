@@ -201,6 +201,11 @@ inputs under content hashes before reusing the current operation/XML filename;
 earlier correction entries point to those preserved bytes. `revision.json` records
 the archived paths and hashes.
 
+Use `box_review` with `segment_id`, explicit `frame_ids` and `status` to accept or
+reject only the selected source boxes. Their coordinates, detector/interpolation
+origin and automatic scores remain intact. This operation does not approve other
+boxes or segment identity. Use `box` for an actual human geometry correction.
+
 For a review of identity continuity alone, use `review` with
 `resolve_identity: true` and `approve_boxes: false`. The segment review then records
 stable identity over its existing source-frame range; every box retains its

@@ -117,6 +117,7 @@ class Correction(Strict):
         "split",
         "join",
         "box",
+        "box_review",
         "fact",
         "area",
         "review",
