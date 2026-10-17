@@ -30,7 +30,7 @@ research are retained as history. Details and commands:
 - [x] Complete the latest final application image build.
 - [x] Verify final-image cold start at October 17 22:54:31 UTC: pinned model hashes, actual 2/2 16K visual warmups, live/ready health and UI HTTP 200. Nineteen installed module hashes match core commit `111234c885f0a23d323fe72a81450dfca5aa7e60`; the public runtime manifest pins the local image and limits. No registry image was published.
 - [x] Verify the real application-only host bridge and SSH loopback forward: health/UI HTTP 200 and unauthenticated API 401. Keep the model port and container egress unavailable.
-- [x] Record the explicit single-reviewer-private security mode: shared key/no principals; block multi-user private uploads and public browser uploads until session and per-principal authorization are implemented. Deployment/admin CLI additions remain isolated on `codex/deployment-private-cli`: 31 independent synthetic checks pass, but the patch is not applied to core or included in the verified image; the proposed test formatting is normalized; gateway integration remains separate.
+- [x] Record the explicit single-reviewer-private security mode: shared key/no principals; block multi-user private uploads and public browser uploads until session and per-principal authorization are implemented. Deployment/admin CLI tooling is integrated from `codex/deployment-private-cli`: 31 independent synthetic checks pass, but the patch is not applied to core or included in the verified image; the unapplied proposal passes formatting; gateway integration remains separate.
 - [x] Verify base private backup payload hashes and restore outside Git; open the human packet through the local OS. Keep case-bearing backup paths and contents private.
 - [ ] Verify the UI against the deployed real v2 workflow and record end-to-end timing without using remote browser tools on private footage.
 - [ ] Implement explicit reviewed-correction replay into later inference. Immutable sidecars/history are preserved now, but are not automatically model context.
@@ -140,3 +140,5 @@ No training, legal classification, production detector change or product fronten
 - [ ] Keep deterministic rule mapping and original-frame evidence outside generated prose.
 - [ ] Use the approved Next.js/TypeScript, Tailwind, shadcn preset `b3d6mT4h6m` and Lucide stack, with browser/API verification before product-completion claims.
 - [ ] Use configuration changes and measured errors before proposing another model/framework/infrastructure layer.
+
+- [x] Integrate the independent deployment/admin tooling; combined suite 320 passed, one optional Docker check skipped. Keep current installer candidate unapproved, all five verification gates false and resource minimums null; ownership proposal remains unapplied.

@@ -6,12 +6,43 @@ import gzip
 import hashlib
 import io
 import json
+import os
 import subprocess
 import tarfile
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PREFIX = "forte-admin-0.1.0"
+PUBLIC_CONTRACTS = (
+    "contracts/frozen-runtime-manifest-v1.json",
+    "contracts/frozen-assets-v1.json",
+    "contracts/frozen-effective-config-v1.json",
+    "contracts/frozen-model-hashes-v1.json",
+    "contracts/reasoning-api-contract.json",
+)
+CURRENT_CANDIDATE = "deploy/portable/core-current.candidate.json"
+ACCEPTANCE_FLAGS = ("release", "model_workload", "offline_analysis", "browser_session", "ownership")
+
+
+def validate_candidate(entries):
+    if CURRENT_CANDIDATE not in entries:
+        return
+    canonical = entries.get("contracts/frozen-runtime-manifest-v1.json")
+    if canonical is None:
+        raise ValueError("Current candidate requires the canonical runtime manifest")
+    candidate = json.loads(entries[CURRENT_CANDIDATE])
+    provenance = candidate.get("provenance") if isinstance(candidate, dict) else None
+    if (
+        not isinstance(provenance, dict)
+        or provenance.get("source_sha256") != hashlib.sha256(canonical).hexdigest()
+    ):
+        raise ValueError("Current candidate differs from the canonical runtime manifest")
+    verification = candidate.get("verification", {})
+    if not isinstance(verification, dict) or any(
+        verification.get(key) is not False for key in ACCEPTANCE_FLAGS
+    ):
+        raise ValueError("Current installation candidate must remain unapproved")
 
 
 def build(output):
@@ -24,9 +55,13 @@ def build(output):
         "build_core.py",
         "bridge.py",
         "import_handoff.py",
-        "core-111234c.candidate.json",
+        "core-current.candidate.json",
     ):
         path = ROOT / "deploy/portable" / name
+        if path.is_file():
+            selected.append(path)
+    for name in PUBLIC_CONTRACTS:
+        path = ROOT / name
         if path.is_file():
             selected.append(path)
     for name in (
@@ -45,7 +80,10 @@ def build(output):
             selected.append(path)
     launcher = ROOT / "tools/forte-admin/forte-admin"
     selected.append(launcher)
+    if any(path.is_symlink() or path.resolve() != path for path in selected):
+        raise ValueError("Archive inputs must be regular repository files without symlinks")
     entries = {str(path.relative_to(ROOT)): path.read_bytes() for path in selected}
+    validate_candidate(entries)
     entries["RELEASE.json"] = (
         json.dumps(
             {
@@ -72,11 +110,19 @@ def build(output):
                 0,
             )
             archive.addfile(info, io.BytesIO(data))
-    output = Path(output).resolve()
+    output = Path(output)
+    if output.is_symlink():
+        raise ValueError("Archive destination must not be a symlink")
+    output = output.parent.resolve() / output.name
     output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("wb") as stream:
-        with gzip.GzipFile(filename="", fileobj=stream, mode="wb", mtime=0) as zipped:
-            zipped.write(buffer.getvalue())
+    fd, temporary = tempfile.mkstemp(prefix=".forte-admin-", suffix=".tar.gz", dir=output.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            with gzip.GzipFile(filename="", fileobj=stream, mode="wb", mtime=0) as zipped:
+                zipped.write(buffer.getvalue())
+        os.replace(temporary, output)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
     print(
         json.dumps(
             {

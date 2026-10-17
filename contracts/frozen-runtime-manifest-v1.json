@@ -174,7 +174,14 @@
       "complete_schedule": false
     },
     "quality_metrics": "unmeasured",
-    "app_only_host_bridge": "passed: localhost SSH-forwarded live/ready/UI200, unauthenticated API401"
+    "app_only_host_bridge": "passed: localhost SSH-forwarded live/ready/UI200, unauthenticated API401",
+    "combined_source_tests": {
+      "passed": 320,
+      "skipped": 1,
+      "warnings": 4,
+      "skip_reason": "optional Docker deployment test not enabled",
+      "scope": "core plus integrated deployment tooling; no new private model run"
+    }
   },
   "handoff": {
     "runtime_attach_authorized": false,
@@ -278,8 +285,17 @@
     "applied": false,
     "included_in_tested_image": false,
     "base_commit": "111234c885f0a23d323fe72a81450dfca5aa7e60",
-    "patch_sha256": "b982287841594d9d55b3fdaee9cd0b1ea63739db731137e64ae7dc739761317a",
+    "patch_sha256": "606173ff99937fc7adb5dbc3f0cf4a36eb79cdf2fe76c424f095cea811e36c17",
     "independent_synthetic_tests_reproduced": 31,
-    "review": "future isolated integration only; formatting normalized by B; real authenticated gateway/session/CSRF/cross-user/range checks and new image receipts required"
+    "review": "format-only proposal fix; fresh31 synthetic tests, lint/format/apply-check pass. Future isolated integration only; real gateway/session/CSRF/cross-user/range checks and new image receipts required",
+    "upstream_proposal_sha256": "b982287841594d9d55b3fdaee9cd0b1ea63739db731137e64ae7dc739761317a"
+  },
+  "deployment_tooling": {
+    "upstream_commit": "eafc7b87b7be5c6d544c2ee4f762f3840cb15e52",
+    "integrated_commit": "75a1802",
+    "activation_authorized": false,
+    "browser_multi_user_enabled": false,
+    "admin_cli": "tools/forte-admin/forte-admin",
+    "handoff": "docs/deployment/handoff.md"
   }
 }

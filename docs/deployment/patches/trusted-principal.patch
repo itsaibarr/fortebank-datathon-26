@@ -197,7 +197,7 @@
                  if os.environ.get("FORTE_FRONTEND_ROOT")
 --- /dev/null
 +++ b/tests/test_gateway_ownership.py
-@@ -0,0 +1,163 @@
+@@ -0,0 +1,180 @@
 +"""Synthetic trusted-gateway ownership checks; no real session or inference claims."""
 +
 +import json
@@ -243,16 +243,25 @@
 +    pytest.fail("Synthetic fixture did not complete")
 +
 +
-+@pytest.mark.parametrize("gateway_headers", [
-+    [],
-+    [("X-Forte-Gateway-Token", "incorrect"), ("X-Forte-Principal", "reviewer-a")],
-+    [("X-Forte-Gateway-Token", TOKEN)],
-+    [("X-Forte-Gateway-Token", TOKEN), ("X-Forte-Principal", "invalid/principal")],
-+    [("X-Forte-Gateway-Token", TOKEN), ("X-Forte-Principal", "reviewer-a"),
-+     ("X-Forte-Principal", "reviewer-b")],
-+    [("X-Forte-Gateway-Token", TOKEN), ("X-Forte-Gateway-Token", TOKEN),
-+     ("X-Forte-Principal", "reviewer-a")],
-+])
++@pytest.mark.parametrize(
++    "gateway_headers",
++    [
++        [],
++        [("X-Forte-Gateway-Token", "incorrect"), ("X-Forte-Principal", "reviewer-a")],
++        [("X-Forte-Gateway-Token", TOKEN)],
++        [("X-Forte-Gateway-Token", TOKEN), ("X-Forte-Principal", "invalid/principal")],
++        [
++            ("X-Forte-Gateway-Token", TOKEN),
++            ("X-Forte-Principal", "reviewer-a"),
++            ("X-Forte-Principal", "reviewer-b"),
++        ],
++        [
++            ("X-Forte-Gateway-Token", TOKEN),
++            ("X-Forte-Gateway-Token", TOKEN),
++            ("X-Forte-Principal", "reviewer-a"),
++        ],
++    ],
++)
 +def test_gateway_identity_is_authenticated_before_upload_or_disclosure(tmp_path, gateway_headers):
 +    settings = Settings(KEY, tmp_path / "jobs", trusted_gateway_token=TOKEN)
 +    consumed = []
@@ -289,8 +298,12 @@
 +            other = 1 if version == 2 else 2
 +            assert client.get(f"/api/v{other}/jobs/{job_id}", headers=headers()).status_code == 404
 +            if version == 1:
-+                assert completed == {"job_id": job_id, "status": "done",
-+                                     "verdict": "no_violation", "violations": []}
++                assert completed == {
++                    "job_id": job_id,
++                    "status": "done",
++                    "verdict": "no_violation",
++                    "violations": [],
++                }
 +
 +
 +def test_every_v2_media_correction_and_subsequent_range_rechecks_owner(tmp_path):
@@ -310,15 +323,19 @@
 +        own_range = client.get(prefix + "/source", headers=headers() | {"Range": "bytes=0-15"})
 +        assert own_range.status_code == 206 and own_range.content == source[:16]
 +        for suffix in media:
-+            denied = client.get(prefix + suffix,
-+                                headers=headers("reviewer-b") | {"Range": "bytes=16-31"})
++            denied = client.get(
++                prefix + suffix, headers=headers("reviewer-b") | {"Range": "bytes=16-31"}
++            )
 +            assert denied.status_code == 404
 +        for auth in [headers("reviewer-b"), {"X-API-Key": KEY, "X-Forte-Principal": "reviewer-a"}]:
 +            response = client.post(prefix + "/corrections", headers=auth, json=correction(result))
 +            assert response.status_code in {401, 404}
 +        assert client.get(prefix + "/corrections", headers=headers()).json() == {"revisions": []}
-+        saved = client.post(prefix + "/corrections", headers=headers(),
-+                            json=correction(result, reviewer="spoofed-reviewer"))
++        saved = client.post(
++            prefix + "/corrections",
++            headers=headers(),
++            json=correction(result, reviewer="spoofed-reviewer"),
++        )
 +        assert saved.status_code == 201, saved.text
 +        assert saved.json()["correction"]["reviewer"] == "reviewer-a"
 +        assert saved.json()["correction"]["other_scopes_approved"] is False

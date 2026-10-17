@@ -91,5 +91,15 @@
       "private_scene_values_printed": false
     }
   },
-  "interpretation": "Base snapshot is fully preserved. New final production delta is incomplete; recovered files are a partial subset only. Counts are transport/payload counts and do not establish semantic review or model quality."
+  "interpretation": "Base snapshot is fully preserved. New final production delta is incomplete; recovered files are a partial subset only. Counts are transport/payload counts and do not establish semantic review or model quality.",
+  "local_case_validation": {
+    "base_completed_result_contract_valid": true,
+    "base_original_source_hash_valid": true,
+    "base_declared_exported_jpeg_hashes_valid": true,
+    "final_recovered_completed_api_result_present": false,
+    "partial_review_image_links_present": true,
+    "partial_review_result_json_present": false,
+    "partial_evidence_association_record_present": false,
+    "partial_recovery_promoted_to_complete_case": false
+  }
 }

@@ -8,18 +8,18 @@ versioned application routes. It does not define new analysis endpoints.
 from pathlib import Path
 from forte_admin.client import APIClient, load_profile
 
-profile = load_profile(Path('/private/connections/customer.json'))
+profile = load_profile(Path("/private/connections/customer.json"))
 client = APIClient(
-    profile['endpoint'],
-    Path(profile['key_file']),
-    api_version=profile['api_version'],
-    gateway_credentials_file=profile.get('gateway_credentials_file'),
+    profile["endpoint"],
+    Path(profile["key_file"]),
+    api_version=profile["api_version"],
+    gateway_credentials_file=profile.get("gateway_credentials_file"),
 )
-print('Processing destination:', profile['endpoint'])
-accepted = client.upload(Path('/authorized/development/input.mov'))
-result = client.wait(accepted['job_id'], timeout=300)
+print("Processing destination:", profile["endpoint"])
+accepted = client.upload(Path("/authorized/development/input.mov"))
+result = client.wait(accepted["job_id"], timeout=300)
 # Keep the complete result local. A done job can still have insufficient evidence.
-assert result['status'] in {'done', 'failed'}
+assert result["status"] in {"done", "failed"}
 ```
 
 Add the extracted archive's `tools/forte-admin` directory to `PYTHONPATH` when

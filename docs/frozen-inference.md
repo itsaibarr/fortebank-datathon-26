@@ -22,7 +22,7 @@ comparison and rollback path.
 | Participants | YOLOX-s and ByteTrack proposals; separate immutable human review | Frozen pretrained OSNet features, bounded recording-local ReID, gallery updates, conflict/gap records and comparison interface | Public OSNet export and synthetic parity verified; private continuity gains and ID-switch metrics unmeasured |
 | Visual reasoning | Loopback model adapter, structured responses, supplied frame IDs | Overview, overlapping full-duration windows, denser bounded reinspection and final reconciliation; source/participant allowlists and persisted observations | First real bounded rehearsal returned a valid partial result; its timeline budget was exhausted and quality remains unreviewed |
 | Legal evidence | Three official acts, 272 main records, BM25 and optional local BGE experiments | Exact official context, recovered temporal notices, version limitations, explicit predicate polarity and four assessment states; reverse scoped-inventory checks | Actual eight-image replay made two 27B calls; one assessment passed structural validation, one was rejected. All findings remain unreviewed and scope incomplete |
-| Orchestration | One API process, private atomic job records, two admitted jobs, deadlines | `forte scan` and versioned `/api/v2` execution, legal-call budgets, artifact manifests and source-bound correction lineage | 201 tests pass; two real API jobs completed as partial/insufficient in 257.43s and 258.04s, with third admission rejected 429; full remote UI latency remains unverified |
+| Orchestration | One API process, private atomic job records, two admitted jobs, deadlines | `forte scan` and versioned `/api/v2` execution, legal-call budgets, artifact manifests and source-bound correction lineage | 201 core tests passed at the image checkpoint; the integrated suite has 320 passes and one optional Docker skip. Two real API jobs completed as partial/insufficient in 257.43s and 258.04s, with third admission rejected 429; full remote UI latency remains unverified |
 | Product UI | Next.js/TypeScript requirement | User-selected Tailwind, shadcn preset `b3d6mT4h6m` and Lucide under `web/` | Synthetic workflow passes; final-image UI and actual loopback bridge return HTTP 200; real full browser workflow remains unverified |
 
 The main modules are `frozen_tracking.py`, `timeline.py`, `legal_reasoning.py`,
@@ -273,7 +273,7 @@ exports. An authenticated loopback deployment is not that ownership boundary.
 The manifest records the precise restriction. Deployment/admin CLI additions are
 isolated on `codex/deployment-private-cli`. Independent synthetic review passed
 31 checks, but the patch is **not applied to core or included in the verified
-image**. Its proposed formatting is normalized; future gateway integration remains separate;
+image**. Its unapplied proposal passes formatting; future gateway integration remains separate;
 it does not change the core's current security mode.
 
 `POST /api/v2/analyze` accepts the same authenticated multipart MOV upload as v1.
@@ -339,3 +339,19 @@ Multi-user/public upload publication remains blocked by the explicit security
 scope above. No precision/recall,
 participant-continuity improvement, legal-match percentage, or under-300-second
 workflow claim follows from the integration tests alone.
+
+## Integrated administrator tooling
+
+Deployment commit `eafc7b8` was integrated as `75a1802` after independent review.
+The combined source suite passes 320 tests with one optional Docker test skipped
+and four existing warnings. No core/API/UI bytes changed after the verified
+`111234c` image checkpoint. The formatted trusted-principal proposal remains
+unapplied; its separate 31 synthetic tests do not establish a browser session
+or gateway trust boundary.
+
+`deploy/portable/core-current.candidate.json` derives from the exact canonical
+manifest, public inventory and effective configuration. All installer acceptance
+flags remain false and resource minimums remain null. The administrator archive
+contains public tooling/metadata only; model weights, cases, credentials and the
+application image must be supplied and verified separately. See
+[deployment handoff](deployment/handoff.md).

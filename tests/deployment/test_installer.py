@@ -1,9 +1,11 @@
 """Installer invariants: repeatability, credential separation and honest diagnostics."""
 
+import hashlib
 import importlib.util
 import json
 import os
 import sys
+import tarfile
 from pathlib import Path
 
 import pytest
@@ -116,6 +118,125 @@ def test_release_archive_reproducible_and_contains_only_allowed_files(tmp_path):
             not any(part in name for part in (".env", ".mov", "__pycache__", ".pem", ".key"))
             for name in names
         )
+
+
+@pytest.fixture
+def public_archive_repo(tmp_path, monkeypatch):
+    spec = importlib.util.spec_from_file_location(
+        "forte_public_build", ROOT / "tools/forte-admin/build.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    root = tmp_path / "public-repository"
+
+    def write(relative, data):
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+        return path
+
+    write("tools/forte-admin/build.py", b"# synthetic archive builder\n")
+    write("tools/forte-admin/forte-admin", b"# synthetic launcher\n")
+    write("tools/forte-admin/forte_admin/__init__.py", b"")
+    for name in module.PUBLIC_CONTRACTS:
+        write(name, json.dumps({"public_metadata": name}).encode())
+    canonical = (root / module.PUBLIC_CONTRACTS[0]).read_bytes()
+    candidate = {
+        "provenance": {"source_sha256": hashlib.sha256(canonical).hexdigest()},
+        "verification": {key: False for key in module.ACCEPTANCE_FLAGS},
+    }
+    write(module.CURRENT_CANDIDATE, json.dumps(candidate).encode())
+    monkeypatch.setattr(module, "ROOT", root)
+    monkeypatch.setattr(module.subprocess, "check_output", lambda *args, **kwargs: "a" * 40)
+    return module, root, write
+
+
+def test_archive_public_attestations_candidate_integrity_and_exclusions(
+    public_archive_repo, tmp_path
+):
+    module, root, write = public_archive_repo
+    marker = b"synthetic-private-secret-never-package"
+    for excluded in (
+        "contracts/private-backup-receipt.json",
+        "contracts/credentials.key",
+        "contracts/input.mov",
+        "contracts/model.safetensors",
+        "deploy/portable/core-111234c.candidate.json",
+        "deploy/portable/core-unreviewed.candidate.json",
+        "src/forte/api.py",
+        ".env",
+    ):
+        write(excluded, marker)
+    output = tmp_path / "admin.tar.gz"
+    module.build(output)
+    with tarfile.open(output) as archive:
+        entries = {
+            member.name.removeprefix(module.PREFIX + "/"): archive.extractfile(member).read()
+            for member in archive.getmembers()
+        }
+    assert set(module.PUBLIC_CONTRACTS) <= entries.keys()
+    assert module.CURRENT_CANDIDATE in entries
+    assert all(marker not in data for data in entries.values())
+    release = json.loads(entries["RELEASE.json"])
+    assert release["core_included"] is False
+    assert not any(name.startswith("src/") for name in entries)
+    for name in (*module.PUBLIC_CONTRACTS, module.CURRENT_CANDIDATE):
+        assert entries[name] == (root / name).read_bytes()
+        assert release["files"][name] == hashlib.sha256(entries[name]).hexdigest()
+    candidate = json.loads(entries[module.CURRENT_CANDIDATE])
+    assert all(candidate["verification"][key] is False for key in module.ACCEPTANCE_FLAGS)
+    canonical_path = root / module.PUBLIC_CONTRACTS[0]
+    original_canonical = canonical_path.read_bytes()
+    canonical_path.write_bytes(original_canonical + b"\n")
+    original_archive = output.read_bytes()
+    with pytest.raises(ValueError, match="canonical runtime manifest"):
+        module.build(output)
+    assert output.read_bytes() == original_archive
+    missing = tmp_path / "must-not-create" / "stale.tar.gz"
+    with pytest.raises(ValueError, match="canonical runtime manifest"):
+        module.build(missing)
+    assert not missing.parent.exists()
+    canonical_path.write_bytes(original_canonical)
+    candidate["verification"]["release"] = True
+    write(module.CURRENT_CANDIDATE, json.dumps(candidate).encode())
+    with pytest.raises(ValueError, match="remain unapproved"):
+        module.build(missing)
+    assert not missing.exists()
+
+
+@pytest.mark.parametrize("traversal", ["contract_file", "contract_parent", "output"])
+def test_archive_rejects_symlink_traversal(public_archive_repo, tmp_path, traversal):
+    module, root, _ = public_archive_repo
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    private = outside / "private.key"
+    private.write_bytes(b"synthetic-secret")
+    output = tmp_path / "admin.tar.gz"
+    if traversal == "contract_file":
+        source = root / module.PUBLIC_CONTRACTS[-1]
+        source.unlink()
+        source.symlink_to(private)
+    elif traversal == "contract_parent":
+        (root / "contracts").rename(outside / "contracts")
+        (root / "contracts").symlink_to(outside / "contracts", target_is_directory=True)
+    else:
+        output.symlink_to(private)
+    with pytest.raises(ValueError, match="symlink"):
+        module.build(output)
+    assert private.read_bytes() == b"synthetic-secret"
+    if traversal != "output":
+        assert not output.exists()
+
+
+def test_archive_supports_output_parent_alias(public_archive_repo, tmp_path):
+    module, _, _ = public_archive_repo
+    destination = tmp_path / "canonical-output"
+    destination.mkdir()
+    alias = tmp_path / "output-alias"
+    alias.symlink_to(destination, target_is_directory=True)
+    module.build(alias / "admin.tar.gz")
+    with tarfile.open(destination / "admin.tar.gz") as archive:
+        assert module.PREFIX + "/RELEASE.json" in archive.getnames()
 
 
 def test_existing_unrelated_directory_is_not_taken_over(tmp_path):

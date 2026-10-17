@@ -10,7 +10,7 @@ Do not infer suitability from the model's parameter count.
 ## Prepare a pinned release
 
 Keep installation state outside Git. Use the packaged
-`deploy/portable/core-111234c.candidate.json` as an **unapproved candidate**.
+`deploy/portable/core-current.candidate.json` as an **unapproved candidate**.
 It preserves provenance from Agent A's canonical handoff, frozen model identity,
 contract hash and immutable local image ID. It intentionally contains no invented
 resource inventory or successful deployment/security approvals.

@@ -1,5 +1,13 @@
 # Agent B deployment handoff
 
+## Integrator checkpoint
+
+The deployment source commit `eafc7b8` was cherry-picked as `75a1802` after independent review. The integrated suite passes 320 tests with one optional Docker test skipped and four existing warnings. The tested core/API/UI bytes still match `111234c`; the optional ownership patch remains unapplied. Its formatting-only revision passes its separate 31 tests, lint, format and apply-check.
+
+The current canonical inventory contains 51 public assets and explicit container paths. The exact effective configuration and model-hash manifest are committed. `deploy/portable/core-current.candidate.json` binds to those canonical bytes and keeps every installer acceptance flag false, with minimum RAM/disk/driver requirements null. The admin archive includes this candidate and public contracts; it includes no case data, credentials, model weights or application image. Packaging rejects stale candidate hashes and symlinked inputs and writes atomically.
+
+The previous VM is deleted, with zero VMs/volumes confirmed. No live attach or external URL is available. The earlier source-verified private review packet is preserved, but the final production delta is incomplete; no completed final-run result survived the limited recovery. See [runtime and preservation limits](../frozen-inference.md) and the canonical runtime manifest. No quality, minimum-resource, session or multi-user acceptance is inferred.
+
 ## Ownership and checkpoints
 
 - Branch: `codex/deployment-private-cli`.

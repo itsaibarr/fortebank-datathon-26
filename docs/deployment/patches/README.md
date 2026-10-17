@@ -56,8 +56,16 @@ must call the same ownership-aware reader before serving content.
 
 `git apply --check docs/deployment/patches/trusted-principal.patch` passes against
 the deployment worktree's unchanged core source at the base above. The patch was
-also applied only inside a disposable `git archive` snapshot of that commit.
-There, **31 targeted tests passed**:
+also applied only inside disposable `git archive` snapshots of that commit.
+The formatting-only follow-up reformatted the proposed new test with Ruff, then
+regenerated and applied the patch in a second fresh snapshot. The proposed API
+and settings bytes are unchanged, and the test AST is identical. B's original
+patch SHA256 was
+`b982287841594d9d55b3fdaee9cd0b1ea63739db731137e64ae7dc739761317a`;
+the formatted proposal SHA256 is
+`606173ff99937fc7adb5dbc3f0cf4a36eb79cdf2fe76c424f095cea811e36c17`.
+All three proposed Python files pass Ruff lint and formatting checks. In the
+fresh snapshot, **31 targeted tests passed**:
 
 ```sh
 python -m pytest -q tests/test_gateway_ownership.py tests/test_api.py tests/test_api_v2.py
