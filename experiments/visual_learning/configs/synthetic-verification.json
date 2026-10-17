@@ -1,0 +1,89 @@
+{
+  "synthetic_only": true,
+  "model_weights_loaded": false,
+  "paid_spend_usd": 0,
+  "comparison_outcome": "inconclusive",
+  "groups": 2,
+  "metrics": {
+    "cases": 6,
+    "answered": 0,
+    "abstained": 6,
+    "failed": 0,
+    "wrong_actor": 0,
+    "role_swaps": 0,
+    "invalid_contract": 0,
+    "invalid_sources": 0,
+    "source_checked": 6,
+    "role_asserted": 0,
+    "role_correct": 0,
+    "roles": 2,
+    "actions": 2,
+    "action_asserted": 0,
+    "contexts": 2,
+    "context_asserted": 0,
+    "context_correct": 0,
+    "0.5": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": null,
+      "recall": 0.0,
+      "f1": 0.0,
+      "boundary_mae_sec": null
+    },
+    "0.75": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": null,
+      "recall": 0.0,
+      "f1": 0.0,
+      "boundary_mae_sec": null
+    },
+    "answer_coverage": 0.0,
+    "role_precision": null,
+    "role_coverage": 0.0,
+    "action_coverage": 0.0,
+    "context_precision": null,
+    "context_coverage": 0.0,
+    "source_validity": 1.0,
+    "false_events_per_minute": 0.0
+  },
+  "scan": {
+    "group_id": "session0",
+    "reviewed_events": 1,
+    "proposed_reviewed_events": 1,
+    "proposal_recall": 1.0,
+    "events": {
+      "0.5": {
+        "tp": 0,
+        "fp": null,
+        "unadjudicated_predictions": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null,
+        "boundary_mae_sec": null
+      },
+      "0.75": {
+        "tp": 0,
+        "fp": null,
+        "unadjudicated_predictions": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null,
+        "boundary_mae_sec": null
+      }
+    },
+    "false_events_per_minute": null,
+    "unadjudicated_predictions": 0,
+    "closely_inspected_fraction": 1.0,
+    "unresolved_fraction": 1.0,
+    "scan_status": "complete_schedule",
+    "omission_eligible": false,
+    "warning": "Unmatched predictions require adjudication. Incomplete action references cannot establish false events."
+  },
+  "adapter_reload_error": 0.0,
+  "claim": "software mechanics only; no real actor/action accuracy or memory-fit evidence"
+}
