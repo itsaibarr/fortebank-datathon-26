@@ -28,6 +28,11 @@ dev = [
     "jsonschema>=4.23,<5",
 ]
 
+tracking = [
+    "onnxruntime==1.31.0",
+    "trackers==2.6.1",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/forte"]
 

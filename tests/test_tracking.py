@@ -155,3 +155,26 @@ def test_role_cannot_inherit_across_a_proposed_join_or_invalid_interval():
     a.facts[0]["end_sec"] = 3
     with pytest.raises(ValueError):
         validate_pair(m, a)
+
+
+def test_conflicting_reviewed_roles_cannot_silently_replace_same_person():
+    from forte.annotations import VisualFact
+    from forte.tracking import validate_pair
+
+    raw, a = pair()
+    for value in ["cashier", "customer"]:
+        a.facts.append(
+            VisualFact(
+                id=value,
+                kind="role",
+                value=value,
+                actor_id="p0001",
+                start_sec=0,
+                end_sec=1,
+                frame_ids=["f000000", "f000001"],
+                continuity_supported=True,
+                segment_ids=["s0001"],
+            )
+        )
+    with pytest.raises(ValueError, match="Conflicting"):
+        validate_pair(TrackManifest.model_validate(raw), a)
