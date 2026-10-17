@@ -6,7 +6,7 @@ Local cash-operation video review service, initialized after the user approved s
 ## Workflow
 - Primary system is `/Users/itsaibarr/harness`, commit `a22a10d9969d7a43f82ffe4f82a822fbb4b5091b`.
 - Harness category 5 implementation after plan approval, bounded to local setup in this session. Use incremental implementation and meaningful behavior tests. Guides use category 7 research with Agent-Reach and concrete-answers.
-- User approved setup. Do not ask for the same approval again. No paid rental, external deployment or final training is authorized by setup alone.
+- User approved setup and then explicitly delegated Hyperstack API provisioning/management within $30. Do not ask for the same approval again. Provision only after checking available credit and actual prices. The user handles the top-up; do not initiate payments or enable auto-top-up. Final training remains conditional on reviewed supervision and measured errors.
 - Read `SPEC.md`, `tasks/plan.md`, `tasks/todo.md` and `docs/case-requirements.md` before extending the product.
 
 ## Stack and commands
@@ -36,7 +36,7 @@ Local cash-operation video review service, initialized after the user approved s
 - FastAPI public API with required file/header/field names, asynchronous jobs, one GPU host/container and atomic filesystem records.
 - No cloud AI, audio analysis, identification, hidden-accounting claims or use of jury data for selection.
 - Next.js App Router with TypeScript comes after working backend mechanics. Ask the user for exact UI libraries and screen/state brief before frontend work. No UI packages selected now.
-- Future primary GPU is Hyperstack A10080 at advertised $1.35/hour, fallback Runpod Secure A10080 at $1.79/hour. $30 experiment cap; actual stock/fees/speed remain unverified.
+- Primary GPU is Hyperstack A10080. Authenticated API preflight verified `n3-A100x1` in CANADA-1 in stock at $1.35/hour, with the R595/CUDA13.2 Docker image offered. Stock/prices must be rechecked before creating a VM. $30 total experiment cap; GPU speed remains unmeasured.
 
 ## Data and access gotchas
 - Original archive is `/Users/itsaibarr/Downloads/open.zip`; never change or commit it.
@@ -45,8 +45,9 @@ Local cash-operation video review service, initialized after the user approved s
 - Private footage, frames, annotations, descriptions, outputs and adapters stay outside Git and remote AI tooling. Use synthetic test fixtures in code.
 - Local humans review private semantics. Keep holdout and jury footage out of tuning/training.
 - Resolve permitted rented hosting before transferring competition footage. Synthetic/public compatibility checks can run first.
-- Agent access uses a local SSH key path and host details. Never request private key contents, passphrases or provider passwords.
-- Stopped Hyperstack VMs still bill; user controls resource deletion unless separately delegated.
+- Hyperstack credential and SSH private key live outside Git under `~/.config/forte26`; never print/copy their contents into logs, Obsidian or memory. API request headers must come from the private header file, not command arguments.
+- Dedicated project environment and public keypair are created; no VM is created while credit is zero. Private provisioning state records their IDs outside Git. See `.context/verify/hyperstack-preflight.json`.
+- Stopped Hyperstack VMs still bill. The user delegated lifecycle management; delete only this project's recorded resource IDs after preserving outputs or at its budget/time limit. Do not touch other account resources. Plan automatic cleanup and reserve before paid allocation.
 
 ## Where not to look
 Ignore `.venv`, caches, generated `dist`, private runs, downloaded weights and future `web/out` for code orientation.

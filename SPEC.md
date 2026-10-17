@@ -1,6 +1,6 @@
 # ForteBank Datathon 26 product specification
 
-User approved local project setup on 17 October 2026. This specification carries the approved architecture into a separate product repository. It does not authorize the agent to rent hardware, pay for services, publish private data or start final training. The supplied case, including all 35 FAQ answers, was reread and reconciled before setup.
+User approved local project setup on 17 October 2026 and subsequently provided a Hyperstack API credential with explicit permission to configure the GPU environment within $30. The user handles the top-up. The agent may provision and manage this project's resources after verifying credit, rates and cleanup controls, without asking again for the same authorization. It may not initiate payments, enable auto-top-up, publish private data or bypass the reviewed-data training gate. The supplied case, including all 35 FAQ answers, was reread and reconciled before setup.
 
 ## Inputs and outputs
 
@@ -42,7 +42,7 @@ Measure video accuracy, FP/FN, localization, category quality where labels exist
 
 ## Hosting and submission gates
 
-Preferred future rental is Hyperstack `n3-A100x1`, one A100 PCIe 80 GB, advertised $1.35/hour. Fallback Runpod Secure A100 PCIe 80 GB is $1.79/hour. Prices were checked 17 October 2026; stock, checkout minimum and performance remain unverified. No paid work until the user provides an instance and allowed work/budget, or separately authorizes rental. Existing older H100 budgets are superseded.
+Preferred rental is Hyperstack `n3-A100x1`, one A100 PCIe 80 GB. Authenticated API preflight on 17 October 2026 verified stock and $1.35/hour compute, with the selected R595/CUDA13.2 Docker image offered. Recheck immediately before allocation. The user's API provisioning authorization and $30 ceiling are recorded; credit was zero at preflight, so paid deployment remains pending the top-up. Include IP/storage charges and a reserve, establish cleanup before allocation, and manage only recorded project resource IDs. Fallback Runpod Secure A100 PCIe 80 GB is advertised at $1.79/hour, but the supplied key authorizes Hyperstack access only. GPU performance remains unmeasured. Existing older H100 budgets are superseded.
 
 The model-locality wording supports controlled rented compute, but the case's separate third-party restriction does not settle hosting permission for jury/competition footage. Resolve that interpretation before such footage leaves permitted local storage. Synthetic/public inputs can test compatibility in the meantime. The same deployment can use team-owned or bank-owned GPU hardware.
 

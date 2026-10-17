@@ -1,0 +1,55 @@
+{
+  "checked_at_utc": "2026-10-17T10:05:40.559723+00:00",
+  "status": "ready_for_user_topup_no_paid_vm_created",
+  "authorization": "User explicitly supplied Hyperstack API credential and approved provisioning/resource management within $30. User handles top-up; do not initiate payments or enable auto-top-up.",
+  "credential_tested": true,
+  "credential_in_repository": false,
+  "credential_value_recorded": false,
+  "credit_usd_at_preflight": 0,
+  "preexisting_vm_count": 0,
+  "flavor": {
+    "name": "n3-A100x1",
+    "gpu": "A100-80G-PCIe",
+    "gpu_count": 1,
+    "vram_gb": 80,
+    "region": "CANADA-1",
+    "stock_available_at_preflight": true,
+    "cpu": 28,
+    "ram_gb": 120,
+    "root_disk_gb": 100,
+    "ephemeral_disk_gb": 750
+  },
+  "account_pricebook_gpu_usd_hour": "1.350000000",
+  "image_offered": "Ubuntu Server 24.04 LTS R595 CUDA 13.2 with Docker",
+  "non_billed_setup_completed": {
+    "environment_name": "forte26-20261017",
+    "dedicated_public_key_imported": true,
+    "private_key_outside_repo": true
+  },
+  "private_provisioning_state": "~/.config/forte26/provisioning-state.json",
+  "api_operations_completed": [
+    "GET /core/flavors",
+    "GET /pricebook",
+    "GET /core/virtual-machines",
+    "GET /billing/user-credit/credit",
+    "GET /core/environments",
+    "GET /core/keypairs",
+    "GET /core/images",
+    "GET /core/regions",
+    "POST /core/environments",
+    "POST /core/keypairs"
+  ],
+  "next_steps": [
+    "Recheck credit and actual price when funded",
+    "Configure narrowly scoped SSH/firewall and cleanup controls before paid work",
+    "Create exactly one A10080 within budget; manage only recorded own IDs",
+    "Verify SSH, NVIDIA driver, Docker and local 8B model on synthetic/public inputs"
+  ],
+  "not_performed": [
+    "Payment or top-up",
+    "Auto-top-up configuration",
+    "Paid VM allocation",
+    "Private competition data upload",
+    "Model inference or training"
+  ]
+}

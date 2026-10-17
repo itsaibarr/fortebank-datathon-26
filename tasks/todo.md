@@ -11,6 +11,14 @@ Ordered task list following Harness's plan convention. Details, dependencies, fi
 - [x] Reread the complete attached case and write the Obsidian GPU, training and requirements guides.
 - [ ] Model inference, complete API mechanics and final UI are still pending; setup success does not satisfy product acceptance.
 
+## Hyperstack delegation
+
+- [x] User authorized API provisioning and resource management within $30; user handles the top-up. Do not request that authorization again.
+- [x] Validate the supplied credential with read-only API calls, check account credit, stock, actual GPU price and offered image.
+- [x] Create the dedicated project environment and import the public half of a dedicated local SSH key. No paid VM or storage created while credit is zero.
+- [ ] Recheck funding and price, establish cleanup/time controls, then provision one A10080 and verify SSH/driver/Docker using public or synthetic inputs.
+- [ ] Keep competition-data hosting permission and reviewed-data training gates separate from infrastructure authorization.
+
 ## Phase 0
 
 - [x] Task 0: Orient the clean product checkout and preserve unrelated changes.
