@@ -61,13 +61,16 @@ def messages(case: RoleCase, root: Path):
         {
             "type": "text",
             "text": (
-                f"The images are chronological views of one interaction. Around {case.target_sec:.2f} "
+                "The images are chronological views of one interaction. "
+                f"Around {case.target_sec:.2f} "
                 "seconds, identify the person moving away from the interaction/workstation area. "
-                "Classify THAT MOVING PERSON as cashier, customer, or unclear. Establish their role "
+                "Classify THAT MOVING PERSON as cashier, customer, or unclear. "
+                "Establish their role "
                 "from visible service actions and continuity across images. Do not define roles by "
                 "appearance, fixed screen position, standing up, or departure alone. If no unique "
-                "moving person or reliable role/continuity is visible, use unclear. Cite up to three "
-                "supplied frame IDs that support the role. Explain only visible evidence and limits. "
+                "moving person or reliable role/continuity is visible, use unclear. "
+                "Cite up to three supplied frame IDs that support the role. "
+                "Explain only visible evidence and limits. "
                 "This is a factual role task; do not judge law, compliance or intent. Return JSON."
             ),
         }
