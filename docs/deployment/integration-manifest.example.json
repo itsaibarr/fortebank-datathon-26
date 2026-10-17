@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "core": {
+    "commit": null,
+    "image": null,
+    "contract_sha256": null
+  },
+  "model": {
+    "identity": "Qwen/Qwen3.8-27B",
+    "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "profile": "frozen27b",
+    "frozen": true
+  },
+  "corpus": {
+    "version": "2026-10-17"
+  },
+  "runtime": {
+    "environment": {
+      "FORTE_MODEL_PATH": "/models/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+      "FORTE_MODEL_PROFILE": "frozen27b",
+      "FORTE_REASONING_CONFIG": "/resources/config/frozen-inference.json"
+    },
+    "mounts": [
+      {
+        "source": "models",
+        "target": "/models"
+      },
+      {
+        "source": "legal",
+        "target": "/legal"
+      }
+    ],
+    "ipc": "host",
+    "requirements": {
+      "min_host_ram_gib": null,
+      "min_free_disk_gib": null,
+      "driver_major": null
+    }
+  },
+  "assets": [],
+  "verification": {
+    "release": false,
+    "model_workload": false,
+    "offline_analysis": false,
+    "browser_session": false,
+    "ownership": false,
+    "receipt": "verification/acceptance.json"
+  }
+}
