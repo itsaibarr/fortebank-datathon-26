@@ -71,6 +71,16 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
             raise ValueError("processing_timeout")
         t = time.monotonic()
         check = backend.verify(registry, frames, event, rule)
+        if rule["id"] == "service_departure" and check.verdict != "unsupported":
+            actor_verdict = (
+                check.actor.departure_verdict(
+                    {f.frame_id: f.timestamp_sec for f in frames}, event.decisive_id
+                )
+                if check.actor
+                else "unclear"
+            )
+            if actor_verdict != "supported":
+                check = check.model_copy(update={"verdict": actor_verdict})
         stats["verification_calls"].append(
             {
                 "frames": len(frames),
@@ -80,6 +90,8 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
                 "matched_conditions": len(set(rule["required"]) & set(check.preconditions)),
                 "unrecognized_conditions": len(set(check.preconditions) - set(rule["required"])),
                 "usage": getattr(backend, "last_usage", {}),
+                "actor_usage": getattr(backend, "last_actor_usage", {}),
+                "actor_role": check.actor.role if check.actor else None,
             }
         )
         return check
@@ -99,7 +111,10 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
             a, _, b = event_times(event, by_id)
             rule = catalog[event.rule_id]
             check = verify(frames, event, rule)
-            if check.verdict != "unsupported":
+            initial_actor = check.actor
+            if check.verdict != "unsupported" or (
+                rule["id"] == "service_departure" and check.actor and check.actor.role == "customer"
+            ):
                 context = sample_window(
                     registry, max(0, center - 8), min(registry.duration, center + 8), 1
                 )
@@ -110,6 +125,8 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
                     candidate.end_id,
                     *candidate.evidence_ids,
                 }
+                if check.actor:
+                    mandatory.update(id for id in check.actor.role_evidence_ids if id in by_id)
                 context = {f.frame_id: f for f in context}
                 context.update({id: by_id[id] for id in mandatory})
                 ordered = sorted(context.values(), key=lambda f: f.timestamp_sec)
@@ -122,6 +139,14 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
                     } | mandatory
                     ordered = [f for f in ordered if f.frame_id in keep]
                 check = verify(ordered, event, rule)
+                if (
+                    initial_actor
+                    and check.actor
+                    and initial_actor.role != "unclear"
+                    and check.actor.role != "unclear"
+                    and initial_actor.role != check.actor.role
+                ):
+                    check = check.model_copy(update={"verdict": "unclear"})
             if check.verdict == "unsupported":
                 continue
             ids = set(check.evidence_ids)
@@ -134,6 +159,19 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
             ):
                 unclear = True
                 continue
+            if rule["id"] == "service_departure":
+                prior = max(
+                    (
+                        id
+                        for id in check.actor.role_evidence_ids
+                        if by_id[id].timestamp_sec < by_id[event.decisive_id].timestamp_sec
+                    ),
+                    key=lambda id: by_id[id].timestamp_sec,
+                )
+                extra = sorted(
+                    ids - {prior, event.decisive_id}, key=lambda id: by_id[id].timestamp_sec
+                )
+                ids = {prior, event.decisive_id, *extra[-1:]}
             event = event.model_copy(
                 update={"evidence_ids": sorted(ids, key=lambda id: by_id[id].timestamp_sec)}
             )

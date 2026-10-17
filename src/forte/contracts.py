@@ -113,7 +113,29 @@ class WindowObservation(StrictModel):
         return self
 
 
+class ActorGrounding(StrictModel):
+    role: Literal["cashier", "customer", "unclear"]
+    role_evidence_ids: list[str] = Field(max_length=3)
+    continuity_supported: bool
+
+    def departure_verdict(
+        self, frame_times: dict[str, float], decisive_id: str
+    ) -> Literal["supported", "unsupported", "unclear"]:
+        ids = set(self.role_evidence_ids)
+        if (
+            self.role == "unclear"
+            or not self.continuity_supported
+            or not ids
+            or not ids <= frame_times.keys()
+            or decisive_id not in frame_times
+            or not any(frame_times[id] < frame_times[decisive_id] for id in ids)
+        ):
+            return "unclear"
+        return "supported" if self.role == "cashier" else "unsupported"
+
+
 class EvidenceCheck(StrictModel):
     verdict: Literal["supported", "unsupported", "unclear"]
     evidence_ids: list[str] = Field(max_length=3)
     preconditions: list[str] = Field(max_length=12)
+    actor: ActorGrounding | None = None
