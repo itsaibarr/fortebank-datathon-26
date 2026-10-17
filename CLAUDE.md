@@ -73,5 +73,6 @@ See `.context/DOC-INDEX.md`. Regenerate with `bash /Users/itsaibarr/harness/agen
 - Human role/view review follow-up: the copied private sidecar can migrate to v2
   for `role_bindings`, `view_relations` and partial `view_observations`. Reflections
   share a canonical local person only when a human identifies the owner. Responses
-  for two recordings supply mappings and one independent same-person join; full
-  role/action intervals, boxes, areas and training gates remain pending. Do not place private role/scene corrections in Git or shared memory.
+  for all three pilots supply initial mappings and one independent same-person join;
+  one item remains unclear. Full role/action intervals, boxes, areas and training
+  gates remain pending. Do not place private role/scene corrections in Git or shared memory.

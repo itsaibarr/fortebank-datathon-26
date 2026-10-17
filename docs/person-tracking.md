@@ -4,7 +4,7 @@ The steps 1–2 workflow is implemented. A CPU run processed all 31 allowlisted
 development recordings offline and prepared local review packets. **No complete
 person/role/action pilot is approved, and no training targets are released.**
 The three original review cases are priority items. Human responses now supply
-role/view mappings for two recordings and one explicit same-person join; full
+role/view mappings for all three pilot recordings and one explicit same-person join; full
 interval and geometry review remains open. Their narrative corrections
 are preserved, with explicit pending bindings to outlined segments/source frames.
 A local human must finish those bindings and review the tracks, areas and actions.
@@ -256,24 +256,26 @@ not actor correctness. Aggregate measurements and remaining gates are in
 
 ## Human view-mapping follow-up
 
-Responses for two recordings are preserved privately with verbatim wording,
-reviewer source and receipt time. Nine named view/role mappings are associated
-with four recording-local identity groups, with four reviewed reflection
+Responses for all three pilot recordings are preserved privately with verbatim
+wording, reviewer source and receipt time. Fourteen named view/role mappings are
+associated with six recording-local identity groups, with seven reviewed reflection
 relationships and one independently confirmed same-person join. The groups are
 not a verified count of all physical people. Full segments, geometry, work areas,
 actions and role intervals remain unapproved, and no role/action training target
 is released. The historical regression exclusion remains. Original review packets
 and baseline proposals are intact; the private index points to immutable reviewed
-revisions. The aggregate separates proposed, confirmed and rejected joins.
+revisions. One additional human response remains explicitly unclear, with its
+role, view kind and identity unresolved; it supplies no abstention training target.
+The aggregate separates proposed, confirmed and rejected joins.
 
 Review regeneration now retains all previously cited source-frame images,
 including diagnostic reference views, before adding new candidate views. The
 packet displays recorded mappings beside pending interval/geometry gates rather
 than treating mirror detections as additional physical people.
 
-The follow-up aggregate receipt is
-`.context/verify/person-view-review-followup-20261017.json`; the earlier receipt
-remains a historical checkpoint.
+The current aggregate receipt is
+`.context/verify/person-pilot-role-review-20261017.json`; the earlier
+`person-view-review` receipts remain historical checkpoints.
 
 These pilots check source binding and annotation errors. Recording-local IDs
 are annotation references, not employment classes or features to memorize.
