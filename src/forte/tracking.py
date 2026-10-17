@@ -114,12 +114,18 @@ class WorkArea(Strict):
 
 class Correction(Strict):
     operation: Literal["split", "join", "box", "fact", "area", "review", "cvat_import"]
-    reviewer: str
+    reviewer: str = Field(min_length=1)
     reviewed_at: datetime
     before_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     affected_ids: list[str]
     reason: str
     artifact: str
+
+    @model_validator(mode="after")
+    def provenance(self):
+        if not self.reviewer.strip() or not self.reviewed_at.tzinfo or not self.reason.strip():
+            raise ValueError("Correction requires actual reviewer, reason and aware timestamp")
+        return self
 
 
 class TrackManifest(Strict):
@@ -160,6 +166,8 @@ class TrackManifest(Strict):
     @model_validator(mode="after")
     def source_binding(self):
         frames = {f.frame_id: f for f in self.frames}
+        if self.recording_group != self.source_sha256:
+            raise ValueError("Recording group must match the verified source hash")
         if len(frames) != len(self.frames) or self.rotation % 90:
             raise ValueError("Duplicate frame or invalid rotation")
         expected_size = (
@@ -252,6 +260,17 @@ def validate_pair(manifest: TrackManifest, annotation: Annotation):
             raise ValueError("Unknown work area")
         if f.counterpart_actor_id and f.counterpart_actor_id not in people:
             raise ValueError("Unknown counterpart actor")
+        if f.counterpart_actor_id:
+            ids = f.counterpart_segment_ids
+            owned = {s.id for s in m.segments if s.person_id == f.counterpart_actor_id}
+            allowed = set().union(*(components[id] for id in owned)) if owned else set()
+            if not ids or not set(ids) <= allowed or not f.counterpart_frame_ids:
+                raise ValueError("Counterpart requires separately bound identity/source evidence")
+            evidence = {b.frame_id for id in ids for b in segs[id].boxes if not b.outside}
+            if not set(f.counterpart_frame_ids) <= evidence or any(
+                not f.start_sec <= frames[id] <= f.end_sec for id in f.counterpart_frame_ids
+            ):
+                raise ValueError("Counterpart evidence outside the action interval")
         if f.actor_id:
             if not f.segment_ids or not set(f.segment_ids) <= segs.keys():
                 raise ValueError("Actor fact requires source-bound segments")
@@ -319,23 +338,29 @@ def training_targets(manifest, annotation):
     for f in a.facts:
         if f.review_status != "confirmed" or f.target_kind == "unresolved":
             continue
+        if f.kind == "role" and f.value == "unclear" and f.target_kind != "abstention":
+            continue
         if f.target_kind != "abstention" and f.observation_state != "observed":
             # An exhaustive reviewed absence is explicit, never inferred from silence.
             if f.observation_state != "not_observed_in_reviewed_interval":
                 continue
         if f.work_area_id and areas[f.work_area_id].review.status != "confirmed":
             continue
+        participating = f.segment_ids + f.counterpart_segment_ids
         if any(
             segs[id].review.status != "confirmed"
+            or segs[id].identity_uncertain
             or any(
-                b.review.status != "confirmed" for b in segs[id].boxes if b.frame_id in f.frame_ids
+                b.review.status != "confirmed"
+                for b in segs[id].boxes
+                if b.frame_id in f.frame_ids + f.counterpart_frame_ids
             )
-            for id in f.segment_ids
+            for id in participating
         ):
             continue
         if any(
             j.review.status == "draft"
-            and (j.from_segment in f.segment_ids or j.to_segment in f.segment_ids)
+            and (j.from_segment in participating or j.to_segment in participating)
             for j in m.joins
         ):
             continue

@@ -39,7 +39,8 @@ def export_cvat(manifest, xml_path, sidecar_path):
     size = ET.SubElement(task, "original_size")
     ET.SubElement(size, "width").text = str(m.oriented_width)
     ET.SubElement(size, "height").text = str(m.oriented_height)
-    label = ET.SubElement(ET.SubElement(task, "labels"), "label")
+    labels = ET.SubElement(task, "labels")
+    label = ET.SubElement(labels, "label")
     ET.SubElement(label, "name").text = "person"
     ET.SubElement(label, "type").text = "rectangle"
     attributes = ET.SubElement(label, "attributes")
@@ -55,6 +56,19 @@ def export_cvat(manifest, xml_path, sidecar_path):
             input_type=kind,
             default_value="unclear" if name == "role" else "",
             values=values,
+        ).items():
+            ET.SubElement(attr, key).text = value
+    area_label = ET.SubElement(labels, "label")
+    ET.SubElement(area_label, "name").text = "work_area"
+    ET.SubElement(area_label, "type").text = "polygon"
+    area_attrs = ET.SubElement(area_label, "attributes")
+    for name, kind, default in [
+        ("area_id", "text", ""),
+        ("boundary_uncertain", "checkbox", "true"),
+    ]:
+        attr = ET.SubElement(area_attrs, "attribute")
+        for key, value in dict(
+            name=name, mutable="false", input_type=kind, default_value=default, values=""
         ).items():
             ET.SubElement(attr, key).text = value
     for i, segment in enumerate(m.segments):
@@ -92,6 +106,26 @@ def export_cvat(manifest, xml_path, sidecar_path):
                 ("role", b.role_attribute),
             ]:
                 ET.SubElement(box, "attribute", name=name).text = value
+    for i, area in enumerate(m.work_areas, start=len(m.segments)):
+        track = ET.SubElement(root, "track", id=str(i), label="work_area", source="manual")
+        indices = sorted(int(id[1:]) for id in area.frame_ids)
+        for ordinal in indices + ([indices[-1] + 1] if indices[-1] + 1 < len(m.frames) else []):
+            polygon = ET.SubElement(
+                track,
+                "polygon",
+                frame=str(ordinal),
+                points=";".join(
+                    f"{x * m.oriented_width},{y * m.oriented_height}" for x, y in area.points
+                ),
+                outside=str(int(ordinal not in indices)),
+                occluded="0",
+                keyframe="1",
+                z_order="0",
+            )
+            ET.SubElement(polygon, "attribute", name="area_id").text = area.id
+            ET.SubElement(polygon, "attribute", name="boundary_uncertain").text = str(
+                area.boundary_uncertain
+            ).lower()
     ET.indent(root)
     Path(xml_path).write_bytes(ET.tostring(root, encoding="utf-8", xml_declaration=True))
     write_json(
@@ -120,6 +154,8 @@ def import_cvat(manifest, xml_path, sidecar_path):
     sidecar = json.loads(Path(sidecar_path).read_bytes())
     if (
         sidecar["source_sha256"] != m.source_sha256
+        or sidecar["time_base"] != m.time_base
+        or sidecar["coordinate_convention"] != m.coordinate_convention
         or sidecar["frames"] != [f.model_dump() for f in m.frames]
         or (sidecar["width"], sidecar["height"]) != (m.oriented_width, m.oriented_height)
     ):
@@ -137,10 +173,46 @@ def import_cvat(manifest, xml_path, sidecar_path):
         int(root.findtext("meta/task/original_size/height", "-1")),
     ) != (m.oriented_width, m.oriented_height):
         raise ValueError("CVAT frame dimensions mismatch")
-    segments = []
+    segments, areas = [], []
     original = {s.id: s for s in m.segments}
     next_number = max([int(s.id[1:]) for s in m.segments] + [0]) + 1
     for track in root.findall("track"):
+        if track.attrib["label"] == "work_area":
+            for item in track.findall("polygon"):
+                ordinal = int(item.attrib["frame"])
+                if not 0 <= ordinal < len(m.frames):
+                    raise ValueError("CVAT area outside source")
+                if item.get("outside", "0") == "1":
+                    continue
+                attrs = {a.attrib["name"]: a.text or "" for a in item.findall("attribute")}
+                points = [
+                    (
+                        float(pair.split(",")[0]) / m.oriented_width,
+                        float(pair.split(",")[1]) / m.oriented_height,
+                    )
+                    for pair in item.attrib["points"].split(";")
+                ]
+                id = attrs.get("area_id") or "area-" + track.attrib["id"]
+                previous = next((a for a in areas if a.id == id), None)
+                frame_id = m.frames[ordinal].frame_id
+                if previous and previous.points == points:
+                    previous.frame_ids.append(frame_id)
+                else:
+                    # A moving outline is a distinct source-bound outline,
+                    # never silently projected across a camera movement.
+                    if previous:
+                        id += "-" + frame_id
+                    areas.append(
+                        WorkArea(
+                            id=id,
+                            frame_ids=[frame_id],
+                            points=points,
+                            boundary_uncertain=attrs.get("boundary_uncertain", "true") != "false",
+                            review=Review(),
+                            notes="CVAT import; outline/extent require local review",
+                        )
+                    )
+            continue
         if track.attrib["label"] != "person":
             raise ValueError("Unexpected CVAT track label")
         boxes = []
@@ -199,6 +271,7 @@ def import_cvat(manifest, xml_path, sidecar_path):
         segments.append(segment)
     # Original manifest/review history is retained by the caller in a new revision.
     m.segments = segments
+    m.work_areas = areas
     live = {s.id for s in segments}
     m.joins = [j for j in m.joins if {j.from_segment, j.to_segment} <= live]
     m.training_eligible = False
@@ -271,6 +344,10 @@ def apply_corrections(
             segment = next(s for s in m.segments if s.id == op["segment_id"])
             status = op.get("status", "confirmed")
             segment.review = reviewed.model_copy(update=dict(status=status))
+            if op.get("resolve_identity", False):
+                if status != "confirmed":
+                    raise ValueError("Resolving identity requires explicit confirmation")
+                segment.identity_uncertain = False
             # Geometry approval is a separate explicit operation, never implied
             # by accepting identity or a role.
             if op.get("approve_boxes", False):

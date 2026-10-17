@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import sys
+import traceback
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -14,6 +15,7 @@ from forte.person_proposals import (
     allowlisted_sources,
     prepare_clip,
     sha256,
+    verify_manifest_source,
     verify_source,
     write_json,
 )
@@ -22,6 +24,12 @@ from forte.tracking import Correction, TrackManifest, training_targets, validate
 
 
 def add_commands(commands):
+    packet = commands.add_parser("tracks-packet", help="Refresh local private review navigation")
+    packet.add_argument("--directory", type=Path, required=True)
+    index = commands.add_parser("tracks-index", help="Refresh private review status and aggregates")
+    index.add_argument("--private-root", type=Path, required=True)
+    index.add_argument("--directory", type=Path, required=True)
+    index.add_argument("--revision", action="append", default=[], metavar="CLIP=PRIVATE_DIRECTORY")
     prepare = commands.add_parser("tracks-prepare", help="Create private local person proposals")
     prepare.add_argument("--private-root", type=Path, required=True)
     prepare.add_argument("--output", type=Path, required=True)
@@ -61,11 +69,14 @@ def load_pair(directory, source):
     if path.resolve().parent != directory.resolve() or sha256(path) != m.annotation_sha256:
         raise ValueError("Annotation hash/path mismatch")
     a = Annotation.model_validate_json(path.read_bytes())
+    verify_manifest_source(m, source)
     return validate_pair(m, a)
 
 
-def aggregate(records):
+def aggregate(records, annotations=None):
     manifests = [m for _, m in records]
+    annotations = annotations or []
+    facts = [f for a in annotations for f in a.facts]
     return dict(
         recordings_processed=len(manifests),
         proposed_segments=sum(len(m.segments) for m in manifests),
@@ -73,8 +84,15 @@ def aggregate(records):
         human_reviewed_segments=sum(
             s.review.status == "confirmed" for m in manifests for s in m.segments
         ),
-        confirmed_roles=0,
-        confirmed_actions=0,
+        confirmed_roles=sum(f.kind == "role" and f.review_status == "confirmed" for f in facts),
+        confirmed_actions=sum(f.kind == "action" and f.review_status == "confirmed" for f in facts),
+        pending_roles=sum(f.kind == "role" and f.review_status == "draft" for f in facts),
+        pending_actions=sum(f.kind == "action" and f.review_status == "draft" for f in facts),
+        confirmed_abstentions=sum(
+            f.target_kind == "abstention" and f.review_status == "confirmed" for f in facts
+        ),
+        people_reviewed=None,
+        human_unreviewed_sec=sum(m.duration_sec for m in manifests),
         training_targets=0,
         source_frames=sum(len(m.frames) for m in manifests),
         detection_frames=sum(len(m.detection_frame_ids) for m in manifests),
@@ -90,6 +108,73 @@ def aggregate(records):
         quality_gate="pending_local_human_review",
         split_frozen=False,
         note="Segments/joins are proposals; distinct people and tracking quality are unmeasured",
+    )
+
+
+def refresh_index(args):
+    directory = args.directory.resolve()
+    private_output(directory)
+    eligible = {
+        r["clip_id"]: r
+        for r in allowlisted_sources(
+            args.private_root / "batch-selection.json",
+            args.private_root / "annotation-review/sources",
+        )
+    }
+    old = json.loads((directory / "index.json").read_bytes())
+    revisions = dict(value.split("=", 1) for value in args.revision)
+    if not set(revisions) <= {r["clip_id"] for r in old["records"]}:
+        raise ValueError("Revision must refer to an existing allowlisted record")
+    records, annotations, rows = [], [], []
+    for row in old["records"]:
+        clip = row["clip_id"]
+        record = eligible[clip]
+        path = (
+            Path(revisions[clip]) if clip in revisions else (directory / row["manifest"]).parent
+        ).resolve()
+        if not path.is_relative_to(args.private_root.resolve()):
+            raise ValueError("Review revision escaped private root")
+        m, a = load_pair(path, record["source"])
+        if m.clip_id != clip or m.source_sha256 != record["recording_group"]:
+            raise ValueError("Index/source binding mismatch")
+        records.append((record, m))
+        annotations.append(a)
+        statuses = [s.review.status for s in m.segments] + [f.review_status for f in a.facts]
+        row.update(
+            manifest=str(path / "tracks.json"),
+            status="confirmed"
+            if statuses and all(x == "confirmed" for x in statuses)
+            else "pending",
+            confirmed=sum(x == "confirmed" for x in statuses),
+            pending=sum(x == "draft" for x in statuses),
+            rejected=sum(x == "rejected" for x in statuses),
+            training_eligible=bool(training_targets(m, a)),
+            excluded=m.exclusion_reasons,
+        )
+        rows.append(row)
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%f")
+    shutil.copyfile(directory / "index.json", directory / f"index-before-{stamp}.json")
+    old["records"] = rows
+    write_json(directory / "index.json", old)
+    report = aggregate(records, annotations)
+    report["training_targets"] = sum(
+        len(training_targets(m, a)) for (_, m), a in zip(records, annotations, strict=True)
+    )
+    write_json(directory / "aggregate.json", report)
+    from forte.review_packet import write_overview
+
+    write_overview(directory)
+    print(json.dumps(report))
+    return 0
+
+
+def review_receipts(review_path, reference):
+    current = sha256(review_path)
+    return dict(
+        current_review_sha256=current,
+        original_reference_review_sha256=reference["review_file_sha256"],
+        reference_review_hash_matches_current=reference["review_file_sha256"] == current,
+        binding_review_status="pending",
     )
 
 
@@ -114,9 +199,10 @@ def prepare_run(args):
     if len(set(pilot)) != 3:
         raise ValueError("Three-case review must bind to three allowlisted recordings")
     regression = reference["recording_sha256"]
-    # Check the original review receipt before forwarding any narrative correction.
-    if reference["review_file_sha256"] != sha256(review_path):
-        raise ValueError("Original role correction review hash changed")
+    # A stale narrative receipt must not approve a binding. Preserve both
+    # versions/receipts and surface it; verified allowlisted media can still
+    # receive geometry proposals without promoting the narrative to truth.
+    receipts = review_receipts(review_path, reference)
     if args.clip:
         records = [r for r in records if r["clip_id"] == args.clip]
     elif args.pilot_only:
@@ -135,6 +221,7 @@ def prepare_run(args):
     output.mkdir(parents=True, exist_ok=True, mode=0o700)
     backup = output / "original-review-backups"
     backup.mkdir(exist_ok=True, mode=0o700)
+    write_json(output / "review-receipts.json", receipts)
     for name, path in [
         ("first-milestone-review.json", review_path),
         ("role-reference.json", reference_path),
@@ -160,6 +247,14 @@ def prepare_run(args):
                 ):
                     raise ValueError("Resume provenance changed")
             else:
+                if args.resume and dest.exists():
+                    failed = output / "failed-attempts"
+                    failed.mkdir(exist_ok=True, mode=0o700)
+                    shutil.move(
+                        dest,
+                        failed
+                        / (record["clip_id"] + "-" + datetime.now(UTC).strftime("%Y%m%dT%H%M%S%f")),
+                    )
                 extra = []
                 if record["recording_group"] == regression:
                     extra = [f["frame_id"] for v in reference["variants"] for f in v["frames"]]
@@ -201,6 +296,7 @@ def prepare_run(args):
                         "Departure alone cannot establish role.",
                         actual_reviewer=None,
                         confirmed_segment_ids=[],
+                        review_receipts=receipts,
                     )
                     if m.regression_only:
                         pending["preserved_role_reference"] = reference
@@ -233,6 +329,22 @@ def prepare_run(args):
                     write_json(dest / "review-intervals.json", intervals)
             result.append((record, m))
         except (OSError, ValueError, KeyError, RuntimeError) as exc:
+            detail = dict(
+                clip_id=record["clip_id"],
+                error_type=type(exc).__name__,
+                trace=[
+                    dict(file=Path(f.filename).name, line=f.lineno)
+                    for f in traceback.extract_tb(exc.__traceback__)
+                ],
+            )
+            if hasattr(exc, "errors"):
+                detail["validation"] = [
+                    dict(location=e["loc"], type=e["type"], message=e["msg"])
+                    for e in exc.errors(include_input=False)
+                ]
+            else:
+                detail["message"] = str(exc)
+            write_json(dest / "failure-detail.json", detail)
             failures.append(dict(clip_id=record["clip_id"], error_type=type(exc).__name__))
         write_json(
             output / "index.json",
@@ -263,13 +375,25 @@ def prepare_run(args):
         print(json.dumps(dict(completed=len(result), failed=len(failures))), flush=True)
     if failures:
         return 1
+    from forte.review_packet import write_overview
+
+    write_overview(output)
     return 0
 
 
 def run_command(args):
     try:
+        if args.command == "tracks-packet":
+            private_output(args.directory)
+            from forte.review_packet import write_overview
+
+            write_overview(args.directory)
+            print(json.dumps(dict(private_review_packet_refreshed=True)))
+            return 0
         if args.command == "tracks-prepare":
             return prepare_run(args)
+        if args.command == "tracks-index":
+            return refresh_index(args)
         m, a = load_pair(args.directory, args.source)
         if args.command == "tracks-check":
             print(
@@ -291,7 +415,19 @@ def run_command(args):
                 raise ValueError("No independently reviewed eligible training targets")
             if args.output.exists():
                 raise FileExistsError("Export exists")
-            write_json(args.output, [f.model_dump(mode="json") for f in targets])
+            write_json(
+                args.output,
+                dict(
+                    schema_version=1,
+                    source_sha256=m.source_sha256,
+                    manifest_sha256=sha256(args.directory / "tracks.json"),
+                    annotation_sha256=m.annotation_sha256,
+                    facts=[f.model_dump(mode="json") for f in targets],
+                    frames=[f.model_dump() for f in m.frames],
+                    segments=[s.model_dump(mode="json") for s in m.segments],
+                    work_areas=[area.model_dump(mode="json") for area in m.work_areas],
+                ),
+            )
             print(json.dumps(dict(exported_targets=len(targets))))
             return 0
         if args.output.exists():
@@ -304,7 +440,7 @@ def run_command(args):
                 operations,
                 reviewer=args.reviewer,
                 reason=args.reason,
-                artifact=str(args.operations),
+                artifact="review-operations.json",
             )
         else:
             revised = import_cvat(m, args.xml, args.directory / "cvat-source-map.json")
@@ -317,23 +453,45 @@ def run_command(args):
                     before_sha256=sha256(args.directory / "tracks.json"),
                     affected_ids=[s.id for s in revised.segments],
                     reason=args.reason,
-                    artifact=str(args.xml),
+                    artifact="cvat-edits.xml",
                 )
             )
             validate_pair(revised, annotation)
         shutil.copytree(args.directory, args.output)
+        if args.command == "tracks-review":
+            shutil.copyfile(args.operations, args.output / "review-operations.json")
+        else:
+            shutil.copyfile(args.xml, args.output / "cvat-edits.xml")
         shutil.copyfile(args.directory / "tracks.json", args.output / "tracks-before.json")
         shutil.copyfile(
             args.directory / "annotation.json", args.output / "annotation-before-revision.json"
         )
         write_json(args.output / "annotation.json", annotation.model_dump(mode="json"))
         revised.annotation_sha256 = sha256(args.output / "annotation.json")
-        write_json(args.output / "tracks.json", revised.model_dump(mode="json"))
         # Rebuild derivatives so review geometry/IDs do not lag the revision.
         from forte.person_proposals import build_packet
 
         shutil.rmtree(args.output / "frames")
         build_packet(args.source, args.output, revised)
+        revised.provenance["review_media"] = {
+            name: sha256(args.output / name)
+            for name in (
+                "review.mp4",
+                "oriented-source.mp4",
+                "review-assets.json",
+                "cvat.xml",
+                "cvat-source-map.json",
+            )
+        }
+        write_json(args.output / "tracks.json", revised.model_dump(mode="json"))
+        write_json(
+            args.output / "complete.json",
+            dict(
+                source_sha256=revised.source_sha256,
+                manifest_sha256=sha256(args.output / "tracks.json"),
+                revision=True,
+            ),
+        )
         write_json(
             args.output / "revision.json",
             dict(

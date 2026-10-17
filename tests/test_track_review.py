@@ -88,3 +88,39 @@ def test_human_split_join_and_review_are_append_only_and_need_actual_reviewer():
     )
     assert len(joined.corrections) == 2
     assert joined.joins[-1].review.status == "confirmed"
+
+
+def test_import_rejects_sidecar_from_different_track_mapping_even_with_same_frame_count(tmp_path):
+    raw, _ = pair()
+    m = TrackManifest.model_validate(raw)
+    xml, sidecar = tmp_path / "a.xml", tmp_path / "map.json"
+    export_cvat(m, xml, sidecar)
+    # A source hash alone is insufficient when a derivative uses another PTS origin.
+    data = json.loads(sidecar.read_text())
+    data["time_base"] = "1/100"
+    sidecar.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match="source"):
+        import_cvat(m, xml, sidecar)
+
+
+def test_cvat_work_area_polygons_are_source_bound_and_import_as_unreviewed(tmp_path):
+    from forte.tracking import WorkArea
+
+    raw, _ = pair()
+    m = TrackManifest.model_validate(raw)
+    m.work_areas = [
+        WorkArea(
+            id="area1",
+            frame_ids=["f000000"],
+            points=[(0.1, 0.1), (0.8, 0.1), (0.8, 0.9)],
+            boundary_uncertain=True,
+        )
+    ]
+    xml, sidecar = tmp_path / "a.xml", tmp_path / "map.json"
+    export_cvat(m, xml, sidecar)
+    restored = import_cvat(m, xml, sidecar)
+    assert len(restored.work_areas) == 1
+    assert restored.work_areas[0].points == m.work_areas[0].points
+    assert restored.work_areas[0].frame_ids == ["f000000"]
+    assert restored.work_areas[0].review.status == "draft"
+    assert ET.parse(xml).find("track[@label='work_area']/polygon") is not None

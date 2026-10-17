@@ -66,6 +66,43 @@ def verify_source(record):
         raise ValueError("Allowlisted source hash mismatch")
 
 
+def verify_manifest_source(manifest, source):
+    """Decode actual media again; self-consistent JSON alone proves no binding."""
+    if sha256(source) != manifest.source_sha256:
+        raise ValueError("Source hash mismatch")
+    info = probe_video(source)
+    if (info["width"], info["height"], info["rotation"]) != (
+        manifest.source_width,
+        manifest.source_height,
+        manifest.rotation,
+    ):
+        raise ValueError("Source dimensions/orientation changed")
+    count = 0
+    last_span = 0
+    with open_video(source) as container:
+        stream = container.streams.video[0]
+        stream.codec_context.thread_count = 1
+        if str(stream.time_base) != manifest.time_base:
+            raise ValueError("Source time base mismatch")
+        for i, frame in enumerate(container.decode(stream)):
+            if (
+                i >= len(manifest.frames)
+                or frame.pts != manifest.frames[i].source_pts
+                or frame.is_corrupt
+            ):
+                raise ValueError("Actual source frame association mismatch")
+            count += 1
+            last_span = float(frame.duration * frame.time_base) if frame.duration else 0
+        if last_span <= 0:
+            last_span = 1 / float(stream.average_rate) if stream.average_rate else 0.04
+    if count != len(manifest.frames):
+        raise ValueError("Incomplete source frame mapping")
+    if not math.isclose(
+        manifest.duration_sec, manifest.frames[-1].timestamp_sec + last_span, abs_tol=1e-6
+    ):
+        raise ValueError("Actual source duration mismatch")
+
+
 class YoloxONNX:
     """Official COCO person class (index 0), fixed 640 ONNX release, CPU only."""
 
@@ -274,6 +311,10 @@ def build_packet(source, output, manifest, extra_frame_ids=()):
             dst.width, dst.height = manifest.oriented_width, manifest.oriented_height
             dst.pix_fmt = "yuv420p"
             dst.time_base = Fraction(manifest.time_base)
+            # VFR timestamps can be closer than 1 / average_rate. Setting only
+            # the muxer time base lets the encoder round distinct source PTS
+            # onto the same tick (non-monotonic DTS). Preserve both time bases.
+            dst.codec_context.time_base = Fraction(manifest.time_base)
             dst.options = {"crf": "23", "preset": "ultrafast", "tune": "zerolatency"}
             dst.codec_context.max_b_frames = 0
             streams.append(dst)
@@ -387,6 +428,11 @@ def prepare_clip(
     )
     if not math.isclose(registry.duration, original.duration_sec, abs_tol=0.05):
         raise ValueError("Template duration mismatch")
+    legacy_duration = original.duration_sec
+    # Old empty templates used rounded probe durations. Migrate to the exact
+    # decoded end; never loosen fact bounds or silently retime existing facts.
+    original.duration_sec = registry.duration
+    original = Annotation.model_validate(original.model_dump())
     metadata = probe_video(record["source"])
     selected = detection_schedule(registry.frames, cadence_sec)
     builder = SegmentBuilder(cadence_sec)
@@ -434,6 +480,7 @@ def prepare_clip(
             detector=detector.provenance,
             tracker="roboflow/trackers ByteTrack",
             template_sha256=sha256(template),
+            legacy_template_duration_sec=legacy_duration,
             source_mapping="forte.video.VideoRegistry",
             undecodable_ranges=[],
             sampled_out_frames=len(registry.frames) - len(selected),
