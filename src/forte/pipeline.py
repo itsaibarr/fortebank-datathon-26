@@ -43,23 +43,43 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
     candidates, confirmed = [], []
     unclear = False
     stats["calls"] = []
+    stats["verification_calls"] = []
 
     def inspect(frames, pixels, tokens):
         if time.monotonic() >= deadline:
             raise ValueError("processing_timeout")
         t = time.monotonic()
-        answer = backend.analyze(registry, frames, rules, pixels, tokens)
-        stats["calls"].append(
+        answer = None
+        try:
+            answer = backend.analyze(registry, frames, rules, pixels, tokens)
+        finally:
+            stats["calls"].append(
+                {
+                    "frames": len(frames),
+                    "pixels": pixels,
+                    "seconds": time.monotonic() - t,
+                    "usage": getattr(backend, "last_usage", {}),
+                    "finish_reason": getattr(backend, "last_finish_reason", None),
+                    "reviewable": answer.complete if answer else None,
+                    "candidate_count": len(answer.events) if answer else None,
+                }
+            )
+        return answer
+
+    def verify(frames, event, rule):
+        if time.monotonic() >= deadline:
+            raise ValueError("processing_timeout")
+        t = time.monotonic()
+        check = backend.verify(registry, frames, event, rule)
+        stats["verification_calls"].append(
             {
                 "frames": len(frames),
-                "pixels": pixels,
                 "seconds": time.monotonic() - t,
+                "verdict": check.verdict,
                 "usage": getattr(backend, "last_usage", {}),
-                "reviewable": answer.complete,
-                "candidate_count": len(answer.events),
             }
         )
-        return answer
+        return check
 
     for start, end in make_windows(registry.duration, 16, 12):
         frames = sample_window(registry, start, end, 1)
@@ -75,15 +95,18 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
         for event in fine.events:
             a, _, b = event_times(event, by_id)
             rule = catalog[event.rule_id]
-            if not set(rule["required"]) <= set(event.preconditions):
-                unclear = True
-                continue
-            check = backend.verify(registry, frames, event, rule)
+            check = verify(frames, event, rule)
             if check.verdict == "unclear":
                 context = sample_window(
                     registry, max(0, center - 8), min(registry.duration, center + 8), 1
                 )
-                mandatory = {event.decisive_id, *event.evidence_ids}
+                mandatory = {
+                    event.decisive_id,
+                    *event.evidence_ids,
+                    candidate.start_id,
+                    candidate.end_id,
+                    *candidate.evidence_ids,
+                }
                 context = {f.frame_id: f for f in context}
                 context.update({id: by_id[id] for id in mandatory})
                 ordered = sorted(context.values(), key=lambda f: f.timestamp_sec)
@@ -95,7 +118,7 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
                         for i in range(budget)
                     } | mandatory
                     ordered = [f for f in ordered if f.frame_id in keep]
-                check = backend.verify(registry, ordered, event, rule)
+                check = verify(ordered, event, rule)
             if check.verdict == "unsupported":
                 continue
             ids = set(check.evidence_ids)

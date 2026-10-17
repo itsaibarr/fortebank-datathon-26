@@ -5,13 +5,36 @@ import json
 import os
 import shutil
 import sys
+from collections import Counter
 from pathlib import Path
 from uuid import UUID
+
+import httpx
+from pydantic import ValidationError
 
 from forte.inference import LocalVLM
 from forte.jobs import atomic_json, failure
 from forte.pipeline import analyze_video
 from forte.video import probe_video
+
+
+def failure_diagnostics(exc):
+    details = {"error_type": type(exc).__name__}
+    reasons = {
+        "Model answer was incomplete": "model_output_truncated",
+        "Visual input exceeds context budget": "visual_context_exceeded",
+        "invalid_event_order": "invalid_event_order",
+        "Unsupported legal, accounting or intent claim": "unsupported_description",
+    }
+    if str(exc) in reasons:
+        details["reason"] = reasons[str(exc)]
+    if isinstance(exc, httpx.HTTPStatusError):
+        details["http_status"] = exc.response.status_code
+    if isinstance(exc, ValidationError):
+        details["validation_types"] = dict(
+            Counter(e["type"] for e in exc.errors(include_input=False, include_context=False))
+        )
+    return details
 
 
 def main():
@@ -47,7 +70,7 @@ def main():
             args.job / "input.mov", args.job, args.job_id, backend, args.deadline, stats
         )
     except Exception as exc:
-        stats["error_type"] = type(exc).__name__
+        stats.update(failure_diagnostics(exc))
         code = (
             str(exc)
             if str(exc) in {"processing_timeout", "insufficient_evidence"}

@@ -28,6 +28,7 @@ class LocalVLM:
         self.model = model
         self.client = client or httpx.Client(timeout=60, trust_env=False, follow_redirects=False)
         self.last_usage = {}
+        self.last_finish_reason = None
 
     def ready(self) -> bool:
         try:
@@ -45,6 +46,8 @@ class LocalVLM:
             return False
 
     def request(self, registry, frames, instruction, schema, pixels, max_tokens):
+        self.last_usage = {}
+        self.last_finish_reason = None
         content = [{"type": "text", "text": instruction}]
         for frame in frames:
             raw = registry.image_bytes(frame, pixels)
@@ -82,9 +85,10 @@ class LocalVLM:
         response.raise_for_status()
         payload = response.json()
         choice = payload["choices"][0]
+        self.last_usage = payload.get("usage", {})
+        self.last_finish_reason = choice["finish_reason"]
         if choice["finish_reason"] != "stop":
             raise ValueError("Model answer was incomplete")
-        self.last_usage = payload.get("usage", {})
         return json.loads(choice["message"]["content"])
 
     def analyze(self, registry, frames, rules, pixels, max_tokens):
