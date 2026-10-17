@@ -11,9 +11,8 @@ from forte.video import decode_video, make_windows, sample_window
 
 def event_times(event, by_id):
     times = [by_id[x].timestamp_sec for x in [event.start_id, event.decisive_id, event.end_id]]
-    if times != sorted(times):
-        raise ValueError("invalid_event_order")
-    return times
+    # Bounds are a source-frame envelope for context/deduplication, not asserted action onset/end.
+    return min(times), by_id[event.decisive_id].timestamp_sec, max(times)
 
 
 def merge_candidates(events, by_id):
@@ -100,7 +99,7 @@ def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, 
             a, _, b = event_times(event, by_id)
             rule = catalog[event.rule_id]
             check = verify(frames, event, rule)
-            if check.verdict == "unclear":
+            if check.verdict != "unsupported":
                 context = sample_window(
                     registry, max(0, center - 8), min(registry.duration, center + 8), 1
                 )

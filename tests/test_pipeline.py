@@ -97,6 +97,39 @@ def test_expanded_verification_retains_original_candidate_context(tmp_path):
     assert result.verdict == "violation"
 
 
+def test_context_counterevidence_overrules_a_locally_supported_hypothesis(tmp_path):
+    class Counterevidence(Observations):
+        checks = 0
+
+        def verify(self, *args):
+            self.checks += 1
+            answer = super().verify(*args)
+            if self.checks == 2:
+                answer.verdict = "unsupported"
+            return answer
+
+    backend = Counterevidence()
+    result = analyze_video(make_mov(tmp_path / "s.mov"), tmp_path / "work", uuid4(), backend)
+    assert backend.checks == 2
+    assert result.verdict == "no_violation"
+
+
+def test_reversed_guessed_bounds_cannot_move_the_verified_source_moment(tmp_path):
+    class ReversedBounds(Observations):
+        def analyze(self, *args):
+            answer = super().analyze(*args)
+            event = answer.events[0]
+            event.start_id, event.end_id = event.end_id, event.start_id
+            return answer
+
+    result = analyze_video(
+        make_mov(tmp_path / "s.mov"), tmp_path / "work", uuid4(), ReversedBounds()
+    )
+    assert result.verdict == "violation"
+    assert result.violations[0].timecode_sec == 3
+    assert result.violations[0].evidence_frames[0].timestamp_sec == 3
+
+
 def test_legal_source_and_omission_prerequisites_are_not_optional():
     rules = load_rules()
     assert len(rules) == 3
