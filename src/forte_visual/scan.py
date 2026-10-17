@@ -90,6 +90,12 @@ class Bounds:
             )
         except Exception as exc:
             receipt["error"] = type(exc).__name__
+            measured = getattr(executor, "last_scan_metrics", {})
+            receipt.update(measured)
+            self.tokens += measured.get("input_tokens", 0) + measured.get("output_tokens", 0)
+            self.peak_memory_bytes = max(
+                self.peak_memory_bytes, measured.get("peak_memory_bytes", 0)
+            )
             raise
         finally:
             receipt["seconds"] = self.clock() - began
@@ -518,6 +524,7 @@ def scan(
                     end=min(m.duration_sec, max(times) + 0.5),
                     segments=segments,
                     seed=seed,
+                    allow_missing_target=True,
                 )
                 response = bounds.invoke(executor, case, output)
                 assess(case, response)
@@ -565,6 +572,7 @@ def scan(
                         segments=component,
                         seed=seed,
                         max_pixels=393216,
+                        allow_missing_target=True,
                         counterpart_segments=participant_pairs.get(segment),
                         counterpart=next(
                             (

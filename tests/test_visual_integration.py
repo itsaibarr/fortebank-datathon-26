@@ -233,3 +233,78 @@ def test_draft_operational_card_and_missing_applicability_never_report(config):
     assert check["prerequisites"]["cashier_role"] == "unknown"
     assert all(s["url"].startswith("https://adilet.zan.kz/") for s in check["sources"])
     assert not result["comprehensive_law_coverage"]
+
+
+def test_supported_synthetic_result_preserves_original_jpegs_pts_and_partial_limit(
+    tmp_path, monkeypatch
+):
+    import forte.visual_pipeline as module
+
+    source = make_mov(tmp_path / "synthetic.mov", rotation=90)
+    registry = decode_video(source, tmp_path / "reference-cache")
+    chosen = [registry.frames[0].frame_id, registry.frames[-1].frame_id]
+    work = tmp_path / "job"
+    work.mkdir()
+
+    class Backend:
+        loaded = {"base_manifest_sha256": "a" * 64, "training_receipt_sha256": "b" * 64}
+        warm_receipt = {"synthetic": True}
+        model = "synthetic-only"
+        config = SimpleNamespace(detector_weights=None)
+
+        def ready(self):
+            return True
+
+    def track(registry, weights, deadline):
+        return automatic_tracks(registry, weights, deadline, detector=Detector(), tracker=Tracker())
+
+    def partial(*args, **kwargs):
+        return {
+            "source_sha256": registry.source_sha256,
+            "status": "complete_schedule",
+            "visual_timeline": [],
+            "role_conflicts": [],
+            "coverage": {
+                "unresolved_ranges": [[0, registry.duration]],
+                "continuous_visibility_validated": False,
+            },
+            "calls": 1,
+            "tokens": 1,
+            "peak_memory_bytes": 1,
+        }
+
+    # Legal semantics are a separate test boundary. This fixture exercises only
+    # the new serializer/evidence branch; it is not an approved real rule card.
+    monkeypatch.setattr(module, "scan", partial)
+    monkeypatch.setattr(
+        module,
+        "temporal_checks",
+        lambda *args: {
+            "checks": [
+                {
+                    "decision": "supported",
+                    "evidence_frame_ids": chosen,
+                    "timecode_frame_id": chosen[-1],
+                    "sources": [
+                        {
+                            "document_title": "Synthetic source fixture",
+                            "provision": "22",
+                            "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+                            "version_id": "synthetic",
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    result = analyze_visual(source, work, uuid4(), Backend(), time.monotonic() + 20, tracking=track)
+    assert result.verdict == "violation" and len(result.violations) == 1
+    event = result.violations[0]
+    assert event.evidence_frames == registry.evidence(chosen)
+    assert event.timecode_sec == registry.frames[-1].timestamp_sec
+    assert "остаются неразрешенными" in event.description
+    association = json.loads((work / "evidence-association.json").read_bytes())
+    assert [a["source_pts"] for a in association] == [
+        registry.frames[0].source_pts,
+        registry.frames[-1].source_pts,
+    ]

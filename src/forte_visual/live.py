@@ -14,8 +14,8 @@ class Proposal(Strict):
 
 
 class AreaProposal(Strict):
-    frame_ids: list[str] = Field(min_length=1, max_length=16)
-    points: list[tuple[float, float]] = Field(min_length=3, max_length=12)
+    frame_ids: list[str] = Field(min_length=1, max_length=3)
+    points: list[tuple[float, float]] = Field(min_length=3, max_length=5)
 
 
 class Visibility(Strict):
@@ -25,11 +25,16 @@ class Visibility(Strict):
     object_resolution_adequate: bool
 
 
+class LiveAnswer(Answer):
+    evidence_frame_ids: list[str] = Field(min_length=1, max_length=3)
+    other_actor_evidence_frame_ids: list[str] = Field(default_factory=list, max_length=3)
+
+
 class ScanResponse(Strict):
-    facts: list[Answer] = Field(default_factory=list, max_length=8)
-    proposals: list[Proposal] = Field(default_factory=list, max_length=8)
-    work_areas: list[AreaProposal] = Field(default_factory=list, max_length=4)
-    visibility: list[Visibility] = Field(default_factory=list, max_length=8)
+    facts: list[LiveAnswer] = Field(default_factory=list, max_length=3)
+    proposals: list[Proposal] = Field(default_factory=list, max_length=3)
+    work_areas: list[AreaProposal] = Field(default_factory=list, max_length=1)
+    visibility: list[Visibility] = Field(default_factory=list, max_length=2)
 
 
 def validate_response(case, value):

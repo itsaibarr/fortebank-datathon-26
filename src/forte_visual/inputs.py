@@ -176,6 +176,7 @@ def make_case(
     track_mode="oracle",
     allow_occluded=False,
     max_pixels=196608,
+    allow_missing_target=False,
 ):
     people = aliases(m, seed)
     actor = next((p for p, ss in people.items() if set(segments) <= set(ss)), None)
@@ -219,6 +220,16 @@ def make_case(
     )
     if counterpart and other is None:
         raise ValueError("Counterpart identity unavailable")
+    visible = {
+        f.frame_id: any(
+            b.frame_id == f.frame_id and not b.outside and (allow_occluded or not b.occluded)
+            for s in segments
+            for b in segs[s].boxes
+        )
+        for f in selected
+    }
+    if not any(visible.values()) or (not allow_missing_target and not all(visible.values())):
+        raise ValueError("Target lacks visible source box at sampled time")
     import base64
 
     extracted = {
@@ -240,16 +251,12 @@ def make_case(
             for b in segs[s].boxes
             if b.frame_id == f.frame_id and not b.outside and (allow_occluded or not b.occluded)
         ]
-        if not any(
-            b.frame_id == f.frame_id and not b.outside and (allow_occluded or not b.occluded)
-            for s in segments
-            for b in segs[s].boxes
-        ):
-            raise ValueError("Target lacks visible source box at sampled time")
-        for kind, rect in [
-            ("scene", (0, 0, image.width, image.height)),
-            ("crop", crop_rect(boxes, image.width, image.height)),
-        ]:
+        rectangles = [("scene", (0, 0, image.width, image.height))]
+        if visible[f.frame_id]:
+            rectangles.append(("crop", crop_rect(boxes, image.width, image.height)))
+        # Missing-target context is a full scene, never an invented/interpolated
+        # crop or an absence fact. Cited actor evidence still requires a real box.
+        for kind, rect in rectangles:
             cropped = image.crop(rect)
             payload = jpeg_bytes(cropped, max_pixels)
             rendered = Image.open(io.BytesIO(payload))

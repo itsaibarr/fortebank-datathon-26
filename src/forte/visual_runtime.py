@@ -45,6 +45,47 @@ Sparse samples never establish an omitted action, completed service or continuou
 Use the schema vocabulary and supplied actor/frame IDs; abstain when support is unclear."""
 
 
+def scan_messages(case, root):
+    from forte_visual.inputs import messages
+
+    content = messages(case, root)[0]["content"]
+    boxes = {
+        a: {
+            f: [[round(v, 4) for v in box] for box in values]
+            for f, values in frames.items()
+            if values
+        }
+        for a, frames in case.track_boxes.items()
+    }
+    boxes = {a: frames for a, frames in boxes.items() if frames}
+    content[0]["text"] = (
+        f"Task {case.task}; target {case.actor_id}; supplied actor aliases {list(boxes)}. "
+        "Source-oriented normalized boxes (4-decimal display only): "
+        + json.dumps(boxes, separators=(",", ":"))
+        + ". "
+        "Unreviewed model role hints, valid only within their evidence intervals: "
+        + json.dumps([h.model_dump() for h in case.predicted_roles], separators=(",", ":"))
+        + ". "
+        "Discover visible actions, roles and context, including unfamiliar actions. "
+        "Return at most 3 facts, 3 actor/frame proposals, one work-area polygon, "
+        "and 2 sample-visibility assessments within 768 tokens. Use up to 3 evidence IDs per fact. "
+        "Fact fields: actor_id, kind (role/action/context), value, other_actor_id or null, "
+        "other_actor_evidence_frame_ids, actor_participation (giver/receiver/actor/unclear), "
+        "service_completion_uncertain, start_frame_id, end_frame_id, continues_before_window, "
+        "continues_after_window, evidence_frame_ids, visibility (observed/unclear/not_visible). "
+        "Roles: cashier/customer/unclear. Use leaves_workstation for workstation departure; "
+        "cash_acceptance, cash_payout, service_ongoing, service_complete for supported context; "
+        "other visible facts may use additional concise names. "
+        "No legal claims or inferred absence. Polygons use supplied frame_ids, normalized points. "
+        "Visibility uses start_frame_id/end_frame_id, state visible_samples/occluded/unclear, "
+        "object_resolution_adequate. Reflections do not establish additional physical people."
+    )
+    for item in content[1:]:
+        if item["type"] == "text":
+            item["text"] = item["text"].split("; source-to-view affine")[0]
+    return [{"role": "system", "content": SCAN_SYSTEM}, {"role": "user", "content": content}]
+
+
 class VisualConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     schema_version: Literal[1] = 1
@@ -316,6 +357,7 @@ class ResidentScanner(LocalVLM):
             return False
 
     def generate(self, messages, schema, timeout, *, max_tokens=768):
+        self.last_usage = {}
         deadline = time.monotonic() + timeout
 
         def post(path, data):
@@ -332,6 +374,7 @@ class ResidentScanner(LocalVLM):
             "chat_template_kwargs": {"enable_thinking": False},
         }
         count = post("/tokenize", {**body, "add_generation_prompt": True})["count"]
+        self.last_usage = {"prompt_tokens": count, "completion_tokens": 0}
         if not isinstance(count, int) or count <= 0 or count + max_tokens > 8192:
             raise ValueError("Actual processor input exceeds context budget")
         data = post(
@@ -344,9 +387,10 @@ class ResidentScanner(LocalVLM):
                 "structured_outputs": {"json": schema},
             },
         )
+        usage = data["usage"]
+        self.last_usage = usage
         if data["model"] != self.model or data["choices"][0]["finish_reason"] != "stop":
             raise ValueError("Wrong model route or incomplete output")
-        usage = data["usage"]
         if (
             usage["prompt_tokens"] != count
             or usage["prompt_tokens"] + max_tokens > 8192
@@ -356,27 +400,14 @@ class ResidentScanner(LocalVLM):
         return json.loads(data["choices"][0]["message"]["content"]), usage
 
     def __call__(self, case, root, timeout):
-        from forte_visual.inputs import messages
         from forte_visual.live import ScanResponse, validate_response
 
-        content = messages(case, root)[0]["content"]
-        content[0]["text"] = content[0]["text"].split("Return one JSON fact")[0] + (
-            "Discover visible actions, roles and context, including unfamiliar actions. "
-            "Return multiple facts and source-bound proposals for closer inspection. "
-            "Facts describe visible support only. Never output law, violations, absence claims, "
-            "private identities or guessed employment. Giver/receiver direction must be explicit. "
-            "Use leaves_workstation for a visible workstation departure; cash_acceptance, "
-            "cash_payout, service_ongoing or service_complete for supported context. "
-            "Other visible actions/context may use additional concise names. "
-            "Propose work-area polygons from visible operational surfaces. "
-            "Visibility assessments cover supplied sampled frames, never continuous absence. "
-            "Return this JSON schema: " + json.dumps(ScanResponse.model_json_schema())
-        )
+        self.last_scan_metrics = {}
         started = time.monotonic()
         memory = DeviceMemory()
         try:
             value, usage = self.generate(
-                [{"role": "system", "content": SCAN_SYSTEM}, {"role": "user", "content": content}],
+                scan_messages(case, root),
                 ScanResponse.model_json_schema(),
                 timeout,
             )
@@ -394,6 +425,12 @@ class ResidentScanner(LocalVLM):
             }
         finally:
             memory.close()
+            self.last_scan_metrics = {
+                "input_tokens": self.last_usage.get("prompt_tokens", 0),
+                "output_tokens": self.last_usage.get("completion_tokens", 0),
+                "peak_memory_bytes": memory.peak,
+                "memory_samples": memory.samples,
+            }
 
 
 def main():
