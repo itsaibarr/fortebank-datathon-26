@@ -5,11 +5,13 @@ SFT profile: runtime/sft/uv.lock; no heavyweight dependencies in CPU environment
 """
 
 import base64
+import gc
 import hashlib
 import io
 import json
 import re
 import subprocess
+import sys
 import threading
 import time
 from pathlib import Path
@@ -236,7 +238,7 @@ def train_offline(model_path, key, inputs, references, output, *, max_updates=1)
         raise ValueError("Initial run limited to one pass / 30 updates")
     offline()
     import torch
-    from peft import LoraConfig, PeftModel, get_peft_model
+    from peft import LoraConfig, get_peft_model
     from transformers import AutoModelForImageTextToText, AutoProcessor
 
     from forte_visual.benchmark import load_cases
@@ -338,14 +340,42 @@ def train_offline(model_path, key, inputs, references, output, *, max_updates=1)
     if tensor_hash(model) != frozen:
         raise ValueError("Frozen base tensor mutation")
     model.save_pretrained(output / "adapter", safe_serialization=True)
-    model = model.unload()
-    model = PeftModel.from_pretrained(model, output / "adapter", is_trainable=False)
-    model.eval()
+    # Reload in a genuinely fresh interpreter, using an inference-only prefix.
+    # The child receives neither the reference pack nor supervised answers.
+    probe, _ = prepare(processor, val_case, inputs.parent)
     with torch.no_grad():
-        actual = model(**last_batch).logits[:, -1].float().cpu()
-    error = float((actual - expected).abs().max())
-    if not torch.isfinite(actual).all() or error > 0.01:
-        raise ValueError("Adapter save/reload logits differ")
+        expected = model(**{k: v.to("cuda") for k, v in probe.items()}).logits[:, -1].float().cpu()
+    import numpy as np
+
+    np.save(output / "reload-expected.npy", expected.numpy())
+    job = {
+        "base": str(model_path),
+        "candidate": key,
+        "adapter": str(output / "adapter"),
+        "case": val_case.model_dump(),
+        "images": str(inputs.parent),
+        "output": str(output),
+        "base_manifest_sha256": base_hash,
+        "adapter_files": {p.name: digest(p) for p in (output / "adapter").iterdir() if p.is_file()},
+    }
+    write(output / "reload-job.json", job)
+    torch_peak = torch.cuda.max_memory_allocated()
+    del model, optimizer, last_batch, val_batch, probe
+    gc.collect()
+    torch.cuda.empty_cache()
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "forte_visual.runtime",
+            "--reload-job",
+            str(output / "reload-job.json"),
+        ],
+        check=True,
+        timeout=600,
+    )
+    reloaded = read(output / "fresh-process-reload.json")
+    error = reloaded["max_abs_error"]
     if memory.samples == 0:
         raise ValueError("Training memory measurement unavailable")
     report = {
@@ -362,8 +392,24 @@ def train_offline(model_path, key, inputs, references, output, *, max_updates=1)
         "losses": losses,
         "validation_smoke_loss": val_loss,
         "reload_max_abs_error": error,
+        "fresh_process_reload": reloaded,
+        "seed": 0,
+        "reference_sha256": digest(references),
+        "trainable_tensor_names": names,
+        "processor_class": type(processor).__name__,
+        "recipe": {
+            "precision": "bfloat16",
+            "rank": 8,
+            "alpha": 16,
+            "dropout": 0.05,
+            "learning_rate": 5e-5,
+            "batch_size": 1,
+            "gradient_accumulation": 8,
+            "gradient_checkpointing": True,
+            "loss": "assistant_only_ce",
+        },
         "peak_memory_bytes": memory.peak or None,
-        "torch_peak_allocated_bytes": torch.cuda.max_memory_allocated(),
+        "torch_peak_allocated_bytes": torch_peak,
         "seconds": time.monotonic() - begun,
         "quality_evaluation": "pending identical-input base/adapter comparison",
         "adapter_files": {p.name: digest(p) for p in (output / "adapter").iterdir() if p.is_file()},
@@ -371,3 +417,69 @@ def train_offline(model_path, key, inputs, references, output, *, max_updates=1)
     write(output / "training.json", report)
     memory.close()
     return report
+
+
+def fresh_reload(job_path):
+    """Private full-model reload probe, invoked only by gated supervised training."""
+    offline()
+    import os
+
+    import numpy as np
+    import torch
+    from peft import PeftModel
+    from transformers import AutoModelForImageTextToText, AutoProcessor
+
+    from forte_visual.inputs import InputCase
+
+    job = read(job_path)
+    base, adapter = Path(job["base"]), Path(job["adapter"])
+    if verify_model(base, job["candidate"]) != job["base_manifest_sha256"] or any(
+        digest(adapter / name) != sha for name, sha in job["adapter_files"].items()
+    ):
+        raise ValueError("Fresh reload asset mismatch")
+    model = AutoModelForImageTextToText.from_pretrained(
+        str(base),
+        local_files_only=True,
+        trust_remote_code=False,
+        torch_dtype=torch.bfloat16,
+        device_map={"": "cuda:0"},
+    )
+    model = PeftModel.from_pretrained(model, str(adapter), is_trainable=False)
+    model.config.use_cache = False
+    model.eval()
+    processor = AutoProcessor.from_pretrained(
+        str(base), local_files_only=True, trust_remote_code=False, max_pixels=196608
+    )
+    case = InputCase.model_validate(job["case"])
+    prefix, _ = prepare(processor, case, Path(job["images"]))
+    with torch.no_grad():
+        actual = (
+            model(**{k: v.to("cuda") for k, v in prefix.items()})
+            .logits[:, -1]
+            .float()
+            .cpu()
+            .numpy()
+        )
+    expected = np.load(Path(job["output"]) / "reload-expected.npy", allow_pickle=False)
+    error = float(np.max(np.abs(actual - expected)))
+    if not np.isfinite(actual).all() or error > 0.01:
+        raise ValueError("Fresh-process adapter reload logits differ")
+    write(
+        Path(job["output"]) / "fresh-process-reload.json",
+        {
+            "pid": os.getpid(),
+            "fresh_interpreter": True,
+            "max_abs_error": error,
+            "base_manifest_sha256": job["base_manifest_sha256"],
+            "adapter_files": job["adapter_files"],
+            "reference_pack_opened": False,
+        },
+    )
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--reload-job", type=Path, required=True)
+    fresh_reload(parser.parse_args().reload_job)

@@ -14,6 +14,37 @@ from forte.person_proposals import sha256
 DEPARTURES = {"leaves_workstation", "workstation_departure"}
 
 
+def reviewed_card_policy(config, policy, card, corpus):
+    """Validate an externally supplied review artifact, never create approval.
+
+    As with the existing annotation gates, structural validity cannot establish
+    that a purported human reviewer is authentic. Preserve the real receipt for
+    independent audit; a reviewer string or random digest alone is insufficient.
+    """
+    name = policy.get("independent_review_receipt")
+    expected = policy.get("independent_review_receipt_sha256")
+    if not name or not expected:
+        return False
+    from forte_visual.io import local
+
+    path = local(config.rule_policy.parent, name)
+    if not path.is_file() or sha256(path) != expected:
+        return False
+    receipt = json.loads(path.read_bytes())
+    return (
+        card.review_status == "approved"
+        and bool(card.reviewer)
+        and receipt.get("kind") == "independent_operational_card_review"
+        and receipt.get("independent_review") is True
+        and receipt.get("reviewer") == card.reviewer
+        and bool(receipt.get("reviewed_at"))
+        and card.id in receipt.get("approved_card_ids", [])
+        and receipt.get("cards_sha256") == sha256(config.rule_cards)
+        and receipt.get("legal_manifest_sha256") == sha256(config.legal_release / "manifest.json")
+        and receipt.get("source_sha256") == sorted(s.sha256 for s in corpus.sources)
+    )
+
+
 def overlaps(a, b):
     return max(a["start_sec"], b["start_sec"]) <= min(a["end_sec"], b["end_sec"])
 
@@ -89,12 +120,7 @@ def temporal_checks(report, config):
             legal_date = False
         # A reviewed independent policy receipt binds the card bytes. A name in
         # JSON alone is not authenticated approval; its receipt remains private.
-        approved = (
-            card.review_status == "approved"
-            and bool(card.reviewer)
-            and policy.get("approved_cards_sha256") == sha256(config.rule_cards)
-            and bool(policy.get("independent_review_receipt_sha256"))
-        )
+        approved = reviewed_card_policy(config, policy, card, corpus)
         ongoing = context("service_ongoing")
         predicates = {
             "legal_date_applicable": legal_date,
