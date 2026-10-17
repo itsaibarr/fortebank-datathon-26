@@ -77,7 +77,10 @@ def prepare(directory):
         image="nginx:1.29-alpine",
         restart="unless-stopped",
         ports=["127.0.0.1:18080:8080"],
-        networks=["cvat"],
+        # Docker does not publish this port from an internal-only network.
+        # Only the loopback proxy gets a host-access network; data services
+        # remain exclusively on the internal backend network.
+        networks=["cvat", "review_access"],
         depends_on=["cvat_server", "cvat_ui"],
         volumes=[str((directory / "proxy.conf").resolve()) + ":/etc/nginx/conf.d/default.conf:ro"],
     )
@@ -101,7 +104,7 @@ def prepare(directory):
     result = dict(
         name=PROJECT,
         services=services,
-        networks={"cvat": {"internal": True}},
+        networks={"cvat": {"internal": True}, "review_access": {"internal": False}},
         volumes={name: {} for name in volume_names},
     )
     (directory / "compose.yml").write_text(yaml.safe_dump(result, sort_keys=False))
@@ -114,6 +117,8 @@ def prepare(directory):
                 ui_image=UI,
                 loopback_only=True,
                 network_internal=True,
+                host_access_service="proxy",
+                backend_egress_disabled=True,
                 excluded=["analytics", "grafana", "webhooks", "cloud storage", "integrated SAM2"],
             ),
             indent=2,
