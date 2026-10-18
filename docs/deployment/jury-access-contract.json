@@ -1,0 +1,96 @@
+{
+  "schema_version": "forte.jury-access-contract/1",
+  "status": "local_source_candidate_not_activated",
+  "core_commit": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3",
+  "implementation": "deploy/portable/jury_gateway.py",
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze",
+      "upload_field": "file",
+      "upload_max_bytes": 268435456,
+      "accepted_body_fields": [
+        "job_id"
+      ],
+      "accepted_header": "Location: /api/v1/jobs/{canonical-lowercase-UUID}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{canonical-lowercase-UUID}"
+    }
+  ],
+  "excluded_routes": [
+    "v2",
+    "OpenAPI",
+    "source",
+    "evidence",
+    "range requests",
+    "corrections",
+    "report",
+    "export",
+    "browser auth",
+    "model service",
+    "health"
+  ],
+  "authentication": {
+    "client": "X-API-Key only; no cookie, CSRF, Origin, Range or If-Range headers",
+    "credential_generation": "Administrator must generate each distinct credential from at least 32 bytes of CSPRNG entropy (for example secrets.token_urlsafe(32)); length validation cannot establish entropy.",
+    "credential_format": "43-128 unpadded base64url/hex-compatible ASCII characters",
+    "upstream": "Separate server-only X-API-Key and X-Forte-Gateway-Token plus the inventory-mapped X-Forte-Principal",
+    "client_identity_headers": "Client principal/token/Authorization headers are discarded; the service credential is never accepted as a jury key.",
+    "principal": "Stable opaque jury_ followed by 32 lowercase hex digits; persist the inventory and never reassign identities across reviewers.",
+    "missing_or_invalid_key": 401,
+    "unreadable_or_invalid_inventory": 503,
+    "sessions": "Separate browser gateway and its database remain unchanged; no jury session database is created."
+  },
+  "key_inventory": {
+    "schema_version": "forte.jury-keys/1",
+    "root_fields": [
+      "schema_version",
+      "keys"
+    ],
+    "entry_fields": [
+      "key_sha256",
+      "principal",
+      "enabled"
+    ],
+    "max_entries": 64,
+    "max_bytes": 65536,
+    "storage": "Canonical absolute paths, no-follow directory/file FDs, owner-private regular files, single hardlink, bounded unchanged read; no raw jury credential stored in this inventory.",
+    "reload": "Read and validate on every request; disabled or removed keys are denied on the next request. Already-admitted uploads/jobs are not cancelled.",
+    "stable_identity": "Rebinding a previously seen key hash during one process lifetime is refused. Across restarts the persisted administrator inventory is authoritative."
+  },
+  "transport": {
+    "listener": "127.0.0.1 only; TLS terminates at a separately reviewed ingress",
+    "upstream": "Literal http://127.0.0.1:{port}, excluding model port 8001; one configured core only",
+    "security_handshake": "/api/internal/security must prove principal-v1 ownership and ownerless denial; upload readiness and the forwarded operation use the same checked upstream socket with no reconnect or retry.",
+    "request_validation": "Exact configured HTTPS Host authority; canonical raw request target; no query, percent encoding, dot traversal, duplicate sensitive headers, transfer encoding or Expect; bounded framing.",
+    "uploads_default": false,
+    "upload_activation": "Explicit jury_uploads_enabled boolean; this source patch performs no ingress activation or verification-flag promotion.",
+    "upload_timeout_seconds": 30,
+    "response_timeout_seconds": 270,
+    "deadline_handling": "read1 chunks recheck absolute deadlines; client write timeout uses the remaining response budget. A failed partial response closes the connection.",
+    "response_ownership": "Every actual API response must have exactly one principal-v1 marker before any response is forwarded.",
+    "location": "Exactly one relative canonical v1 job Location only on POST202; buffered accepted JSON <=4096 bytes must contain only a matching string job_id.",
+    "retry_after": "Only canonical Retry-After: 5 on429/503; duplicated, misplaced or other values are refused.",
+    "response_framing": "Canonical core JSON responses require one bounded Content-Length and no Transfer-Encoding; no redirects are followed.",
+    "secrets": "No credential bodies, paths, key bytes, cookies or request data enter access/error logs; response headers exclude upstream credentials and Set-Cookie."
+  },
+  "ownership": {
+    "component": "The existing trusted-principal core persists ownership at admission and enforces it on reads; this proxy does not create an independent job store.",
+    "cross_owner_and_ownerless": "Actual core returns the same generic404 as missing jobs.",
+    "media": "This jury surface never proxies recordings, evidence, ranges or exports. They remain behind the existing browser session boundary."
+  },
+  "compatibility_limits": [
+    "Transport only. Exact ebb v1 retains its legacy inference path; this proxy does not implement new-mechanic v1 projection or model-quality acceptance.",
+    "The frozen original release archive is unchanged. A separate source/release identity and coordinator security review are required before deployment.",
+    "Synthetic transport tests use generated media and a fake inference runner; real GPU inference, public TLS, external API/browser access and clean installation are unverified."
+  ],
+  "verification_flags_unchanged": {
+    "release": false,
+    "model_workload": false,
+    "offline_analysis": false,
+    "browser_session": false,
+    "ownership": false
+  }
+}
