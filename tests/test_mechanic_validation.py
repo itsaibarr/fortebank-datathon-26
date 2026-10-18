@@ -1,5 +1,6 @@
 """Synthetic evaluation-boundary regressions, never sponsor reference answers."""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -168,12 +169,25 @@ def test_actual_api_default_dispatch_uses_legacy_v1_even_with_reasoning_config(
 
     calls = []
 
-    async def worker(directory, job_id, deadline, settings, *, reasoning=False):
+    async def worker(
+        directory, job_id, deadline, settings, *, reasoning=False, frozen_configuration=None
+    ):
         calls.append(reasoning)
+        if reasoning:
+            assert frozen_configuration == directory / "immutable/request-config.json"
+            assert json.loads(frozen_configuration.read_bytes())["tracking"] == {
+                "mode": "byte_track"
+            }
+        else:
+            assert frozen_configuration is None
         return await (uncertain if reasoning else negative)(directory, job_id, deadline)
 
     monkeypatch.setattr(api, "run_worker", worker)
-    settings = Settings("synthetic-version-two-key", tmp_path / "jobs", reasoning_config={})
+    settings = Settings(
+        "synthetic-version-two-key",
+        tmp_path / "jobs",
+        reasoning_config={"tracking": {"mode": "byte_track"}, "legal": {"release": "/synthetic"}},
+    )
     with TestClient(api.create_app(settings, ready=lambda: True)) as client:
         media = make_mov(tmp_path / "synthetic.mov").read_bytes()
         v1 = submit(client, media, version=1)
