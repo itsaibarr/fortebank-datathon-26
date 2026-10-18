@@ -47,6 +47,8 @@ def source_code_fingerprints():
         "contracts": "contracts",
         "contracts_v2": "contracts_v2",
         "investigation_report": "investigation_report",
+        "jury_projection": "jury_projection",
+        "mechanic_review": "mechanic_review",
         "settings": "settings",
         "jobs": "jobs",
         "worker": "worker",
