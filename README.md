@@ -1,3 +1,5 @@
+![Make somethings that people love](docs/assets/readme-banner.jpg)
+
 # Forte Review · ForteBank Datathon 2026
 
 Local source-timed cash-operation video review. The sole architecture and current
