@@ -155,9 +155,40 @@ def test_changed_existing_release_identity_or_resources_are_rejected(local_build
 
 
 def test_missing_source_contract_hash_preserves_original_configuration(local_build):
-    (local_build.bundle / "core-source/SOURCE.json").write_text('{"files": {}}')
+    source = local_build.bundle / "core-source/SOURCE.json"
+    source.write_text(json.dumps({"core_commit": local_build.built["core_commit"], "files": {}}))
+    local_build.built["source_manifest_sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
     before = dict(local_build.config)
     with pytest.raises(ConfigError, match="canonical contract"):
+        select(local_build)
+    assert local_build.config == before and not local_build.root.exists()
+
+
+@pytest.mark.parametrize("change", ["contract", "serialization"])
+def test_changed_source_inventory_cannot_be_bound_to_an_earlier_build(local_build, change):
+    source = local_build.bundle / "core-source/SOURCE.json"
+    if change == "contract":
+        changed = json.loads(source.read_bytes())
+        changed["files"]["contracts/reasoning-api-contract.json"]["sha256"] = "9" * 64
+        source.write_text(json.dumps(changed))
+    else:
+        source.write_bytes(source.read_bytes() + b"\n")
+    before = dict(local_build.config)
+    original = local_build.original.read_bytes()
+    with pytest.raises(ConfigError, match="Source inventory changed after the image build"):
+        select(local_build)
+    assert local_build.config == before
+    assert local_build.original.read_bytes() == original
+    assert not local_build.root.exists()
+
+
+@pytest.mark.parametrize("inventory", [[], {"core_commit": "c" * 40, "files": {}}])
+def test_source_inventory_shape_and_commit_must_match_the_build(local_build, inventory):
+    source = local_build.bundle / "core-source/SOURCE.json"
+    source.write_text(json.dumps(inventory))
+    local_build.built["source_manifest_sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+    before = dict(local_build.config)
+    with pytest.raises(ConfigError, match="does not match the built core commit"):
         select(local_build)
     assert local_build.config == before and not local_build.root.exists()
 

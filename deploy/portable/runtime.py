@@ -69,7 +69,7 @@ def validate(config: dict) -> list[str]:
             or not url.hostname
             or url.username
             or url.password
-            or url.path not in {"", "/"}
+            or url.path
             or url.query
             or url.fragment
         ):
@@ -525,6 +525,7 @@ http {{
     if c["access_mode"] == "browser-session" and not qualification:
         session = {
             "origin": c["origin"],
+            "deployment_mode": c.get("deployment_mode", "private"),
             "upstream": c.get("attach_upstream", "http://127.0.0.1:18000")
             if c["mode"] == "attach"
             else f"http://127.0.0.1:{c.get('bridge_port', 18001)}",
@@ -1063,6 +1064,22 @@ def lifecycle(config: dict, target: Path, action: str) -> dict:
                 c["mode"] == "attach" and owned.get("ingress", {}).get("running") is True
             )
             if not resuming:
+                if c["mode"] == "private" and (
+                    owned.get("ingress", {}).get("running") is True
+                    or (target / "session-daemon.json").exists()
+                    or (target / "bridge.json").exists()
+                ):
+                    # A stopped model still needs fresh GPU and free-port checks.
+                    # Release only verified access helpers before those probes.
+                    if c["access_mode"] == "browser-session":
+                        _session_daemon(c, target, "stop")
+                    _bridge_stop(c, target)
+                    ingress = owned.get("ingress", {})
+                    if (
+                        ingress.get("running") is True
+                        and _docker(["stop", ingress["id"]]).returncode
+                    ):
+                        raise RuntimeError("Owned ingress could not be stopped for recovery")
                 host_errors = host_prerequisites(c)
                 if host_errors:
                     raise ValueError("; ".join(host_errors))

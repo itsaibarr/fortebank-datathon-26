@@ -324,3 +324,104 @@ def test_cli_resume_preserves_owned_model_and_only_starts_ingress(owned, monkeyp
     assert "core" not in commands[0] and "down" not in commands[0]
     assert bridge_calls == [CORE_ID]
     assert json.loads((root / "installation.json").read_text())["gpu_uuid"] == GPU
+
+
+@pytest.fixture
+def recovery(owned, monkeypatch):
+    owned.records[CORE_ID]["State"]["Running"] = False
+    state = SimpleNamespace(owned=owned, events=[], commands=[], host_errors=[])
+    original_docker = runtime._docker
+
+    def docker(arguments):
+        if arguments[0] == "stop":
+            assert arguments == ["stop", INGRESS_ID]
+            state.events.append("ingress-stop")
+            owned.records[INGRESS_ID]["State"]["Running"] = False
+            return SimpleNamespace(returncode=0)
+        return original_docker(arguments)
+
+    def helper(config, target, action):
+        state.events.append("session-" + action)
+
+    def bridge_stop(config, target):
+        state.events.append("bridge-stop")
+        (target / "bridge.json").unlink(missing_ok=True)
+
+    def fresh_host_checks(config):
+        assert config["gpu_uuid"] == GPU
+        assert owned.records[CORE_ID]["State"]["Running"] is False
+        assert owned.records[INGRESS_ID]["State"]["Running"] is False
+        assert "session-stop" in state.events and "bridge-stop" in state.events
+        state.events.append("fresh-host-and-gpu-checks")
+        return state.host_errors
+
+    def run(command, **options):
+        assert "fresh-host-and-gpu-checks" in state.events
+        state.commands.append(command)
+        service = command[-1]
+        assert service in {"core", "ingress"}
+        state.events.append(service + "-start")
+        owned.records[CORE_ID if service == "core" else INGRESS_ID]["State"]["Running"] = True
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(runtime, "_docker", docker)
+    monkeypatch.setattr(runtime, "_session_daemon", helper)
+    monkeypatch.setattr(runtime, "_bridge_stop", bridge_stop)
+    monkeypatch.setattr(runtime, "_bridge_start", lambda *args: state.events.append("bridge-start"))
+    monkeypatch.setattr(runtime, "host_prerequisites", fresh_host_checks)
+    monkeypatch.setattr(
+        runtime,
+        "compose_command",
+        lambda *args: ["docker", "compose", "up", "-d", "--pull", "never"],
+    )
+    monkeypatch.setattr(runtime, "render", lambda *args: state.events.append("render"))
+    monkeypatch.setattr(runtime.subprocess, "run", run)
+    monkeypatch.setattr(
+        runtime,
+        "status",
+        lambda *args: {"ok": True, "ready": True, "core_ready": True, "access_ready": True},
+    )
+    return state
+
+
+@pytest.mark.parametrize("ingress_running", [True, False])
+def test_stopped_private_core_recovers_owned_access_only_after_fresh_checks(
+    recovery, ingress_running
+):
+    owned = recovery.owned
+    owned.records[INGRESS_ID]["State"]["Running"] = ingress_running
+    if not ingress_running:
+        (owned.target / "bridge.json").write_text('{"synthetic":"owned helper sentinel"}')
+    result = runtime.lifecycle(owned.config, owned.target, "up")
+    assert result["ok"] and result["already_running"] is False
+    assert [command[-1] for command in recovery.commands] == ["core", "ingress"]
+    assert recovery.events.index("fresh-host-and-gpu-checks") < recovery.events.index("core-start")
+    assert recovery.events.count("ingress-stop") == int(ingress_running)
+    assert recovery.events.count("core-start") == 1
+    assert recovery.events.count("bridge-start") == recovery.events.count("session-start") == 1
+
+
+@pytest.mark.parametrize(
+    "blocker", ["GPU has another active allocation", "An unrelated listener occupies HTTPS"]
+)
+def test_partial_recovery_keeps_host_gpu_and_foreign_listener_failures_closed(recovery, blocker):
+    owned = recovery.owned
+    recovery.host_errors = [blocker]
+    result = runtime.lifecycle(owned.config, owned.target, "up")
+    assert result["ok"] is False and blocker in result["errors"][0]
+    assert recovery.commands == []
+    assert "ingress-stop" in recovery.events
+    assert owned.records[CORE_ID]["State"]["Running"] is False
+
+
+def test_partial_recovery_refuses_a_helper_whose_identity_cannot_be_verified(recovery, monkeypatch):
+    owned = recovery.owned
+
+    def foreign_helper(*args):
+        raise RuntimeError("Host helper identity could not be verified; no signal sent")
+
+    monkeypatch.setattr(runtime, "_session_daemon", foreign_helper)
+    result = runtime.lifecycle(owned.config, owned.target, "up")
+    assert result["ok"] is False and "no signal" in result["errors"][0]
+    assert recovery.events == recovery.commands == []
+    assert owned.records[INGRESS_ID]["State"]["Running"] is True

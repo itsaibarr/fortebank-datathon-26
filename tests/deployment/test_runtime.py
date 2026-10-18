@@ -238,6 +238,7 @@ def test_preview_does_not_claim_an_unreleased_candidate(installation):
         {"bind_address": "192.0.2.1"},
         {"https_port": 443},
         {"origin": "https://localhost:8443/case"},
+        {"origin": "https://localhost:8443/"},
     ],
 )
 def test_unsafe_configuration_rejected_before_render(installation, change):
@@ -246,6 +247,21 @@ def test_unsafe_configuration_rejected_before_render(installation, change):
     assert runtime.validate(config)
     with pytest.raises(ValueError):
         runtime.render(config, target)
+    assert not target.exists()
+
+
+def test_noncanonical_direct_origin_blocks_before_any_runtime_operation(installation, monkeypatch):
+    config, _, target = installation
+    config["origin"] += "/"
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Invalid origin must be rejected before any Docker or service operation")
+
+    monkeypatch.setattr(runtime, "_docker", forbidden)
+    monkeypatch.setattr(runtime.subprocess, "run", forbidden)
+    result = runtime.lifecycle(config, target, "up")
+    assert result["ok"] is False
+    assert any("origin" in error for error in result["errors"])
     assert not target.exists()
 
 

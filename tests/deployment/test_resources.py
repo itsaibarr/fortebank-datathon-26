@@ -2,11 +2,13 @@
 
 import hashlib
 import http.server
+import io
 import json
 import subprocess
 import sys
 import threading
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -477,3 +479,79 @@ def test_docker_errors_are_safe_and_actionable(tmp_path):
     assert report["image"]["status"] == "missing"
     assert not report["ok"]
     assert "SECRET" not in json.dumps(report) and "CASE" not in json.dumps(report)
+
+
+def test_shared_resource_preparations_cannot_change_the_verified_partial_before_publication(
+    tmp_path, monkeypatch
+):
+    destination = tmp_path / "resources" / ASSET
+    partial = destination.with_name(destination.name + ".part")
+    lock = destination.with_name(destination.name + ".prepare.lock")
+    verified, publish = threading.Event(), threading.Event()
+    opened = []
+
+    class PublicBytes(io.BytesIO):
+        status = 200
+        headers = {"Content-Length": str(len(BODY)), "ETag": '"synthetic-public-v1"'}
+
+    def transport(_self, url, headers):
+        opened.append(url)
+        return PublicBytes(BODY)
+
+    original = resources._verified
+
+    def pause_after_hash(path, spec):
+        result = original(path, spec)
+        if path == partial and result:
+            verified.set()
+            assert publish.wait(5), "Synthetic publication barrier timed out"
+        return result
+
+    monkeypatch.setattr(resources._PublicTransport, "open", transport)
+    monkeypatch.setattr(resources, "_verified", pause_after_hash)
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        first = executor.submit(prepare, tmp_path, apply=True, online=True)
+        try:
+            assert verified.wait(5), "First synthetic preparation did not reach verification"
+            inode = lock.stat().st_ino
+            assert lock.stat().st_mode & 0o777 == 0o600
+            assert partial.read_bytes() == BODY and not destination.exists()
+            second = prepare(tmp_path, apply=True, online=True)
+            assert not second["ok"] and second["missing"] == 1 and second["corrupt"] == 0
+            assert "Another preparation owns" in second["items"][0]["reason"]
+            assert len(opened) == 1 and partial.read_bytes() == BODY
+        finally:
+            publish.set()
+        assert first.result(timeout=5)["ok"]
+    assert destination.read_bytes() == BODY and not partial.exists()
+    assert lock.exists() and lock.stat().st_ino == inode
+    # The inode remains stable across the next repair, rather than unlinking a
+    # held lock and allowing another process to lock a different replacement.
+    destination.write_bytes(b"synthetic corruption")
+    assert prepare(tmp_path, apply=True, online=True)["ok"]
+    assert destination.read_bytes() == BODY and lock.stat().st_ino == inode
+
+
+@pytest.mark.parametrize("kind", ["symlink", "directory", "broad"])
+def test_resource_lock_rejects_unsafe_files_before_transport(tmp_path, monkeypatch, kind):
+    destination = tmp_path / "resources" / ASSET
+    destination.parent.mkdir(parents=True, mode=0o700)
+    lock = destination.with_name(destination.name + ".prepare.lock")
+    preserved = tmp_path / "synthetic-preserved.txt"
+    preserved.write_bytes(b"synthetic bytes must not be changed")
+    if kind == "symlink":
+        lock.symlink_to(preserved)
+    elif kind == "directory":
+        lock.mkdir()
+    else:
+        lock.write_bytes(b"")
+        lock.chmod(0o644)
+
+    def forbidden(*args):
+        pytest.fail("Unsafe lock must reject before any public transport")
+
+    monkeypatch.setattr(resources._PublicTransport, "open", forbidden)
+    report = prepare(tmp_path, apply=True, online=True)
+    assert not report["ok"] and report["corrupt"] == 1
+    assert not destination.exists()
+    assert preserved.read_bytes() == b"synthetic bytes must not be changed"

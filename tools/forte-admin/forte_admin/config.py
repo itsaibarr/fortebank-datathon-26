@@ -136,6 +136,8 @@ def plan(root, changes):
         or origin.path not in {"", "/"}
     ):
         raise ConfigError("Application origin must be a credential-free HTTPS origin.")
+    if origin.path == "/":
+        result["origin"] = origin._replace(path="").geturl()
     try:
         port = origin.port or 443
     except ValueError as exc:

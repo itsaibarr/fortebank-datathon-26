@@ -424,3 +424,35 @@ def test_malformed_manifest_shapes_return_safe_blockers(manifest):
 def test_very_large_integer_minimum_is_a_blocker_without_float_overflow(host, manifest):
     manifest["runtime"]["requirements"]["min_host_ram_gib"] = 10**1000
     assert not inspect(host, manifest)["can_attempt"]
+
+
+@pytest.mark.parametrize("key", ["min_gpu_vram_gib", "min_host_ram_gib", "min_free_disk_gib"])
+@pytest.mark.parametrize("value", ["80", True, False, 0, -1, float("nan"), float("inf"), [], {}])
+def test_malformed_declared_size_minima_block_before_host_probe(manifest, key, value):
+    manifest["runtime"]["requirements"][key] = value
+
+    def forbidden(_):
+        pytest.fail("Invalid size metadata must not trigger a host probe")
+
+    report = hardware.inspect_host({"mode": "private"}, manifest, probe=forbidden)
+    assert report["status"] == "blocked" and report["can_attempt"] is False
+    assert report["selected_gpu"] is None
+    assert report["resource_qualification"]["verified_workload"] is False
+
+
+@pytest.mark.parametrize("key", ["min_gpu_vram_gib", "min_host_ram_gib", "min_free_disk_gib"])
+@pytest.mark.parametrize("absent", [True, False])
+def test_missing_or_null_size_minima_remain_unvalidated_candidates(host, manifest, key, absent):
+    if absent:
+        manifest["runtime"]["requirements"].pop(key)
+    else:
+        manifest["runtime"]["requirements"][key] = None
+    report = inspect(host, manifest)
+    assert report["status"] == "candidate" and report["can_attempt"] is True
+    assert report["resource_qualification"]["verified_workload"] is False
+
+
+@pytest.mark.parametrize("value", [10**1000, 1e308])
+def test_large_numeric_gpu_minimum_blocks_without_conversion_overflow(host, manifest, value):
+    manifest["runtime"]["requirements"]["min_gpu_vram_gib"] = value
+    assert inspect(host, manifest)["can_attempt"] is False
