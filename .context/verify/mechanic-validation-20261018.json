@@ -1,0 +1,221 @@
+{
+  "planned_recordings": 3,
+  "terminal_jobs": 3,
+  "done_jobs": 3,
+  "failed_jobs": 0,
+  "missing_jobs": 0,
+  "partial_jobs": 3,
+  "human_complete_case_reviews": 0,
+  "recognition_accuracy": null,
+  "stage_seconds": {
+    "decoding_seconds": {
+      "observed_cases": 3,
+      "sum": 15.046829973999934,
+      "min": 2.260496413999931,
+      "max": 9.901852598000005
+    },
+    "tracking_seconds": {
+      "observed_cases": 3,
+      "sum": 126.55184134999979,
+      "min": 15.397041479999984,
+      "max": 91.43333403399993
+    },
+    "timeline_seconds": {
+      "observed_cases": 3,
+      "sum": 358.01191787200014,
+      "min": 89.61448605500027,
+      "max": 135.5166698170001
+    },
+    "legal_seconds": {
+      "observed_cases": 3,
+      "sum": 261.81724769200036,
+      "min": 62.909659619000195,
+      "max": 100.51798511900006
+    },
+    "total_seconds": {
+      "observed_cases": 3,
+      "sum": 766.2060330029997,
+      "min": 254.54573809399994,
+      "max": 256.75397504500006
+    }
+  },
+  "timeline": {
+    "calls": 8,
+    "windows_scheduled": 9,
+    "windows_examined": 2,
+    "source_duration_sec": 106.36666666666666,
+    "unexamined_sec": 75.63333333333333,
+    "tokens": 48997,
+    "continuous_visibility_verified_cases": 0,
+    "status_counts": {
+      "budget_exhausted": 3
+    },
+    "pending_reinspections": 8,
+    "successful_calls": 5,
+    "call_errors": {
+      "ReadTimeout": 3
+    },
+    "role_observations": 0,
+    "attributed_observations": 10,
+    "unattributed_observations": 0,
+    "unresolved_questions": 5
+  },
+  "legal": {
+    "planned_rule_case_pairs": 36,
+    "calls": 6,
+    "assessments": 2,
+    "coverage_status": {
+      "evaluated": 2,
+      "evaluation_unavailable": 4,
+      "not_evaluated": 30
+    },
+    "assessment_states": {
+      "insufficient_evidence": 2
+    },
+    "call_errors": {
+      "ReadTimeout": 3,
+      "ValueError": 1
+    },
+    "truncated_calls": 0,
+    "condition_states": {
+      "unknown": 12
+    }
+  },
+  "observations_by_kind": {
+    "action": 8,
+    "context": 2
+  },
+  "source_integrity": {
+    "verified_sources": 3,
+    "verified_jpegs": 20,
+    "verified_markers": 9
+  },
+  "case_client_seconds": [
+    257.792754219,
+    263.8272437549999,
+    258.34857959600004
+  ],
+  "errors": {
+    "ReadTimeout": 6,
+    "ValueError": 1
+  },
+  "model_calls_truncated": 0,
+  "artifacts_locally_preserved": 3,
+  "supplied_label_confusion_status": "not_evaluable_for_insufficient_v2_assessments",
+  "role_actor_action_metrics_status": "not_evaluable_without_independent_interval_review",
+  "source_timestamp_semantics": "mechanical_PTS_integrity_is_not_event_localization_accuracy",
+  "case_assessment_states": {
+    "insufficient_evidence": 3
+  },
+  "api_event_candidates": {
+    "count": 9,
+    "assessment_states": {
+      "insufficient_evidence": 9
+    },
+    "export_complete": 9,
+    "one_to_three_jpegs": 9,
+    "jpeg_count_distribution": {
+      "3": 5,
+      "2": 4
+    }
+  },
+  "participants": {
+    "detection_samples": 642,
+    "proposed_registry_entries": 457,
+    "track_segments": 465,
+    "unresolved_continuity": 0,
+    "proposed_view_relationships": 0,
+    "role_hypotheses": 0
+  },
+  "call_seconds": {
+    "visual": [
+      55.50511275100007,
+      46.0976772030001,
+      32.206030289999944,
+      53.749015554999914,
+      32.24724176399968,
+      50.98089928399986,
+      43.59533510500023,
+      36.456250963
+    ],
+    "legal": [
+      64.8802901250001,
+      35.286233835000075,
+      58.574345101999825,
+      4.273467544000141,
+      54.35696781099978,
+      43.94439280100005
+    ]
+  },
+  "under_300_sec_terminal_cases": 3,
+  "timing_denominator": 3,
+  "outcome": "components_execute_but_final_acceptance_unestablished",
+  "human_partial_qualitative_reviews": 1,
+  "tracking_origin_diagnostic": {
+    "recordings": 3,
+    "segments": 465,
+    "negative_unmatched_tracker_segments": 433,
+    "single_sample_segments": 436,
+    "segments_without_appearance_gallery": 429,
+    "cpu_and_cuda_proposals_need_not_be_bit_identical": true,
+    "physical_people_count": null,
+    "all_case_source_fingerprints_identical": true,
+    "all_case_config_fingerprints_identical": true,
+    "returned_config_sha256": "33ec93ba546f7ae836cbcf9270831e701038c9174c5b7200162e907c7899366a"
+  },
+  "scoped_geometry_reference": {
+    "scope": "prior_human_accepted_proposal_box_anchors_only",
+    "complete_current_case_reviews": 0,
+    "reviewed_boxes": 8,
+    "reviewed_boxes_on_sampled_frames": 8,
+    "matched_boxes_iou_ge_0_5": 8,
+    "ambiguous_box_matches": 0,
+    "unmatched_boxes": 0,
+    "within_reviewed_stable_segment_pairs": 4,
+    "false_split_anchor_pairs": 0,
+    "precision": null,
+    "full_detector_recall": null,
+    "id_switch_rate": null,
+    "role_accuracy": null,
+    "reflection_accuracy": null,
+    "iou_threshold_prespecified": 0.5,
+    "identity_between_unreviewed_segments_not_assumed": true,
+    "limitations": [
+      "Prior accepted proposals are a selected and biased geometry reference, not exhaustive independent people labels.",
+      "Sparse anchors do not establish continuous tracking, all switches or role intervals.",
+      "No reference was supplied to inference."
+    ],
+    "mean_iou_among_matched_accepted_boxes": 0.99606428854278
+  },
+  "model_response_diagnostic": {
+    "legal_value_error_receipts": 1,
+    "value_error_had_returned_response": 1,
+    "value_error_raw_reply_preserved": 1,
+    "recorded_max_prompt_tokens": 11207,
+    "calls_with_prompt_counts": 14,
+    "returned_visual_responses": 5,
+    "returned_legal_responses": 3
+  },
+  "legal_rejection_diagnostic": [
+    {
+      "replay": "saved_returned_condition_candidate_only",
+      "source_module_sha256": "72d5a46b13f245feffbd9a3408376dcb887d0c0200c4435bc9fa331c9bb33366",
+      "schema_valid": true,
+      "recorded_output_unmodified": true,
+      "new_model_calls": 0,
+      "reproduced_rejection": true,
+      "rejection_category": "legal_evidence_or_condition_validation",
+      "public_static_reason": "Actor-sensitive condition requires a participant"
+    }
+  ],
+  "playback_integrity": {
+    "recordings": 3,
+    "playback_frames_compared_to_source_pts": 3186,
+    "max_normalized_timestamp_difference_sec": 0,
+    "scene_pixels_reviewed_by_automation": false
+  },
+  "baseline_harness_commit": "dc3866438c670eecf0b6c75f9660a5f11a8c7757",
+  "baseline_core_commit": "e55c0773ea74e2745ea33512d19bfaa38b32d7fb",
+  "all_three_backups_restored": true,
+  "restored_file_hash_checks": 436
+}
