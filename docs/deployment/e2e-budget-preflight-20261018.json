@@ -1,0 +1,100 @@
+{
+  "schema_version": "forte.deployment-budget-preflight/1",
+  "checked_at_utc": "2026-10-18T01:30:00.056923+00:00",
+  "authorization": "existing user-approved cumulative project ceiling; no new allocation or old-session extension",
+  "project_ceiling_usd": "30",
+  "original_funded_credit_usd": "30.0",
+  "session_ledger_continuous": true,
+  "sessions": [
+    {
+      "vm_id": 1107904,
+      "requested_at_utc": "2026-10-17T10:44:56.161785+00:00",
+      "deletion_confirmed_at_utc": "2026-10-17T10:57:40.965164+00:00",
+      "before_usd": "30.0",
+      "after_usd": "29.773879928333322",
+      "observed_debit_usd": "0.226120071666678",
+      "full_wall_time_hours": "0.2124453830555555555555555556",
+      "conservative_elapsed_rate_cost_usd": "0.2882289914506480472222222222",
+      "closed": true
+    },
+    {
+      "vm_id": 1107953,
+      "requested_at_utc": "2026-10-17T11:19:31.008608+00:00",
+      "deletion_confirmed_at_utc": "2026-10-17T12:22:07.408046+00:00",
+      "before_usd": "29.773879928333322",
+      "after_usd": "28.409622162611036",
+      "observed_debit_usd": "1.364257765722286",
+      "full_wall_time_hours": "1.043444288333333333333333333",
+      "conservative_elapsed_rate_cost_usd": "1.415662183548643983333333333",
+      "closed": true
+    },
+    {
+      "vm_id": 1108032,
+      "requested_at_utc": "2026-10-17T12:48:45.612322+00:00",
+      "deletion_confirmed_at_utc": "2026-10-17T13:05:04.564432+00:00",
+      "before_usd": "28.409622162611036",
+      "after_usd": "28.115666069444355",
+      "observed_debit_usd": "0.293956093166681",
+      "full_wall_time_hours": "0.2719311416666666666666666667",
+      "conservative_elapsed_rate_cost_usd": "0.3689345354523909166666666667",
+      "closed": true
+    },
+    {
+      "vm_id": 1108153,
+      "requested_at_utc": "2026-10-17T14:23:46.791790+00:00",
+      "deletion_confirmed_at_utc": "2026-10-17T14:53:23.037654+00:00",
+      "before_usd": "28.115666069444355",
+      "after_usd": "27.55036589027766",
+      "observed_debit_usd": "0.565300179166695",
+      "full_wall_time_hours": "0.4934016288888888888888888889",
+      "conservative_elapsed_rate_cost_usd": "0.6694080701088337555555555556",
+      "closed": true
+    },
+    {
+      "vm_id": 1108604,
+      "requested_at_utc": "2026-10-17T21:04:26.333971+00:00",
+      "deletion_confirmed_at_utc": "2026-10-17T23:07:34.334669+00:00",
+      "before_usd": "27.55036589027766",
+      "after_usd": "24.927373058944198",
+      "observed_debit_usd": "2.622992831333462",
+      "full_wall_time_hours": "2.052222416111111111111111111",
+      "conservative_elapsed_rate_cost_usd": "2.784292078841905594444444444",
+      "closed": true
+    },
+    {
+      "vm_id": 1108722,
+      "requested_at_utc": "2026-10-17T23:58:30.402929+00:00",
+      "deletion_confirmed_at_utc": "2026-10-18T01:03:11.705359+00:00",
+      "before_usd": "24.927373058944198",
+      "after_usd": "23.548040621777464",
+      "observed_debit_usd": "1.379332437166734",
+      "full_wall_time_hours": "1.078139563888888888888888889",
+      "conservative_elapsed_rate_cost_usd": "1.462733972719345805555555556",
+      "closed": true
+    }
+  ],
+  "observed_cumulative_debits_usd": "6.451959378222536",
+  "current_credit_usd": "23.548040621777464",
+  "cumulative_elapsed_rate_upper_usd": "6.989259832121768102777777778",
+  "unsettled_allowance_usd": "0.537300453899232102777777778",
+  "additional_unsettled_buffer_usd": "0.537300453899232102777777778",
+  "untouched_reserve_usd": "1.50",
+  "conservative_remaining_headroom_after_buffers_usd": "20.97343971397899979444444444",
+  "proposed_new_session_ceiling_usd": "3",
+  "maximum_seconds": 5400,
+  "maximum_at_current_hourly_rate_usd": "2.0350806450",
+  "new_session_fits_conservative_headroom": true,
+  "rates_are_recorded_quotes_not_final_invoice": true,
+  "billing_settlement_unresolved": true,
+  "no_resources_created": true,
+  "provider_inventory_at_preflight": {
+    "vms": 0,
+    "volumes": 0,
+    "at_utc": "2026-10-18T01:15:29.303058+00:00"
+  },
+  "limits": [
+    "Elapsed-time estimate assumes the recorded compute/IP rates; it is a conservative operating estimate, not a settled invoice.",
+    "Requery credit/inventory/rates immediately before creation; stop on unexplained debit, extra resources or insufficient buffered headroom.",
+    "No payment or automatic top-up; new guard deletes exact owned resource on budget/deadline violation."
+  ]
+}
