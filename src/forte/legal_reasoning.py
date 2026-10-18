@@ -579,17 +579,7 @@ class LegalEvidenceService:
                     raise ValueError("Observation timestamp is not source-derived")
         if len({o["observation_id"] for o in observations}) != len(observations):
             raise ValueError("Duplicate timeline observation")
-        tools = (
-            EvidenceTools(
-                registry,
-                {"participants": timeline.get("participants", [])},
-                output / "source-evidence",
-                deadline,
-                table=table,
-            )
-            if max_calls
-            else None
-        )
+        tools = None
         metadata = [EvidenceItem.model_validate(e) for e in metadata_evidence]
         if any(
             e.kind != "metadata"
@@ -628,112 +618,140 @@ class LegalEvidenceService:
                     }
                 )
                 continue
-            plan = self.prepare_card(
-                card.id, event_date=event_date, operation_context=operation_context
-            )
-            relevant = related.get(card.id, observations)
-            # Decisive frames plus local neighbors and a recording overview. A
-            # bounded set cannot be promoted to continuous-operation coverage.
-            supplied_observations, wanted = bounded_observation_evidence(relevant)
-            active_participant_ids = sorted(
-                {id for o in supplied_observations for id in o["actor_ids"] + o["recipient_ids"]}
-            )
-            supplied_metadata = [
-                e for e in metadata if set(e.participant_ids) <= set(active_participant_ids)
-            ]
-            for observation in supplied_observations:
-                center = observation["decisive_sec"]
-                wanted.extend(
-                    nearest(registry.frames, max(0, center + delta)).frame_id
-                    for delta in [-1, -0.5, 0.5, 1]
-                )
-            wanted.extend(
-                nearest(registry.frames, registry.duration * i / 7).frame_id for i in range(8)
-            )
-            ids = list(dict.fromkeys(wanted))[:8]
-            frames = tools.get_frames(ids)
-            frame_ids = [f.frame_id for f in frames]
-            frame_participants = {id: set() for id in frame_ids}
-            for obs in supplied_observations:
-                for id in obs["evidence_frame_ids"]:
-                    frame_participants[id].update(obs["actor_ids"] + obs["recipient_ids"])
-            evidence = (
-                [
-                    EvidenceItem(
-                        id=id,
-                        kind="frame",
-                        source_id=registry.source_sha256,
-                        participant_ids=sorted(frame_participants[id]),
-                        frame_ids=[id],
-                        origin="source",
-                        visibility="unknown",
-                    )
-                    for id in frame_ids
-                ]
-                + [
-                    EvidenceItem(
-                        id=o["observation_id"],
-                        kind="observation",
-                        source_id=registry.source_sha256,
-                        participant_ids=list(dict.fromkeys(o["actor_ids"] + o["recipient_ids"])),
-                        actor_ids=o["actor_ids"],
-                        frame_ids=o["evidence_frame_ids"],
-                        origin="model",
-                        visibility="partial" if o["visibility"] == "partly_occluded" else "unknown",
-                    )
-                    for o in supplied_observations
-                ]
-                + supplied_metadata
-            )
-            sources = [self.get_source_provision(*id.split(":")) for id in card.clause_ids]
-            # Deduplicate exact clauses and retain only useful participant fields;
-            # appearance embeddings and gallery state never consume VLM context.
-            legal_clauses = {}
-            official_sources = {}
-            notices, unavailable = [], []
-            for source in sources:
-                for clause in [source["clause"], *source["context_provisions"]]:
-                    key = f"{clause['act_id']}:{clause['version_id']}:{clause['provision']}"
-                    legal_clauses[key] = clause
-                official_sources[source["source"]["version_id"]] = source["source"]
-                notices.extend(source["source_effect_notices"])
-                unavailable.extend(source["unavailable_references"])
-            participants = compact_participants(
-                [
-                    p
-                    for p in timeline.get("participants", [])
-                    if p["participant_id"] in active_participant_ids
-                ]
-            )
-            prompt, schema = build_condition_prompt(
-                plan,
-                supplied_observations,
-                active_participant_ids,
-                frame_ids,
-                {
-                    "provisions": legal_clauses,
-                    "sources": official_sources,
-                    "source_effect_notices": list({n["text"]: n for n in notices}.values()),
-                    "unavailable_references": list(dict.fromkeys(unavailable)),
-                    "participants": participants,
-                    "coverage": timeline.get("coverage", {}),
-                    "operation_context": operation_context or {},
-                    "source_sha256": registry.source_sha256,
-                },
-                metadata_evidence=supplied_metadata,
-            )
             began = time.monotonic()
             receipt = {
                 "rule_id": card.id,
-                "plan_id": plan.plan_id,
-                "source_frame_ids": frame_ids,
-                "participant_ids": active_participant_ids,
-                "observations_not_supplied": len(relevant) - len(supplied_observations),
                 "direction": "action_triggered" if card.id in related else "inventory",
+                "stage": "condition_plan",
+                "inference_attempted": False,
             }
             try:
+                plan = self.prepare_card(
+                    card.id, event_date=event_date, operation_context=operation_context
+                )
+                relevant = related.get(card.id, observations)
+                # Decisive frames plus local neighbors and a recording overview. A
+                # bounded set cannot be promoted to continuous-operation coverage.
+                supplied_observations, wanted = bounded_observation_evidence(relevant)
+                active_participant_ids = sorted(
+                    {
+                        id
+                        for o in supplied_observations
+                        for id in o["actor_ids"] + o["recipient_ids"]
+                    }
+                )
+                supplied_metadata = [
+                    e for e in metadata if set(e.participant_ids) <= set(active_participant_ids)
+                ]
+                for observation in supplied_observations:
+                    center = observation["decisive_sec"]
+                    wanted.extend(
+                        nearest(registry.frames, max(0, center + delta)).frame_id
+                        for delta in [-1, -0.5, 0.5, 1]
+                    )
+                wanted.extend(
+                    nearest(registry.frames, registry.duration * i / 7).frame_id for i in range(8)
+                )
+                ids = list(dict.fromkeys(wanted))[:8]
+                receipt["stage"] = "source_evidence"
+                if tools is None:
+                    tools = EvidenceTools(
+                        registry,
+                        {"participants": timeline.get("participants", [])},
+                        output / "source-evidence",
+                        deadline,
+                        table=table,
+                    )
+                frames = tools.get_frames(ids)
+                frame_ids = [f.frame_id for f in frames]
+                frame_participants = {id: set() for id in frame_ids}
+                for obs in supplied_observations:
+                    for id in obs["evidence_frame_ids"]:
+                        frame_participants[id].update(obs["actor_ids"] + obs["recipient_ids"])
+                evidence = (
+                    [
+                        EvidenceItem(
+                            id=id,
+                            kind="frame",
+                            source_id=registry.source_sha256,
+                            participant_ids=sorted(frame_participants[id]),
+                            frame_ids=[id],
+                            origin="source",
+                            visibility="unknown",
+                        )
+                        for id in frame_ids
+                    ]
+                    + [
+                        EvidenceItem(
+                            id=o["observation_id"],
+                            kind="observation",
+                            source_id=registry.source_sha256,
+                            participant_ids=list(
+                                dict.fromkeys(o["actor_ids"] + o["recipient_ids"])
+                            ),
+                            actor_ids=o["actor_ids"],
+                            frame_ids=o["evidence_frame_ids"],
+                            origin="model",
+                            visibility="partial"
+                            if o["visibility"] == "partly_occluded"
+                            else "unknown",
+                        )
+                        for o in supplied_observations
+                    ]
+                    + supplied_metadata
+                )
+                receipt["stage"] = "source_context"
+                sources = [self.get_source_provision(*id.split(":")) for id in card.clause_ids]
+                # Deduplicate exact clauses and retain only useful participant fields;
+                # appearance embeddings and gallery state never consume VLM context.
+                legal_clauses = {}
+                official_sources = {}
+                notices, unavailable = [], []
+                for source in sources:
+                    for clause in [source["clause"], *source["context_provisions"]]:
+                        key = f"{clause['act_id']}:{clause['version_id']}:{clause['provision']}"
+                        legal_clauses[key] = clause
+                    official_sources[source["source"]["version_id"]] = source["source"]
+                    notices.extend(source["source_effect_notices"])
+                    unavailable.extend(source["unavailable_references"])
+                participants = compact_participants(
+                    [
+                        p
+                        for p in timeline.get("participants", [])
+                        if p["participant_id"] in active_participant_ids
+                    ]
+                )
+                receipt["stage"] = "condition_prompt"
+                prompt, schema = build_condition_prompt(
+                    plan,
+                    supplied_observations,
+                    active_participant_ids,
+                    frame_ids,
+                    {
+                        "provisions": legal_clauses,
+                        "sources": official_sources,
+                        "source_effect_notices": list({n["text"]: n for n in notices}.values()),
+                        "unavailable_references": list(dict.fromkeys(unavailable)),
+                        "participants": participants,
+                        "coverage": timeline.get("coverage", {}),
+                        "operation_context": operation_context or {},
+                        "source_sha256": registry.source_sha256,
+                    },
+                    metadata_evidence=supplied_metadata,
+                )
+                receipt.update(
+                    plan_id=plan.plan_id,
+                    source_frame_ids=frame_ids,
+                    participant_ids=active_participant_ids,
+                    observations_not_supplied=len(relevant) - len(supplied_observations),
+                )
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("Legal evidence preparation deadline exceeded")
+                receipt["stage"] = "inference"
+                receipt["inference_attempted"] = True
                 data = backend.request(registry, frames, prompt, schema, 393216, 1600)
                 write_private(output / f"condition-reply-{len(receipts):03d}.json", data)
+                receipt["stage"] = "condition_validation"
                 result = parse_and_evaluate(plan, data, evidence, active_participant_ids)
                 if time.monotonic() >= deadline:
                     raise TimeoutError("Legal condition evaluation deadline exceeded")
@@ -780,6 +798,10 @@ class LegalEvidenceService:
                     }
                 )
             except (ValueError, TimeoutError, httpx.HTTPError) as exc:
+                # Preparation deadlines are recoverable; invalid source ownership,
+                # legal assets or metadata must still fail closed before inference.
+                if not receipt["inference_attempted"] and not isinstance(exc, TimeoutError):
+                    raise
                 # Persist only a safe failure type; case-bearing text stays in
                 # the private raw reply, never in global logs or API errors.
                 receipt["error"] = type(exc).__name__
@@ -787,15 +809,24 @@ class LegalEvidenceService:
                     {
                         "rule_id": card.id,
                         "status": "evaluation_unavailable",
-                        "reason": "invalid condition output or exhausted deadline",
+                        "reason": "legal evidence preparation deadline exhausted"
+                        if not receipt["inference_attempted"]
+                        else "invalid condition output or exhausted deadline",
+                        "stage": receipt["stage"],
                     }
                 )
             finally:
                 receipt.update(
                     seconds=time.monotonic() - began,
-                    counted_prompt_tokens=getattr(backend, "counted_prompt_tokens", None),
-                    usage=getattr(backend, "last_usage", {}),
-                    finish_reason=getattr(backend, "last_finish_reason", None),
+                    counted_prompt_tokens=getattr(backend, "counted_prompt_tokens", None)
+                    if receipt["inference_attempted"]
+                    else None,
+                    usage=getattr(backend, "last_usage", {})
+                    if receipt["inference_attempted"]
+                    else {},
+                    finish_reason=getattr(backend, "last_finish_reason", None)
+                    if receipt["inference_attempted"]
+                    else None,
                 )
                 receipts.append(receipt)
                 write_private(output / "condition-call-receipts.json", receipts)
@@ -821,7 +852,11 @@ class LegalEvidenceService:
             "rule_coverage": coverage,
             "retrieval_receipts": retrieval_receipts,
             "limitations": limitations,
-            "metrics": {"calls": len(receipts), "receipts": receipts},
+            "metrics": {
+                "calls": sum(r["inference_attempted"] for r in receipts),
+                "attempts": len(receipts),
+                "receipts": receipts,
+            },
             "weights_frozen": True,
             "validated_legal_conclusion": False,
         }
