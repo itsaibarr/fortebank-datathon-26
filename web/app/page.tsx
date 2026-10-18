@@ -50,6 +50,7 @@ import { Input } from "@/components/ui/input"
 import { InvestigationTools } from "@/components/investigation-tools"
 import {
   emptyFilters,
+  createHistoryRequestGate,
   filterEvents,
   revisionHead,
   validJobId,
@@ -357,6 +358,8 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
   const fileInput = useRef<HTMLInputElement>(null)
   const localUrl = useRef("")
   const submitting = useRef(false)
+  const historyGate = useRef(createHistoryRequestGate())
+  const historyBusy = useRef(false)
   const busy = phase === "uploading" || phase === "processing"
   const visibleEvents = result ? filterEvents(result, revisions, filters) : []
   const selected = visibleEvents.find((event) => event.event_id === selectedId)
@@ -399,6 +402,8 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
         const job = await response.json()
         if (controller.signal.aborted) return
         if (job.status === "done") {
+          setReloading(true)
+          setHistoryReady(false)
           setResult(job.result)
           setPhase("done")
           setSelectedId(job.result.events[0]?.event_id || "")
@@ -428,24 +433,31 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
   }, [request, jobId, phase])
   useEffect(() => {
     if (!result || !jobId) return
-    const controller = new AbortController()
+    const attempt = historyGate.current.begin(jobId)
+    historyBusy.current = true
     request(`/api/v2/jobs/${jobId}/corrections`, {
-      signal: controller.signal,
+      signal: attempt.signal,
     })
       .then((response) => response.json())
       .then((data) => {
-        if (!controller.signal.aborted) {
+        if (attempt.current()) {
           setRevisions(data.revisions)
           setHistoryReady(true)
         }
       })
       .catch(() => {
-        if (!controller.signal.aborted)
+        if (attempt.current())
           setReviewStatus(
             "Review history could not be loaded. Reload it before saving a correction."
           )
       })
-    return () => controller.abort()
+      .finally(() => {
+        if (attempt.current()) {
+          historyBusy.current = false
+          setReloading(false)
+        }
+      })
+    return () => attempt.abort()
   }, [request, jobId, result])
 
   useEffect(() => {
@@ -492,6 +504,8 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
       )
       return
     }
+    historyGate.current.invalidate()
+    historyBusy.current = false
     if (localUrl.current) URL.revokeObjectURL(localUrl.current)
     localUrl.current = URL.createObjectURL(candidate)
     setFile(candidate)
@@ -513,6 +527,8 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     if (!file || !uploadReady || busy || caseOperation || submitting.current)
       return
     submitting.current = true
+    historyGate.current.invalidate()
+    historyBusy.current = false
     setPhase("uploading")
     const metadata = await access.refreshMetadata()
     if (!uploadsAvailable(metadata) || !metadata) {
@@ -577,19 +593,39 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     setReviewStatus("")
   }
   async function reloadReviews() {
+    if (historyBusy.current)
+      throw new Error("Review history is already loading.")
+    const attempt = historyGate.current.begin(jobId)
+    historyBusy.current = true
     setReloading(true)
     try {
-      const response = await request(`/api/v2/jobs/${jobId}/corrections`)
+      const response = await request(`/api/v2/jobs/${jobId}/corrections`, {
+        signal: attempt.signal,
+      })
       const data = await response.json()
+      if (!attempt.current())
+        throw new Error("The recording changed. Reload its review history.")
       setRevisions(data.revisions)
       setHistoryReady(true)
       return data.revisions as ReviewRevision[]
     } finally {
-      setReloading(false)
+      if (attempt.current()) {
+        historyBusy.current = false
+        setReloading(false)
+      }
     }
   }
   async function saveCorrection() {
-    if (!result || !selected || !access.session || !note.trim()) return
+    if (
+      !result ||
+      !selected ||
+      !access.session ||
+      !note.trim() ||
+      saving ||
+      historyBusy.current ||
+      !historyReady
+    )
+      return
     setSaving(true)
     setReviewStatus("")
     try {
@@ -625,6 +661,8 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
   function resumeCase() {
     const id = resumeId.trim()
     if (busy || caseOperation || !validJobId(id)) return
+    historyGate.current.invalidate()
+    historyBusy.current = false
     if (localUrl.current) URL.revokeObjectURL(localUrl.current)
     localUrl.current = ""
     setFile(null)
@@ -1316,6 +1354,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                           </FieldLabel>
                           <select
                             id="review-scope"
+                            disabled={saving || reloading}
                             className="native-select"
                             value={scope}
                             onChange={(event) => setScope(event.target.value)}
@@ -1335,6 +1374,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                           </FieldLabel>
                           <Textarea
                             id="correction-note"
+                            disabled={saving || reloading}
                             value={note}
                             maxLength={12000}
                             onChange={(event) => setNote(event.target.value)}
@@ -1345,6 +1385,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                           <Button
                             disabled={
                               saving ||
+                              reloading ||
                               !historyReady ||
                               !access.session ||
                               !note.trim()
@@ -1363,7 +1404,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                           </Button>
                           <Button
                             variant="outline"
-                            disabled={saving}
+                            disabled={saving || reloading}
                             onClick={() =>
                               reloadReviews()
                                 .then(() =>

@@ -6,6 +6,7 @@ import {
   filterEvents,
   revisionHead,
   validJobId,
+  createHistoryRequestGate,
 } from "./investigation.ts"
 
 // Synthetic source-linked records only. Adjacent events remain distinct even at one timestamp.
@@ -165,4 +166,40 @@ test("resume accepts only a full job UUID, never a URL or route", () => {
   assert.equal(validJobId("12345678-1234-1234-1234-123456789abc"), true)
   for (const value of ["../source", "https://other.invalid", "12345678", ""])
     assert.equal(validJobId(value), false)
+})
+
+test("late case A history cannot commit after case B replaces it", async () => {
+  const gate = createHistoryRequestGate()
+  const first = gate.begin("case-a")
+  let completeA
+  const delayed = new Promise((resolve) => {
+    completeA = resolve
+  })
+  const applied = []
+  const requestA = delayed.then((value) => {
+    if (first.current()) applied.push(value)
+  })
+  gate.invalidate()
+  const second = gate.begin("case-b")
+  if (second.current()) applied.push("new-case-b")
+  completeA("old-case-a")
+  await requestA
+  assert.deepEqual(applied, ["new-case-b"])
+  assert.equal(first.signal.aborted, true)
+  assert.equal(first.current(), false)
+  assert.equal(second.current(), true)
+})
+
+test("latest history request wins over an earlier initial fetch in the same case", () => {
+  const gate = createHistoryRequestGate()
+  const initial = gate.begin("case-a")
+  const reloaded = gate.begin("case-a")
+  initial.abort()
+  assert.equal(initial.current(), false)
+  assert.equal(initial.signal.aborted, true)
+  assert.equal(reloaded.current(), true)
+  assert.equal(reloaded.signal.aborted, false)
+  gate.invalidate()
+  assert.equal(reloaded.current(), false)
+  assert.equal(reloaded.signal.aborted, true)
 })
