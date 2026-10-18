@@ -170,7 +170,53 @@ def validate_answer(value, frames, participants, frame_boxes) -> ScanAnswer:
     return answer
 
 
-def compact_participants(participants):
+def participant_role_history(person, observations):
+    """Keep source-bound role proposals separate for each recording-local person.
+
+    Only already validated observations enter here. Matching observation IDs
+    enrich compatible records; different claims/origins remain independent.
+    A historical interval never establishes a current or permanent role.
+    """
+    history = [dict(row) for row in person.get("role_hypotheses", [])]
+    for observation in observations:
+        if (
+            observation["kind"] != "role"
+            or person["participant_id"] not in observation["actor_ids"]
+        ):
+            continue
+        role = {
+            key: observation[key]
+            for key in (
+                "observation_id",
+                "value",
+                "start_sec",
+                "end_sec",
+                "evidence_frame_ids",
+                "review_status",
+                "origin",
+                "uncertainty",
+                "visibility",
+                "source_sha256",
+                "phase",
+                "localization",
+                "start_frame_id",
+                "end_frame_id",
+                "decisive_frame_id",
+            )
+            if key in observation
+        }
+        for index, previous in enumerate(history):
+            if previous.get("observation_id") != role["observation_id"]:
+                continue
+            if all(previous[key] == role[key] for key in previous.keys() & role.keys()):
+                history[index] = {**previous, **role}
+                break
+        else:
+            history.append(role)
+    return history
+
+
+def compact_participants(participants, *, interval=None):
     """Bound prompt history; full records remain recoverable in the registry.
 
     Tokenizers split long numeric arrays very finely. Per-frame galleries,
@@ -213,6 +259,40 @@ def compact_participants(participants):
             for key in ("conflicts", "visibility_gaps", "role_hypotheses", "track_segments")
         }
         value["history_is_bounded_summary"] = True
+        roles = person.get("role_hypotheses", [])
+
+        def role_priority(index, roles=roles):
+            row = roles[index]
+            start, end = row.get("start_sec"), row.get("end_sec")
+            timed = (
+                not isinstance(start, bool)
+                and isinstance(start, (int, float))
+                and not isinstance(end, bool)
+                and isinstance(end, (int, float))
+                and math.isfinite(start)
+                and math.isfinite(end)
+                and start <= end
+            )
+            overlaps = (
+                timed and interval is not None and max(start, interval[0]) <= min(end, interval[1])
+            )
+            return overlaps, end if timed else -math.inf, index
+
+        chosen = sorted(range(len(roles)), key=role_priority, reverse=True)[:4]
+        value["role_hypotheses"] = [
+            {
+                **compact(roles[index]),
+                **{
+                    key: roles[index][key]
+                    for key in ("start_sec", "end_sec")
+                    if key in roles[index]
+                },
+            }
+            for index in chosen
+        ]
+        value["role_history_semantics"] = (
+            "source_evidence_intervals_only_not_current_or_permanent_role_approval"
+        )
         segments = []
         for segment in person.get("track_segments", [])[:4]:
             if isinstance(segment, str):
@@ -537,7 +617,13 @@ def scan_recording(registry, participants, backend, output, deadline, bounds=Non
         supplied = [p for p in participants_list if p["participant_id"] in active_ids]
         # Embeddings/gallery never enter the VLM prompt. Geometry and role evidence
         # are provisional; a tracker association cannot establish a role.
-        participant_context = compact_participants(supplied)
+        participant_context = compact_participants(
+            [
+                {**person, "role_hypotheses": participant_role_history(person, tools.observations)}
+                for person in supplied
+            ],
+            interval=(start, end),
+        )
         prior = [
             {
                 k: o[k]
@@ -793,24 +879,7 @@ def scan_recording(registry, participants, backend, output, deadline, bounds=Non
             for o in tools.observations
             if o["kind"] == "role" and person["participant_id"] in o["actor_ids"]
         ]
-        person["role_hypotheses"] = [
-            *person.get("role_hypotheses", []),
-            *[
-                {
-                    k: role[k]
-                    for k in (
-                        "observation_id",
-                        "value",
-                        "start_sec",
-                        "end_sec",
-                        "evidence_frame_ids",
-                        "review_status",
-                        "origin",
-                    )
-                }
-                for role in roles
-            ],
-        ]
+        person["role_hypotheses"] = participant_role_history(person, tools.observations)
         for index, role in enumerate(roles):
             for other in roles[index + 1 :]:
                 if role["value"] != other["value"] and max(
