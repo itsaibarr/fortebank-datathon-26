@@ -3,7 +3,9 @@ title: "Architecture"
 description: "One frozen visual model, mandatory CPU condition proposals and deterministic decisions."
 ---
 
-The sole architecture reference is repository `report.md`. Both API versions adapt one implementation in `src/forte/pipeline.py`; `worker.py` always invokes it.
+These guides describe source `491ba6127f663de9cf96281124bbdd5fd2596427` pinned in [installation](/guides/installation).
+Its `report.md` is the sole architecture reference. Documentation and application source share `main`; this release deploys no
+inference service. Both API versions adapt one implementation in `src/forte/pipeline.py`; `worker.py` always invokes it.
 
 ```mermaid
 flowchart TD
