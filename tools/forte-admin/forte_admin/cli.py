@@ -3,6 +3,7 @@
 import argparse
 import importlib.util
 import json
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -261,6 +262,18 @@ def install_command(args, runtime, root):
 
     if args.preview and args.apply:
         raise ConfigError("Choose --preview or --apply.")
+    qualification_timeout = args.readiness_timeout
+    if args.qualification:
+        if (
+            not math.isfinite(qualification_timeout)
+            or not 1 <= qualification_timeout <= 900
+            or qualification_timeout != int(qualification_timeout)
+        ):
+            raise ConfigError(
+                "For --qualification, --readiness-timeout must be a finite whole number "
+                "of seconds in 1–900."
+            )
+        qualification_timeout = int(qualification_timeout)
     changes = read_json(args.config) if args.config else {}
     for key in (
         "mode",
@@ -294,7 +307,7 @@ def install_command(args, runtime, root):
         if candidate.is_file():
             changes["integration_manifest"] = str(candidate)
     config, _ = plan(root, changes)
-    config["qualification_timeout"] = args.readiness_timeout
+    config["qualification_timeout"] = qualification_timeout
     report = install(
         config,
         root,
