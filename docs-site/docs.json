@@ -1,0 +1,90 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Forte Review",
+  "description": "Evidence-first cash-operation video review: jury guide, setup, API and reproducibility.",
+  "colors": {
+    "primary": "#0369A1",
+    "light": "#0284C7",
+    "dark": "#38BDF8"
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.svg",
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/itsaibarr/fortebank-datathon-26"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Try the UI demo",
+      "href": "https://fortebank-review-demo.vercel.app"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Jury guide",
+        "groups": [
+          {
+            "group": "Start here",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "architecture"
+            ]
+          },
+          {
+            "group": "Install and operate",
+            "pages": [
+              "guides/installation",
+              "guides/configuration",
+              "guides/operations",
+              "guides/review"
+            ]
+          },
+          {
+            "group": "Evaluate",
+            "pages": [
+              "evaluation/results",
+              "evaluation/reproduce",
+              "evaluation/limitations"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "Use the API",
+            "pages": [
+              "api/authentication",
+              "api/v1",
+              "api/v2",
+              "api/errors"
+            ]
+          },
+          {
+            "group": "Project maintenance",
+            "pages": [
+              "guides/troubleshooting",
+              "guides/repository",
+              "guides/documentation"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/itsaibarr/fortebank-datathon-26"
+    }
+  }
+}

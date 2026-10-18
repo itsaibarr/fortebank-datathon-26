@@ -1,0 +1,67 @@
+---
+title: "Jury API v1"
+description: "The unchanged asynchronous MOV contract required by the competition."
+---
+
+Download the exact [v1 OpenAPI contract](/openapi/v1.json). The published demo domain is not an inference API. Set `BASE_URL` to your own ready service origin and `SAMPLE_FILE` to a locally authorized MOV.
+
+## Endpoints
+
+| Method | Route | Result |
+| --- | --- | --- |
+| POST | `/api/v1/analyze` | 202 with `job_id`; exactly one multipart field `file`. |
+| GET | `/api/v1/jobs/{job_id}` | `processing`, `done` or `failed`; same key required. |
+
+## Submit
+
+After [key setup](/api/authentication) and [readiness](/guides/operations):
+
+```bash
+export BASE_URL="http://127.0.0.1:8000"
+export SAMPLE_FILE="/absolute/path/to/authorized-sample.mov"
+curl --fail-with-body --silent --show-error \
+  --header @"$FORTE_EXAMPLE_ROOT/request.headers" \
+  --form "file=@$SAMPLE_FILE;type=video/quicktime" \
+  --output "$FORTE_EXAMPLE_ROOT/accepted.json" \
+  "$BASE_URL/api/v1/analyze"
+```
+
+A generated example of the response shape:
+
+```json
+{"job_id":"00000000-0000-4000-8000-000000000000"}
+```
+
+Read the returned identifier from your own accepted response; do not reuse this example identifier. Avoid re-submitting POST after an ambiguous network timeout.
+
+## Poll
+
+```bash
+JOB_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job_id"])' \
+  "$FORTE_EXAMPLE_ROOT/accepted.json")
+curl --fail-with-body --silent --show-error \
+  --header @"$FORTE_EXAMPLE_ROOT/request.headers" \
+  --output "$FORTE_EXAMPLE_ROOT/result.json" \
+  "$BASE_URL/api/v1/jobs/$JOB_ID"
+```
+
+Repeat GET while `status` is `processing`. The test suite verifies asynchronous admission and polling. Outputs remain local because real case results can contain private descriptions and base64 evidence.
+
+## Interpret
+
+```json
+{
+  "job_id": "00000000-0000-4000-8000-000000000000",
+  "status": "done",
+  "verdict": "no_violation",
+  "violations": []
+}
+```
+
+This is a synthetic schema example, not a quality result. A positive uses `verdict: violation` and one or more violations, each with `type`, `timecode_sec`, `description` and `evidence_frames`. Each event has one to three actual JPEGs represented by `timestamp_sec` and `image_base64`. Exact public provision references go in `description`. There are no extra binary verdict values.
+
+An execution failure uses `status: failed` and `error` with `code` and `message`. In opt-in reasoning projection, insufficient evidence is a failure rather than a fabricated binary negative. A supported event can survive unrelated incomplete work; that does not establish complete coverage.
+
+## Limits
+
+MOV only; complete multipart body at most 256 MiB; duration at most 180 seconds; upload deadline 30 seconds; total job budget 270 seconds; two admitted jobs. Overflow returns 429, with `Retry-After: 5`. A two-job admission limit is not a two-job latency guarantee. See [common errors](/api/errors).

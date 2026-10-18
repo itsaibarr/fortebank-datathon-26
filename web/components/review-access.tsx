@@ -35,6 +35,14 @@ export function WorkspaceHeader({ access }: { access: BrowserAccess }) {
         </span>
       </Link>
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-3">
+        <a
+          href="https://datathon-f289adc4.mintlify.site/introduction"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-sm text-sm font-medium text-muted-foreground outline-offset-4 hover:text-foreground focus-visible:outline-2"
+        >
+          Documentation
+        </a>
         {access.session ? (
           <>
             <span

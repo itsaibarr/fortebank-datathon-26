@@ -1,0 +1,36 @@
+---
+title: "Repository and evidence index"
+description: "A navigable codebase with historical evidence retained separately from current instructions."
+---
+
+| Location | Purpose |
+| --- | --- |
+| `src/forte/` | API, workers, decoding, tracking, frozen reasoning, legal retrieval and evaluation. |
+| `web/` | Approved Next.js/TypeScript review interface. |
+| `contracts/` | Exact v1/v2, browser session, model asset and historical runtime identities. |
+| `configs/` | Explicit baseline, frozen reasoning and tracking configuration examples. |
+| `legal/` | Public official-source snapshots, coverage and draft rule cards. |
+| `tests/` | Synthetic software/contract/evidence/security checks. |
+| `scripts/` | Runtime checks, public preparation, private rehearsal and docs verification. |
+| `tools/forte-session/` | Existing local account/session gateway implementation. |
+| `deploy/portable/`, `tools/forte-admin/` | Deployment components; newer integration tooling and acceptance are maintained in their designated lane. |
+| `docs-site/` | Mintlify jury guides and API reference. |
+| `docs/` | Engineering runbooks and research history; use its index. |
+| `.context/verify/` | Preserved verification receipts; never presented as accuracy by test count alone. |
+| `tasks/`, `SPEC.md` | Scope and honest implementation/acceptance tracking. |
+
+## Cleanup policy and actions
+
+The audit found no tracked private datasets, model weights, image dumps, temporary log files or Python cache binaries. Generated `web/out`, `.next`, environments and private runs are ignored. Verification receipts, legal snapshots, smoke scripts, model manifests and active deployment work remain because build/test/reproduction or historical claims depend on them.
+
+The superseded frontend setup note was moved to `docs/archive/frontend-setup-20261017.md`, with the referring link updated. It has no runtime/build/test import. The old note is historical: the approved UI stack is already implemented. No research or evaluation evidence was discarded because of age.
+
+## Evidence to inspect
+
+- Current source behavior: code, contracts and synthetic tests at the named application commit.
+- Historical frozen GPU results: `docs/frozen-inference.md` and the immutable runtime manifest.
+- Exploratory failures: `docs/development-rehearsal.md` and matching `.context/verify/` receipts.
+- Legal scope: `legal/README.md`, coverage inventory and draft cards.
+- Review/privacy provenance: `docs/person-tracking.md`, browser-session plan and immutable correction contracts.
+
+Runtime sessions, private review packets, full recordings, credentials and derived sensitive outputs stay outside Git and published Mintlify content.

@@ -2,7 +2,7 @@
 
 Next.js App Router, TypeScript and Tailwind use the user-selected shadcn preset
 `b3d6mT4h6m`: Nova, zinc, sky, Manrope/Geist and Lucide. The previous setup-only
-note is preserved in `README.setup-history.md`; the explicit library approval
+note is preserved in [the archived setup note](../docs/archive/frontend-setup-20261017.md); the explicit library approval
 supersedes its unselected-library state.
 
 Run from this directory:

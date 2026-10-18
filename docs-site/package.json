@@ -1,0 +1,13 @@
+{
+  "name": "forte-review-docs",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "mint dev --port 3333",
+    "validate": "mint validate",
+    "links": "mint broken-links"
+  },
+  "devDependencies": {
+    "mint": "4.2.1059"
+  }
+}

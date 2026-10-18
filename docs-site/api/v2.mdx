@@ -1,0 +1,87 @@
+---
+title: "Detailed review API v2"
+description: "Timeline, participants, original evidence and independent correction scopes."
+---
+
+Download the exact [v2 OpenAPI contract](/openapi/v2.json). V2 is a separate namespace, not a modified jury v1 response.
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| POST | `/api/v2/analyze` | Admit one MOV in multipart field `file`; 202 with `job_id`. |
+| GET | `/api/v2/jobs/{job_id}` | Processing, failure or source-bound rich result. |
+| GET | `/api/v2/jobs/{job_id}/source` | Original source media; fresh range requests are authorized again. |
+| GET | `/api/v2/jobs/{job_id}/evidence/{frame_id}` | Source-bound decoded JPEG. |
+| GET | `/api/v2/jobs/{job_id}/corrections` | Immutable review revisions. |
+| POST | `/api/v2/jobs/{job_id}/corrections` | Append a source-bound scoped correction. |
+| GET | `/api/v2/jobs/{job_id}/report` | Complete recording investigation report. |
+| GET | `/api/v2/openapi.json` | Authenticated v2 contract. |
+
+Submission and polling use the [same key-file workflow](/api/v1), changing the route prefix to `/api/v2`. Retain the job's actual API version; a v2 job is not exposed through v1.
+
+## Execution and assessment
+
+A completed v2 response has `status: done`, `api_version: 2` and `result`. The result includes `schema_version: forte.reasoning/1`, `source_sha256`, `source`, `execution`, `assessment`, `timeline`, `participants`, `legal`, `events`, `metrics`, `provenance` and `artifacts`.
+
+| Field | Interpretation |
+| --- | --- |
+| Job `processing` | No terminal result yet. |
+| Job `failed` | Execution did not produce a valid successful result. Inspect sanitized error. |
+| Job `done` | Execution returned a valid reviewable result; this is not a claim of semantic certainty. |
+| `execution.status: partial` | Coverage or a stage is incomplete. Inspect limits and skipped work. |
+| `supported_violation` | Application-validated support under the supplied evidence and legal prerequisites; review separately. |
+| `no_violation_observed` | No supported concern under the stated coverage; sparse or incomplete work is not a clean negative. |
+| `insufficient_evidence` | A valid successful abstention, not a processing failure or binary negative. |
+| `not_applicable` | Applicability conditions exclude the candidate. |
+
+Source frame IDs, original PTS/time base and hashes connect events to JPEGs. Intervals are sampled evidence envelopes, not exact action start/end labels. Condition findings can be `satisfied`, `contradicted` or `unknown`; skipped/unavailable rules remain explicit.
+
+## Generated response example
+
+The [complete generated v2 response](/examples/v2-result.json) was captured from the actual API using a test-only inference fixture and a generated color video. It contains no real person or transaction. `status: done`, `execution.status: partial` and `assessment: insufficient_evidence` intentionally coexist. This illustrates the contract; it is not a model prediction or accuracy result.
+
+After saving your own completed v2 response as `result.json` in the private client directory, retrieve its original recording:
+
+```bash
+V2_JOB_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job_id"])' \
+  "$FORTE_EXAMPLE_ROOT/result.json")
+curl --fail-with-body --silent --show-error \
+  --header @"$FORTE_EXAMPLE_ROOT/request.headers" \
+  --output "$FORTE_EXAMPLE_ROOT/original.mov" \
+  "$BASE_URL/api/v2/jobs/$V2_JOB_ID/source"
+```
+
+Keep the downloaded file private. Its SHA-256 must equal `result.source_sha256`; the documentation verifier checks this binding. Evidence, correction history and reports use the authenticated routes in the endpoint table.
+
+## Corrections
+
+A correction requires the exact `source_sha256`, current `parent_revision` (or null initially), an existing `target_id`, `reviewer`, a bounded `change` object and one scope: `visual`, `identity`, `geometry`, `role` or `legal`. The server chooses the authenticated reviewer in trusted mode. Conflict returns 409; reload history rather than overwriting prior reviews.
+
+Approving a role does not approve geometry or identity. Reflection ownership can remain null. Stored corrections do not automatically become model context on later inference. See [review workflow](/guides/review).
+
+For example, the first visual correction to the generated response has this request shape. Replace the digest and target with values from your own result, use your reviewer identifier, and obtain the latest parent revision from correction history before a later change:
+
+```json
+{
+  "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+  "parent_revision": null,
+  "scope": "visual",
+  "target_id": "obs-00000",
+  "reviewer": "synthetic-reviewer",
+  "change": {"visibility": "synthetic correction"}
+}
+```
+
+Save the completed request as a private `correction.json`, then submit:
+
+```bash
+V2_JOB_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job_id"])' \
+  "$FORTE_EXAMPLE_ROOT/result.json")
+curl --fail-with-body --silent --show-error \
+  --header @"$FORTE_EXAMPLE_ROOT/request.headers" \
+  --header "Content-Type: application/json" \
+  --data-binary @"$FORTE_EXAMPLE_ROOT/correction.json" \
+  --output "$FORTE_EXAMPLE_ROOT/correction-response.json" \
+  "$BASE_URL/api/v2/jobs/$V2_JOB_ID/corrections"
+```
+
+A successful append returns **201** with `revision` and `correction`. The immutable correction records `origin: human` and `other_scopes_approved: false`; it does not alter the base result. Reusing a stale parent returns **409**.
