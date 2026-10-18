@@ -1,0 +1,53 @@
+---
+title: "How to install the source"
+description: "Install the actual Python package and build the frontend without downloading model weights."
+---
+
+## Prerequisites
+
+- Repository access, Git and `uv`.
+- Python 3.12 (the package accepts 3.12 only).
+- Node.js and npm for the frontend; validation used Node.js 24 and the committed npm lockfile.
+- For actual frozen inference: a separately prepared Linux x86_64 NVIDIA CUDA host, compatible driver, vLLM runtime and verified public model/tracking/legal assets. RAM alone does not implement CPU inference or offload.
+
+## Install the foundation
+
+```bash
+ git clone https://github.com/itsaibarr/fortebank-datathon-26.git
+ cd fortebank-datathon-26
+ uv sync --frozen
+ uv run forte --help
+ uv run pytest -q
+```
+
+Run these commands at the source revision named in [verified results](/evaluation/results). If the default branch is older, use the documented source commit from a fetched repository branch. The lockfile installs software dependencies; it does not download model weights, install CUDA or make inference ready.
+
+## Build the interface
+
+From the repository root:
+
+```bash
+npm --prefix web ci
+npm --prefix web test
+npm --prefix web run typecheck
+npm --prefix web run lint
+npm --prefix web run build
+```
+
+The build produces `web/out`. Runtime user data, API keys and recordings are not build inputs. Fonts are acquired at public build time and served as build assets afterward.
+
+`npm --prefix web run dev -- --port 3102` starts frontend development only. It does not provide the session gateway, deployment metadata or inference API.
+
+## Prepare a real inference host
+
+The repository Dockerfile pins its vLLM base by digest and includes the model-check/warmup entrypoint. The public asset inventory is `contracts/frozen-assets-v1.json`. The selected profile and private configuration must match the mounted resources. Model port 8001 remains loopback-only; private inference requires OS-enforced outbound denial after public acquisition.
+
+The historical image is not a published registry release and does not contain every newer security change. A fresh complete customer GPU installation and the exact newer externally reachable session deployment are not certified by this source installation check. Do not set installer acceptance flags to bypass missing evidence. Existing detailed deployment runbooks remain in `docs/deployment/` on the integration lane.
+
+## Verify
+
+Package installation and the test suite should complete. Then use [configuration](/guides/configuration) and [operations](/guides/operations). Actual uploads require model readiness; successful installation alone does not prove that readiness.
+
+## Troubleshooting
+
+A GitHub 404 can mean the private repository is inaccessible. A Python version error requires 3.12. Missing tracking/runtime dependencies are separate from the base package. See [common errors](/guides/troubleshooting).

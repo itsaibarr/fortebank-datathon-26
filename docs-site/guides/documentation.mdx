@@ -1,0 +1,35 @@
+---
+title: "How to maintain the documentation"
+description: "Validate Mintlify pages and source-bound examples before publishing."
+---
+
+The Mintlify source is `docs-site/`. Its navigation follows the jury journey, and the committed OpenAPI files are byte-identical copies of `contracts/api-contract.json` and `contracts/reasoning-api-contract.json`.
+
+## Validate locally
+
+From the repository root:
+
+```bash
+uv run python scripts/verify_documentation.py
+cd docs-site
+npm ci
+npm run validate
+npm run links
+npm run dev
+```
+
+The documentation CLI is pinned in this directory's lockfile. `mint dev` is a local preview, not proof of a successful hosted deployment. Keep Mintlify keys only in authorized private configuration; never put them in `docs.json`, MDX, examples, logs or commits.
+
+## Publish
+
+The Mintlify project must be connected to the intended repository, branch and `docs-site/` directory. A successful source push and Mintlify deployment are separate from a Vercel UI deployment. Verify the actual hosted URL and representative guide/API pages before linking it from the README and app.
+
+The admin API key is server-side and can trigger an existing configured project. Creating a new project and connecting GitHub can require the account's interactive OAuth authorization. Do not invent an existing site or claim a local Mintlify preview is publicly hosted.
+
+## Keep claims source-bound
+
+When behavior changes, update source identity, command checks, contract copies and measurement limitations together. Run examples with generated data. Never publish private case descriptions to make the docs look realistic.
+
+## Troubleshooting
+
+Broken links should be fixed before publishing. A hosted docs failure should be reported with its actual deployment state; do not replace an established site with an unrelated starter project. Preserve the previous working UI and evidence while repairing docs.

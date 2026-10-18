@@ -1,0 +1,42 @@
+---
+title: "Troubleshooting"
+description: "Find the failing boundary before changing model or evidence settings."
+---
+
+## Repository or installation
+
+**GitHub returns 404:** the repository is private; use authorized repository access. This is separate from the public UI demo.
+
+**Python install fails:** use Python 3.12 and the frozen `uv.lock`. Model-serving/tracking dependencies are separate from the base source install.
+
+**Frontend runs but cannot sign in:** a Next development/static server alone has no session gateway. The real UI requires same-origin HTTPS services. The public demo uses an explicitly separate simulator.
+
+## Startup and readiness
+
+**Live is 200, ready is 503:** the API process exists, but the resident model or its pinned identity/configuration is not ready. Do not retry uploads until readiness is restored.
+
+**Private inference refuses to start:** verify actual OS network denial and the public resource hashes. An environment flag is not network isolation. Do not disable the guard to process private media.
+
+**Context exceeded or generation timed out:** preserve the terminal failure and effective model/profile configuration. Do not silently change image/context/output budgets while calling the run a fixed comparison.
+
+## Upload or result
+
+**415/422:** verify a decodable MOV, field `file`, input duration/dimensions and request structure. Renaming another format is insufficient.
+
+**429:** capacity is full. Preserve the admitted job IDs and wait. A retry of GET is different from duplicating a POST.
+
+**404 on a known job:** check API version and authenticated principal. Cross-owner and ownerless history intentionally resemble unknown jobs.
+
+**Done but insufficient evidence:** v2 executed successfully and abstained. Inspect unexamined intervals, actor/role uncertainty, legal prerequisites and skipped rules. It is not a clean negative.
+
+**JPEG/source integrity error:** preserve the evidence failure; do not serve a replacement frame or relabel it as verified.
+
+## Review and evaluation
+
+**Correction conflict:** reload history, retain the immutable previous head and append a scoped revision.
+
+**Evaluator refuses results:** check the v1 schema, neutral names, source fingerprints, explicit development split, missing files and duplicates. Reserved media are intentionally refused.
+
+**No accepted accuracy score:** supplied coarse labels do not establish event categories, exact intervals, roles or legal correctness. Report available denominators and unresolved references rather than inventing a score.
+
+See [API error reference](/api/errors) for HTTP responses and [limitations](/evaluation/limitations) for known unsupported behavior.

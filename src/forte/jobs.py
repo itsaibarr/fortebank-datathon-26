@@ -6,6 +6,7 @@ import fcntl
 import json
 import os
 import signal
+import stat
 import sys
 import tempfile
 import time
@@ -119,7 +120,50 @@ async def probe(path: Path):
     return json.loads(await child(["--probe", str(path)], 10))
 
 
-async def run_worker(directory, id, deadline, settings, *, reasoning=False):
+def reasoning_configuration(settings):
+    """Validate a private copy before admission or crossing the worker boundary."""
+    from forte.reasoning_pipeline import load_reasoning_config
+
+    supplied = settings.reasoning_config
+    if isinstance(supplied, Path):
+        descriptor = None
+        limit = 1024 * 1024
+        try:
+            descriptor = os.open(supplied, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            info = os.fstat(descriptor)
+            if not stat.S_ISREG(info.st_mode) or info.st_size > limit:
+                raise ValueError("A bounded regular reasoning configuration is required")
+            chunks, count = [], 0
+            while chunk := os.read(descriptor, min(65536, limit + 1 - count)):
+                chunks.append(chunk)
+                count += len(chunk)
+                if count > limit:
+                    raise ValueError("A bounded regular reasoning configuration is required")
+            supplied = json.loads(b"".join(chunks))
+        except OSError as exc:
+            raise ValueError("A bounded regular reasoning configuration is required") from exc
+        finally:
+            if descriptor is not None:
+                os.close(descriptor)
+    snapshot = copy.copy(settings)
+    snapshot.reasoning_config = copy.deepcopy(supplied)
+    return load_reasoning_config(snapshot)
+
+
+def freeze_reasoning_configuration(directory, settings):
+    """Freeze dictionaries and file configurations alike, without replacing history."""
+    validated = reasoning_configuration(settings)
+    immutable = directory / "immutable"
+    immutable.mkdir(mode=0o700)
+    configuration = immutable / "request-config.json"
+    atomic_json(configuration, validated)
+    configuration.chmod(0o400)
+    return configuration
+
+
+async def run_worker(
+    directory, id, deadline, settings, *, reasoning=False, frozen_configuration=None
+):
     extra = [
         "--model-revision",
         settings.model_revision,
@@ -127,22 +171,10 @@ async def run_worker(directory, id, deadline, settings, *, reasoning=False):
         str(settings.max_context_tokens),
     ]
     if reasoning:
-        configuration = settings.reasoning_config
-        if isinstance(configuration, dict):
-            from forte.reasoning_pipeline import load_reasoning_config
-
-            # Validation supplies defaults; do not mutate the caller's dictionary
-            # while freezing the exact worker request into this private job.
-            snapshot_settings = copy.copy(settings)
-            snapshot_settings.reasoning_config = copy.deepcopy(configuration)
-            validated = load_reasoning_config(snapshot_settings)
-            immutable = directory / "immutable"
-            immutable.mkdir(mode=0o700)
-            configuration = immutable / "request-config.json"
-            atomic_json(configuration, validated)
-            configuration.chmod(0o400)
-        if not isinstance(configuration, Path):
-            raise ValueError("A persisted reasoning configuration is required")
+        configuration = frozen_configuration or freeze_reasoning_configuration(directory, settings)
+        expected = directory / "immutable/request-config.json"
+        if configuration != expected or not stat.S_ISREG(configuration.lstat().st_mode):
+            raise ValueError("The worker requires this job's frozen reasoning configuration")
         extra += ["--reasoning-config", str(configuration)]
     await child(
         [

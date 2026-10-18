@@ -46,6 +46,9 @@ def source_code_fingerprints():
         "annotations": "annotations",
         "contracts": "contracts",
         "contracts_v2": "contracts_v2",
+        "investigation_report": "investigation_report",
+        "jury_projection": "jury_projection",
+        "mechanic_review": "mechanic_review",
         "settings": "settings",
         "jobs": "jobs",
         "worker": "worker",
@@ -57,6 +60,8 @@ def source_code_fingerprints():
 
 
 def load_reasoning_config(settings):
+    from forte.legal_reasoning import EvidenceItem, VersionApplicability
+
     supplied = getattr(settings, "reasoning_config", None)
     if supplied is None:
         raise ValueError("An explicit frozen reasoning configuration is required")
@@ -79,6 +84,30 @@ def load_reasoning_config(settings):
         raise ValueError("Unknown frozen reasoning configuration sections")
     if not isinstance(config["tracking"], dict) or not isinstance(config["legal"], dict):
         raise ValueError("Invalid reasoning configuration sections")
+    law = dict(config["legal"])
+    config["legal"] = law
+    if set(law) - {
+        "release",
+        "cards",
+        "event_date",
+        "operation_context",
+        "applicability",
+        "metadata_evidence",
+    }:
+        raise ValueError("Unknown legal reasoning configuration fields")
+    for name in ("applicability", "metadata_evidence"):
+        if not isinstance(law.get(name, []), list):
+            raise ValueError("Legal " + name + " must be an explicit list")
+    law["applicability"] = [
+        VersionApplicability.model_validate(binding).model_dump(mode="json")
+        for binding in law.get("applicability", [])
+    ]
+    metadata = [EvidenceItem.model_validate(e) for e in law.get("metadata_evidence", [])]
+    if any(
+        e.kind != "metadata" or e.origin not in {"human", "authorized_metadata"} for e in metadata
+    ) or len({e.id for e in metadata}) != len(metadata):
+        raise ValueError("Operation metadata requires unique authorized evidence records")
+    law["metadata_evidence"] = [e.model_dump(mode="json") for e in metadata]
     if config.get("schema_version", 1) != 1:
         raise ValueError("Unsupported frozen reasoning configuration version")
     training = config.get("training", {})
@@ -267,6 +296,14 @@ def analyze_reasoning(
     try:
         stage = time.monotonic()
         registry = decode_video(source, run / "sampled-frames", deadline)
+        law = config["legal"]
+        # This is operator-supplied configuration, never model output. Bind it
+        # before tracking/inference so another recording's metadata cannot leak
+        # into a prompt, even when the legal call budget is already exhausted.
+        if any(
+            item["source_id"] != registry.source_sha256 for item in law.get("metadata_evidence", [])
+        ):
+            raise ValueError("Operation metadata belongs to another source recording")
         table = source_frame_table(registry, deadline)
         write_private(run / "source-frames.json", table)
         metrics["decoding_seconds"] = time.monotonic() - stage
@@ -305,9 +342,10 @@ def analyze_reasoning(
         )
         backend.deadline = deadline
         metrics["timeline_seconds"] = time.monotonic() - stage
-        law = config["legal"]
         service = legal or LegalEvidenceService(
-            Path(law["release"]), Path(law["cards"]) if law.get("cards") else None
+            Path(law["release"]),
+            Path(law["cards"]) if law.get("cards") else None,
+            **({"applicability": law["applicability"]} if law["applicability"] else {}),
         )
         stage = time.monotonic()
         legal_deadline = max(time.monotonic(), deadline - 10)
@@ -320,6 +358,7 @@ def analyze_reasoning(
             legal_deadline,
             event_date=law.get("event_date"),
             operation_context=law.get("operation_context"),
+            **({"metadata_evidence": law["metadata_evidence"]} if law["metadata_evidence"] else {}),
             max_calls=limits["legal_max_calls"],
             table=table,
         )
@@ -349,6 +388,8 @@ def analyze_reasoning(
         complete = (
             timeline["status"] == "complete_schedule"
             and not timeline["coverage"]["unexamined_intervals"]
+            and not timeline["coverage"].get("unclear_intervals")
+            and not timeline["coverage"].get("pending_reinspections", 0)
             and not evidence_limited
             and legal_report.get("status") == "complete_scoped_schedule"
         )
