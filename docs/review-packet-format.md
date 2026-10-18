@@ -1,10 +1,18 @@
 # Readable saved-prediction review
 
+`mechanic_review.py` is retained only as a source-preserving adapter for existing
+historical private review layouts. It performs no inference, selects no model and
+never changes original predictions or cited evidence. Current API review uses the
+single pipeline's immutable result plus `investigation_report.py`, following
+[report.md](../report.md). The historical layout and receipts below retain their
+original source/model identity and do not validate the current 8B/Laya runtime.
+
+
 This standalone tool creates a new human-local presentation of already saved v2
 results. It makes no model calls and changes no API, model, prompt, law, source,
 prediction, correction or approval. The exact original result remains available
-as a separate byte-preserved download. This follow-up is outside the frozen
-`ebb3d82` application delivery and its test/browser acceptance.
+as a separate byte-preserved download. Its historical checks are separate from
+current pipeline, real-model and deployment acceptance.
 
 ## Human review layout
 
@@ -102,17 +110,17 @@ tool may inspect private footage or descriptions.
 
 ## REA adaptation boundary
 
-PRODUCT/REA's public `RESEARCH_REPORT.md`, `FINDINGS.json` and
-`docs/product-research/REA.md` document Axxon/Mikshi public evidence separately
-from recommendations and unknown internals. Their public findings support scoped
+The earlier external PRODUCT/REA research recorded Axxon/Mikshi public evidence
+separately from recommendations and unknown internals. Those historical research
+documents are not active architecture guides in this checkout. Their findings informed scoped
 timeline navigation, independent human assessment, source/derived-media separation
 and explicit track/configuration dependencies. They do not establish either
 vendor's staff/customer role classifier, model, training or identity accuracy.
 
 This tool adopts the readable evidence and investigation organization. Role/action
-inference changes remain a separate contract-dependent task for the product/core
-owners, followed by a newly identified runtime comparison and independent local
-human judgments. No vendor architecture or recognition capability is inferred
+inference follows the selected frozen pipeline; semantic acceptance requires a
+newly identified runtime evaluation and independent local human judgments.
+No vendor architecture or recognition capability is inferred
 from screenshots, marketing or this renderer.
 
 ## Validation scope

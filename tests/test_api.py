@@ -19,7 +19,9 @@ def settings(tmp_path):
 
 
 async def negative(directory, job_id, deadline):
-    return DoneJob(job_id=job_id, verdict="no_violation", violations=[])
+    from test_api_v2 import uncertain
+
+    return await uncertain(directory, job_id, deadline)
 
 
 def test_auth_precedes_body_and_job_existence(settings):
@@ -55,9 +57,11 @@ def test_required_post_and_get_contract(settings, tmp_path):
             time.sleep(0.01)
         assert r.json() == {
             "job_id": id,
-            "status": "done",
-            "verdict": "no_violation",
-            "violations": [],
+            "status": "failed",
+            "error": {
+                "code": "insufficient_evidence",
+                "message": "The visible evidence was insufficient for a reliable result.",
+            },
         }
         assert client.get(response.headers["Location"], headers=headers).json() == r.json()
         schema = json.loads(open("contracts/api-contract.json").read())

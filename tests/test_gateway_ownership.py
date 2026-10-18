@@ -6,7 +6,7 @@ from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
-from test_api_v2 import KEY, correction, negative, uncertain
+from test_api_v2 import KEY, correction, uncertain
 from test_video import make_mov
 
 from forte.api import create_app
@@ -24,7 +24,7 @@ def headers(principal="reviewer-a"):
 
 
 def app(settings):
-    return create_app(settings, runner=negative, reasoning_runner=uncertain, ready=lambda: True)
+    return create_app(settings, runner=uncertain, ready=lambda: True)
 
 
 def submit(client, source, principal="reviewer-a", version=2, trusted=True):
@@ -37,7 +37,9 @@ def submit(client, source, principal="reviewer-a", version=2, trusted=True):
         response = client.get(accepted.headers["Location"], headers=auth)
         assert response.status_code == 200
         if response.json()["status"] != "processing":
-            assert response.json()["status"] == "done", response.text
+            assert response.json()["status"] == ("done" if version == 2 else "failed"), (
+                response.text
+            )
             return response.json()
         time.sleep(0.01)
     pytest.fail("Synthetic fixture did not complete")
@@ -157,7 +159,11 @@ def test_both_versions_persist_owner_and_cannot_be_read_by_another_principal(tmp
             completed = submit(client, source, version=version)
             job_id = completed["job_id"]
             metadata = json.loads((settings.private_root / job_id / "request.json").read_text())
-            assert metadata == {"api_version": version, "owner_principal": "reviewer-a"}
+            assert metadata["api_version"] == version
+            assert metadata["owner_principal"] == "reviewer-a"
+            if version == 1:
+                assert metadata["pipeline"] == "reasoning"
+                assert metadata["projection"] == "forte.jury-v1/1"
             prefix = f"/api/v{version}/jobs/{job_id}"
             assert client.get(prefix, headers=headers()).status_code == 200
             denied = client.get(prefix, headers=headers("reviewer-b"))
@@ -170,9 +176,11 @@ def test_both_versions_persist_owner_and_cannot_be_read_by_another_principal(tmp
             if version == 1:
                 assert completed == {
                     "job_id": job_id,
-                    "status": "done",
-                    "verdict": "no_violation",
-                    "violations": [],
+                    "status": "failed",
+                    "error": {
+                        "code": "insufficient_evidence",
+                        "message": "The visible evidence was insufficient for a reliable result.",
+                    },
                 }
 
 

@@ -1,203 +1,500 @@
-"""Cover the clip, refine candidates, verify evidence, map public rules."""
+"""Versioned frozen inference: source -> participants -> timeline -> official rules.
 
+The sole production route
+persists uncertainty and provisional findings without inventing a clean negative.
+"""
+
+import hashlib
+import html
+import json
 import time
 from pathlib import Path
-from uuid import UUID
+from uuid import uuid4
 
-from forte.contracts import DoneJob, Violation
-from forte.rules import description, load_rules
-from forte.video import decode_video, make_windows, sample_window
-
-
-def event_times(event, by_id):
-    times = [by_id[x].timestamp_sec for x in [event.start_id, event.decisive_id, event.end_id]]
-    # Bounds are a source-frame envelope for context/deduplication, not asserted action onset/end.
-    return min(times), by_id[event.decisive_id].timestamp_sec, max(times)
-
-
-def merge_candidates(events, by_id):
-    merged = []
-    for event in sorted(events, key=lambda x: by_id[x.decisive_id].timestamp_sec):
-        start, _, end = event_times(event, by_id)
-        duplicate = False
-        for prior in merged:
-            pstart, _, pend = event_times(prior, by_id)
-            linked = set(event.evidence_ids) & set(prior.evidence_ids)
-            if event.rule_id == prior.rule_id and linked and max(start, pstart) <= min(end, pend):
-                duplicate = True
-                break
-        if not duplicate:
-            merged.append(event)
-    return merged
+from forte.inference import LocalVLM
+from forte.timeline import (
+    EvidenceTools,
+    ScanBounds,
+    private_directory,
+    scan_recording,
+    sha256,
+    source_frame_table,
+    write_private,
+)
+from forte.video import decode_video
 
 
-def analyze_video(path: Path, work: Path, job_id: UUID, backend, deadline=None, stats=None):
-    deadline = deadline or time.monotonic() + 270
-    stats = stats if stats is not None else {}
-    started = time.monotonic()
-    registry = decode_video(path, work / "frames", deadline)
-    by_id = {f.frame_id: f for f in registry.frames}
-    rules = load_rules()
-    catalog = {r["id"]: r for r in rules}
-    candidates, confirmed = [], []
-    unclear = False
-    stats["calls"] = []
-    stats["verification_calls"] = []
+def source_code_fingerprints():
+    """Fingerprint shipped application sources.
 
-    def inspect(frames, pixels, tokens, phase):
+    These hashes identify code bytes in the installed package; they do not claim
+    that every module executed. Public weights, legal snapshots and
+    the effective run configuration retain their separate provenance records.
+    """
+    modules = {
+        "pipeline": "pipeline",
+        "timeline": "timeline",
+        "video": "video",
+        "inference": "inference",
+        "model_profile": "model_profile",
+        "frozen_tracking": "frozen_tracking",
+        "person_proposals": "person_proposals",
+        "tracking": "tracking",
+        "legal_reasoning": "legal_reasoning",
+        "legal": "legal",
+        "laya": "laya",
+        "laya_service": "laya_service",
+        "telemetry": "telemetry",
+        "annotations": "annotations",
+        "contracts": "contracts",
+        "contracts_v2": "contracts_v2",
+        "investigation_report": "investigation_report",
+        "jury_projection": "jury_projection",
+        "mechanic_review": "mechanic_review",
+        "settings": "settings",
+        "jobs": "jobs",
+        "worker": "worker",
+        "api": "api",
+        "manifest": "manifest",
+    }
+    package = Path(__file__).resolve().parent
+    return {name: sha256(package / f"{module}.py") for name, module in modules.items()}
+
+
+def load_reasoning_config(settings):
+    from forte.legal_reasoning import EvidenceItem, VersionApplicability
+
+    supplied = getattr(settings, "reasoning_config", None)
+    if supplied is None:
+        raise ValueError("An explicit frozen reasoning configuration is required")
+    config = (
+        dict(supplied) if isinstance(supplied, dict) else json.loads(Path(supplied).read_bytes())
+    )
+    if not isinstance(config, dict) or not {"tracking", "legal"} <= config.keys():
+        raise ValueError("Reasoning configuration requires tracking and legal sections")
+    unknown = set(config) - {
+        "tracking",
+        "legal",
+        "bounds",
+        "model",
+        "schema_version",
+        "status",
+    }
+    if unknown:
+        raise ValueError("Unknown frozen reasoning configuration sections")
+    if not isinstance(config["tracking"], dict) or not isinstance(config["legal"], dict):
+        raise ValueError("Invalid reasoning configuration sections")
+    law = dict(config["legal"])
+    config["legal"] = law
+    if set(law) - {
+        "release",
+        "cards",
+        "event_date",
+        "operation_context",
+        "applicability",
+        "metadata_evidence",
+    }:
+        raise ValueError("Unknown legal reasoning configuration fields")
+    for name in ("applicability", "metadata_evidence"):
+        if not isinstance(law.get(name, []), list):
+            raise ValueError("Legal " + name + " must be an explicit list")
+    law["applicability"] = [
+        VersionApplicability.model_validate(binding).model_dump(mode="json")
+        for binding in law.get("applicability", [])
+    ]
+    metadata = [EvidenceItem.model_validate(e) for e in law.get("metadata_evidence", [])]
+    if any(
+        e.kind != "metadata" or e.origin not in {"human", "authorized_metadata"} for e in metadata
+    ) or len({e.id for e in metadata}) != len(metadata):
+        raise ValueError("Operation metadata requires unique authorized evidence records")
+    law["metadata_evidence"] = [e.model_dump(mode="json") for e in metadata]
+    if config.get("schema_version", 1) != 1:
+        raise ValueError("Unsupported frozen reasoning configuration version")
+    model = config.get("model", {})
+    if not isinstance(model, dict):
+        raise ValueError("Invalid frozen model configuration")
+    # A training path is deliberately absent. Reject accidental adapter routing.
+    if model.get("adapter_path") or model.get("adapters"):
+        raise ValueError("Frozen reasoning does not permit trained adapters")
+    if model.get("quantization") is not None or model.get("precision", "bfloat16") != "bfloat16":
+        raise ValueError("Frozen reasoning requires unquantized BF16 weights")
+    if model.get("revision", settings.model_revision) != settings.model_revision:
+        raise ValueError("Frozen model revision differs from serving configuration")
+    if model.get("checkpoint", "Qwen/Qwen3-VL-8B-Instruct") != "Qwen/Qwen3-VL-8B-Instruct":
+        raise ValueError("Only the selected 8B visual model is supported")
+    if (
+        settings.model_revision != "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b"
+        or settings.max_context_tokens != 8192
+    ):
+        raise ValueError("Selected visual identity/context differs")
+    limits = config.get("bounds", {})
+    if set(limits) - {"max_calls", "max_tokens", "max_reinspections", "condition_max_questions"}:
+        raise ValueError("Unknown inference budget")
+    for name, default, maximum in (
+        ("max_calls", 32, 64),
+        ("max_tokens", 80000, 200000),
+        ("max_reinspections", 4, 12),
+        ("condition_max_questions", 96, 192),
+    ):
+        value = limits.get(name, default)
+        if isinstance(value, bool) or not isinstance(value, int) or not 0 < value <= maximum:
+            raise ValueError("Invalid bounded reasoning budget: " + name)
+        limits[name] = value
+    config["bounds"] = limits
+    return config
+
+
+def model_backend(settings):
+    # Startup verifies the only selected immutable visual checkpoint.
+    return LocalVLM(
+        settings.model_url,
+        settings.model_name,
+        expected_revision=settings.model_revision,
+        max_context_tokens=settings.max_context_tokens,
+        enable_thinking=False,
+        request_timeout=100,
+    )
+
+
+def export_event_evidence(registry, timeline, run, deadline, table, max_frames=48):
+    tools = EvidenceTools(registry, {}, run / "evidence", deadline, table)
+    by_id = {row["frame_id"]: row for row in table["frames"]}
+    chosen, per_event = [], {}
+    for event in timeline["events"]:
+        ids = sorted(set(event["evidence_frame_ids"]), key=lambda fid: by_id[fid]["timestamp_sec"])
+        picks = list(dict.fromkeys([ids[0], event["decisive_frame_id"], ids[-1]]))
+        per_event[event["event_id"]] = picks
+        chosen.extend(fid for fid in picks if fid not in chosen)
+    selected = chosen[:max_frames]
+    associations = []
+    for offset in range(0, len(selected), 16):
         if time.monotonic() >= deadline:
-            raise ValueError("processing_timeout")
-        t = time.monotonic()
-        answer = None
+            break
         try:
-            answer = backend.analyze(registry, frames, rules, pixels, tokens, phase)
-        finally:
-            stats["calls"].append(
+            images = tools.original_jpegs(selected[offset : offset + 16])
+        except TimeoutError:
+            break
+        for fid, raw in images.items():
+            filename = fid + ".jpg"
+            target = tools.output / filename
+            target.write_bytes(raw)
+            target.chmod(0o600)
+            row = by_id[fid]
+            associations.append(
                 {
-                    "frames": len(frames),
-                    "pixels": pixels,
-                    "phase": phase,
-                    "seconds": time.monotonic() - t,
-                    "usage": getattr(backend, "last_usage", {}),
-                    "finish_reason": getattr(backend, "last_finish_reason", None),
-                    "reviewable": answer.complete if answer else None,
-                    "candidate_count": len(answer.events) if answer else None,
+                    "frame_id": fid,
+                    "file": "evidence/" + filename,
+                    "source_sha256": registry.source_sha256,
+                    "jpeg_sha256": hashlib.sha256(raw).hexdigest(),
+                    "image_sha256": hashlib.sha256(raw).hexdigest(),
+                    "source_pts": row["source_pts"],
+                    "time_base": row["time_base"],
+                    "timestamp_sec": row["timestamp_sec"],
+                    "oriented_size": row["oriented_size"],
+                    "rotation_degrees": row["rotation_degrees"],
+                    "kind": "decoded_source_jpeg_no_overlay_no_resize",
                 }
             )
-        return answer
-
-    def verify(frames, event, rule):
-        if time.monotonic() >= deadline:
-            raise ValueError("processing_timeout")
-        t = time.monotonic()
-        check = backend.verify(registry, frames, event, rule)
-        if rule["id"] == "service_departure" and check.verdict != "unsupported":
-            actor_verdict = (
-                check.actor.departure_verdict(
-                    {f.frame_id: f.timestamp_sec for f in frames}, event.decisive_id
-                )
-                if check.actor
-                else "unclear"
-            )
-            if actor_verdict != "supported":
-                check = check.model_copy(update={"verdict": actor_verdict})
-        stats["verification_calls"].append(
+    exported = {item["frame_id"]: item for item in associations}
+    events = []
+    for event in timeline["events"]:
+        events.append(
             {
-                "frames": len(frames),
-                "seconds": time.monotonic() - t,
-                "verdict": check.verdict,
-                "required_conditions": len(rule["required"]),
-                "matched_conditions": len(set(rule["required"]) & set(check.preconditions)),
-                "unrecognized_conditions": len(set(check.preconditions) - set(rule["required"])),
-                "usage": getattr(backend, "last_usage", {}),
-                "actor_usage": getattr(backend, "last_actor_usage", {}),
-                "actor_role": check.actor.role if check.actor else None,
+                **event,
+                "evidence": [
+                    exported[fid] for fid in per_event[event["event_id"]] if fid in exported
+                ],
+                "evidence_export_complete": set(per_event[event["event_id"]]) <= exported.keys(),
+                "assessment": "insufficient_evidence",
+                "review_status": "unreviewed",
             }
         )
-        return check
+    write_private(run / "evidence-association.json", associations)
+    return events, len(exported) < len(chosen)
 
-    for start, end in make_windows(registry.duration, 16, 12):
-        frames = sample_window(registry, start, end, 1)
-        observation = inspect(frames, 196608, 512, "propose")
-        unclear |= not observation.complete
-        candidates.extend(observation.events)
-    for candidate in merge_candidates(candidates, by_id):
-        _, center, _ = event_times(candidate, by_id)
-        start, end = max(0, center - 4), min(registry.duration, center + 4)
-        frames = sample_window(registry, start, end, 2)
-        fine = inspect(frames, 393216, 768, "refine")
-        unclear |= not fine.complete
-        for event in fine.events:
-            a, _, b = event_times(event, by_id)
-            rule = catalog[event.rule_id]
-            check = verify(frames, event, rule)
-            initial_actor = check.actor
-            if check.verdict != "unsupported" or (
-                rule["id"] == "service_departure" and check.actor and check.actor.role == "customer"
-            ):
-                context = sample_window(
-                    registry, max(0, center - 8), min(registry.duration, center + 8), 1
-                )
-                mandatory = {
-                    event.decisive_id,
-                    *event.evidence_ids,
-                    candidate.start_id,
-                    candidate.end_id,
-                    *candidate.evidence_ids,
-                }
-                if check.actor:
-                    mandatory.update(id for id in check.actor.role_evidence_ids if id in by_id)
-                context = {f.frame_id: f for f in context}
-                context.update({id: by_id[id] for id in mandatory})
-                ordered = sorted(context.values(), key=lambda f: f.timestamp_sec)
-                if len(ordered) > 16:
-                    rest = [f for f in ordered if f.frame_id not in mandatory]
-                    budget = 16 - len(mandatory)
-                    keep = {
-                        rest[round(i * (len(rest) - 1) / max(1, budget - 1))].frame_id
-                        for i in range(budget)
-                    } | mandatory
-                    ordered = [f for f in ordered if f.frame_id in keep]
-                check = verify(ordered, event, rule)
-                if (
-                    initial_actor
-                    and check.actor
-                    and initial_actor.role != "unclear"
-                    and check.actor.role != "unclear"
-                    and initial_actor.role != check.actor.role
-                ):
-                    check = check.model_copy(update={"verdict": "unclear"})
-            if check.verdict == "unsupported":
-                continue
-            ids = set(check.evidence_ids)
-            if (
-                check.verdict != "supported"
-                or not ids
-                or event.decisive_id not in ids
-                or not ids <= {f.frame_id for f in registry.frames}
-                or not set(rule["required"]) <= set(check.preconditions)
-            ):
-                unclear = True
-                continue
-            if rule["id"] == "service_departure":
-                prior = max(
-                    (
-                        id
-                        for id in check.actor.role_evidence_ids
-                        if by_id[id].timestamp_sec < by_id[event.decisive_id].timestamp_sec
-                    ),
-                    key=lambda id: by_id[id].timestamp_sec,
-                )
-                extra = sorted(
-                    ids - {prior, event.decisive_id}, key=lambda id: by_id[id].timestamp_sec
-                )
-                ids = {prior, event.decisive_id, *extra[-1:]}
-            event = event.model_copy(
-                update={"evidence_ids": sorted(ids, key=lambda id: by_id[id].timestamp_sec)}
-            )
-            confirmed.append(event)
-    confirmed = merge_candidates(confirmed, by_id)
-    if unclear and not confirmed:
-        raise ValueError("insufficient_evidence")
-    selected = {id for e in confirmed for id in e.evidence_ids}
-    evidence = {e.timestamp_sec: e for e in registry.evidence(list(selected))} if selected else {}
-    violations = [
-        Violation(
-            type=catalog[e.rule_id]["title"],
-            timecode_sec=by_id[e.decisive_id].timestamp_sec,
-            description=description(e, catalog[e.rule_id], unclear),
-            evidence_frames=[evidence[by_id[id].timestamp_sec] for id in e.evidence_ids],
+
+def write_review_packet(run, result):
+    rows = []
+    for event in result["events"]:
+        evidence = "".join(
+            '<a href="'
+            + html.escape(frame["file"], quote=True)
+            + '"><img src="'
+            + html.escape(frame["file"], quote=True)
+            + '" width="240" alt="Source '
+            + html.escape(frame["frame_id"], quote=True)
+            + '"></a>'
+            for frame in event["evidence"]
         )
-        for e in confirmed
-    ]
-    stats.update(
-        duration_sec=registry.duration,
-        decoded_frames=len(registry.frames),
-        source_sha256=registry.source_sha256,
-        total_seconds=time.monotonic() - started,
-        candidates=len(candidates),
-        confirmed_events=len(violations),
+        rows.append(
+            "<article><h2>"
+            + html.escape(event["event_id"])
+            + "</h2><p>"
+            + html.escape(str(event["start_sec"]) + "–" + str(event["end_sec"]) + " s")
+            + " · "
+            + html.escape(", ".join(event["actor_ids"]) or "unresolved actor")
+            + "</p><p>"
+            + html.escape(event["value"])
+            + "</p>"
+            + evidence
+            + "<p>"
+            + html.escape("; ".join(event["uncertainty"]))
+            + "</p></article>"
+        )
+    body = (
+        "<!doctype html><html lang=en><meta charset=utf-8>"
+        '<meta name="referrer" content="no-referrer">'
+        '<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; '
+        'img-src &#39;self&#39; data:; style-src &#39;unsafe-inline&#39;">'
+        "<title>Local frozen inference review</title>"
+        "<style>body{font:16px system-ui;max-width:1100px;margin:2rem auto;padding:1rem}"
+        "article{border-top:1px solid #bbb;padding:1rem 0}img{margin:.3rem}</style>"
+        "<h1>Local frozen inference review</h1><p>Provisional model observations; "
+        "human visual, geometry, role and legal review are separate. Sampling does not "
+        "establish absence or exact action boundaries.</p><p>Execution: "
+        + html.escape(result["execution"]["status"])
+        + "; assessment: "
+        + html.escape(result["assessment"])
+        + "</p>"
+        + "".join(rows)
+        + '<p><a href="result.json">Complete source/condition record</a></p></html>'
     )
-    return DoneJob(
-        job_id=job_id, verdict="violation" if violations else "no_violation", violations=violations
-    )
+    target = run / "review.html"
+    target.write_text(body)
+    target.chmod(0o600)
+
+
+def analyze_reasoning(
+    source: Path,
+    work_dir: Path,
+    settings,
+    *,
+    deadline=None,
+    backend=None,
+    tracking=None,
+    legal=None,
+    decision_backend=None,
+):
+    """Execute real frozen inference; injectable components are for synthetic tests.
+
+    All artifacts live in a fresh revision directory. External source/annotation
+    producers are read-only. Existing correction sidecars are never regenerated.
+    """
+    from forte.frozen_tracking import analyze_participants, require_outbound_blocked
+    from forte.legal_reasoning import LegalEvidenceService
+
+    started = time.monotonic()
+    deadline = deadline if deadline is not None else started + getattr(settings, "job_timeout", 270)
+    config = load_reasoning_config(settings)
+    isolation = require_outbound_blocked()
+    backend = backend if backend is not None else model_backend(settings)
+    backend.deadline = deadline
+    if not backend.ready():
+        raise ValueError("Frozen model identity/readiness unavailable")
+    from forte.laya import LocalLaya
+
+    decision_backend = decision_backend or LocalLaya(settings.laya_url)
+    if not decision_backend.ready():
+        raise ValueError("Selected CPU Laya identity/readiness unavailable")
+    root = private_directory(work_dir)
+    run = root / ("reasoning-" + uuid4().hex)
+    run.mkdir(mode=0o700)
+    write_private(run / "configuration.json", config)
+    write_private(run / "execution.json", {"status": "processing", "weights_frozen": True})
+    from forte.telemetry import memory_snapshot
+
+    metrics = {"memory_start": memory_snapshot()}
+    try:
+        stage = time.monotonic()
+        registry = decode_video(source, run / "sampled-frames", deadline)
+        law = config["legal"]
+        # This is operator-supplied configuration, never model output. Bind it
+        # before tracking/inference so another recording's metadata cannot leak
+        # into a prompt, even when the legal call budget is already exhausted.
+        if any(
+            item["source_id"] != registry.source_sha256 for item in law.get("metadata_evidence", [])
+        ):
+            raise ValueError("Operation metadata belongs to another source recording")
+        table = source_frame_table(registry, deadline)
+        write_private(run / "source-frames.json", table)
+        metrics["decoding_seconds"] = time.monotonic() - stage
+        stage = time.monotonic()
+        participant_report = (tracking or analyze_participants)(
+            registry, run / "tracking", config["tracking"], deadline=deadline
+        )
+        if (
+            participant_report.get("source_sha256", registry.source_sha256)
+            != registry.source_sha256
+        ):
+            raise ValueError("Participant registry belongs to another source")
+        write_private(run / "participants.json", participant_report)
+        metrics["tracking_seconds"] = time.monotonic() - stage
+        limits = config["bounds"]
+        bounds = ScanBounds(
+            deadline=deadline,
+            max_calls=limits["max_calls"],
+            max_tokens=limits["max_tokens"],
+            max_reinspections=limits["max_reinspections"],
+        )
+        stage = time.monotonic()
+        # Keep legal checks and original JPEG export reachable within the job deadline.
+        timeline_deadline = min(
+            deadline, time.monotonic() + max(1, (deadline - time.monotonic()) * 0.8)
+        )
+        backend.deadline = timeline_deadline
+        timeline = scan_recording(
+            registry,
+            participant_report,
+            backend,
+            run / "scan",
+            timeline_deadline,
+            bounds=bounds,
+            table=table,
+        )
+        backend.deadline = deadline
+        metrics["timeline_seconds"] = time.monotonic() - stage
+        service = legal or LegalEvidenceService(
+            Path(law["release"]),
+            Path(law["cards"]) if law.get("cards") else None,
+            **({"applicability": law["applicability"]} if law["applicability"] else {}),
+        )
+        stage = time.monotonic()
+        legal_deadline = max(time.monotonic(), deadline - 10)
+        backend.deadline = legal_deadline
+        legal_report = service.evaluate_timeline(
+            timeline,
+            registry,
+            decision_backend,
+            run / "legal",
+            legal_deadline,
+            event_date=law.get("event_date"),
+            operation_context=law.get("operation_context"),
+            **({"metadata_evidence": law["metadata_evidence"]} if law["metadata_evidence"] else {}),
+            max_calls=limits["condition_max_questions"],
+            table=table,
+        )
+        backend.deadline = deadline
+        write_private(run / "legal-assessments.json", legal_report)
+        metrics["legal_seconds"] = time.monotonic() - stage
+        events, evidence_limited = export_event_evidence(registry, timeline, run, deadline, table)
+        for event in events:
+            linked = [
+                assessment
+                for assessment in legal_report.get("assessments", [])
+                if set(assessment.get("observation_ids", [])) & set(event["observation_ids"])
+            ]
+            event["legal_assessment_ids"] = [a["assessment_id"] for a in linked]
+            event["legal_assessments"] = linked
+            outcomes = {a["assessment"] for a in linked}
+            required = {
+                fid
+                for a in linked
+                if a["assessment"] == "supported_violation"
+                for fid in a.get("evidence_frame_ids", [])
+            }
+            exported = {frame["frame_id"] for frame in event["evidence"]}
+            if (
+                "supported_violation" in outcomes
+                and event["evidence_export_complete"]
+                and required
+                and len(required) <= 3
+                and required <= exported
+            ):
+                event["assessment"] = "supported_violation"
+            elif linked and outcomes == {"not_applicable"}:
+                event["assessment"] = "not_applicable"
+            elif linked and outcomes <= {"no_violation_observed", "not_applicable"}:
+                event["assessment"] = "no_violation_observed"
+        states = [
+            a.get("assessment", a.get("decision")) for a in legal_report.get("assessments", [])
+        ]
+        supported = any(e["assessment"] == "supported_violation" for e in events)
+        complete = (
+            timeline["status"] == "complete_schedule"
+            and not timeline["coverage"]["unexamined_intervals"]
+            and not timeline["coverage"].get("unclear_intervals")
+            and not timeline["coverage"].get("pending_reinspections", 0)
+            and not timeline.get("unresolved_questions")
+            and not timeline.get("role_conflicts")
+            and not evidence_limited
+            and legal_report.get("status") == "complete_scoped_schedule"
+        )
+        assessment = "supported_violation" if supported else "insufficient_evidence"
+        if complete and states and all(s == "not_applicable" for s in states):
+            assessment = "not_applicable"
+        elif (
+            complete
+            and states
+            and all(s in {"no_violation_observed", "not_applicable"} for s in states)
+        ):
+            assessment = "no_violation_observed"
+        metrics.update(
+            total_seconds=time.monotonic() - started,
+            memory_end=memory_snapshot(),
+            decoded_frames=len(registry.frames),
+            source_duration_sec=registry.duration,
+            scan=timeline["metrics"],
+            legal=legal_report.get("metrics", {}),
+        )
+        result = {
+            "schema_version": "forte.reasoning/1",
+            "source_sha256": registry.source_sha256,
+            "source": {
+                "duration_sec": registry.duration,
+                "frame_count": len(registry.frames),
+                "original_name": source.name,
+                "frame_table": "source-frames.json",
+            },
+            "execution": {
+                "status": "completed" if complete else "partial",
+                "weights_frozen": True,
+                "network_isolation": isolation,
+                "budget_exhausted": timeline["status"] == "budget_exhausted",
+            },
+            "assessment": assessment,
+            "review_status": "unreviewed",
+            "timeline": timeline,
+            "participants": participant_report,
+            "legal": legal_report,
+            "events": events,
+            "metrics": metrics,
+            "provenance": {
+                "model": getattr(backend, "loaded", None),
+                "model_name": getattr(backend, "model", None),
+                "decision_model": getattr(decision_backend, "identity", None),
+                "config_sha256": sha256(run / "configuration.json"),
+                "source_code": source_code_fingerprints(),
+                "source_code_scope": "shipped_application_sources",
+            },
+            "artifacts": {
+                "revision": run.name,
+                "result": "result.json",
+                "review": "review.html",
+                "source_frames": "source-frames.json",
+                "timeline": "scan/timeline.json",
+                "evidence": "evidence-association.json",
+            },
+            "limitations": [
+                "Model observations and rule interpretations require independent review.",
+                "Sparse samples do not establish continuous visibility or missing actions.",
+                "Source envelope timestamps are not exact action onset/offset.",
+                *legal_report.get("limitations", []),
+            ],
+        }
+        write_private(run / "result.json", result)
+        write_private(run / "execution.json", result["execution"])
+        write_review_packet(run, result)
+        # Stable job-level pointer is atomic; revision artifacts remain untouched.
+        write_private(root / "reasoning-result.json", result)
+        return result
+    except Exception as exc:
+        write_private(
+            run / "execution.json",
+            {
+                "status": "failed",
+                "error_type": type(exc).__name__,
+                "weights_frozen": True,
+                "seconds": time.monotonic() - started,
+            },
+        )
+        raise

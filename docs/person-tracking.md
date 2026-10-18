@@ -1,6 +1,14 @@
 # Private person tracking and visual review
 
-The steps 1–2 workflow is implemented. A CPU run processed all 31 allowlisted
+The production tracking path in [report.md](../report.md) retains YOLOX-s,
+ByteTrack and frozen OSNet correspondence before 8B visual facts and CPU Laya
+condition proposals. See [frozen-tracking.md](frozen-tracking.md) for that callable.
+This guide covers the separate proposal preparation and independent human review
+workflow. Its earlier ByteTrack-only runs are historical review inputs, not
+acceptance of the current inference pipeline. Automatic replay of reviewed
+corrections into later inference remains unimplemented.
+
+The proposal/review workflow is implemented. An earlier CPU run processed all 31 allowlisted
 development recordings offline and prepared local review packets. **No complete
 person/role/action pilot is approved, and no training targets are released.**
 The three original review cases are priority items. Human responses now supply
@@ -12,11 +20,13 @@ A local human must finish those bindings and review the tracks, areas and action
 
 The public jury API and production detector are unchanged. This workflow does
 not train anything, infer employment from a detector, or assign legal labels.
-Steps 3–4 in `role-action-training-research.md` remain a later proposal.
+The product uses frozen inference only; weight adaptation is outside scope.
 
 ## Reproduce proposals
 
-Run from this repository. Public setup and private inference are separate:
+Run from this repository only when the relevant setup/private execution is
+separately authorized. Public setup downloads detector weights; private proposal
+execution requires the OS network sandbox. These commands are reference steps:
 
 ```sh
 PRIVATE_ROOT=/Users/itsaibarr/.local/share/forte26/development-rehearsal
@@ -35,8 +45,9 @@ supplied labels, points and original filenames do not guide detection or labelin
 The prior template index is checked against each source and copied explicitly.
 
 Dependencies are isolated under `person-tracking-v1/_runtime/.venv`, using the
-`tracking` dependency group and `uv.lock`. Normal `uv sync --frozen` keeps the
-lightweight API environment. Public weights are downloaded first and SHA256
+`inference-tracking` extra and `uv.lock`. The base dependencies now include the
+mandatory Laya runtime; the tracking extra adds CPU detector/tracker software.
+Public weights are downloaded first and SHA256
 checked. The Mac wrapper enforces `sandbox-exec` network denial for Python and
 its children. A direct unsandboxed CLI invocation is not the private inference
 runbook. On Linux use an independently verified network-disabled container;
@@ -52,7 +63,9 @@ Code, artifact hashes, COCO person class 0, thresholds and license basis are in
 `.context/verify/person-tracking-upstream-20261017.json`. The selected tracker is
 the 2.6.1 wheel, pinned to its release commit and wheel/source hashes. The initial
 HEAD search was discovery, not the installed revision. No hosted inference SDK,
-appearance ReID, SAM, BoxMOT or semantic role model is used.
+SAM, BoxMOT or semantic role model is used in this proposal-preparation command.
+Its historical ByteTrack-only outputs contain no appearance ReID; the production
+pipeline separately retains frozen OSNet proposals as described above.
 
 Each recording is decoded completely with `forte.video`, including original PTS,
 time base, source ordinal, display rotation and normalized timestamp. Detection
@@ -270,18 +283,18 @@ JSON, a model, or this software checker. Reviewers are real humans; synthetic
 reviewer names occur only in synthetic tests. Record actual reviewed ranges and
 tracking errors privately before reporting tracking accuracy.
 
-## Training gate and verification
+## Review eligibility and verification
 
-Draft/rejected facts, unresolved identities, unreviewed boxes, proposed joins and
-unfrozen session splits are excluded from target export. The regression recording
-is always excluded. Role approval does not approve every box or join. Before any
-later training, a human must determine session continuity and freeze a split that
+Draft/rejected facts, unresolved identities, unreviewed boxes and proposed joins
+cannot become approved truth. The historical regression exclusion remains.
+Role approval does not approve every box or join. For development evaluation and
+calibration, a human must determine session continuity and freeze a split that
 keeps exact duplicates and continuous sessions together. No sessions are inferred
 from filenames, and the current split is deliberately unfrozen.
 
-`tracks-export-targets` refuses an empty/unreviewed release and emits source-bound
-facts, frame/geometry provenance and canonical artifact hashes only when all gates
-are met. Nothing from the present run is training-ready.
+Training and weight updates are outside the accepted architecture; training-target
+export is removed from the product. Review eligibility guards remain
+for compatibility with existing independent human review records.
 
 ```sh
 uv run pytest -q
@@ -342,10 +355,10 @@ The current aggregate receipt is
 
 These pilots check source binding and annotation errors. Recording-local IDs
 are annotation references, not employment classes or features to memorize.
-Generalization to other cameras remains untested. Before any later training,
+Generalization to other cameras remains untested. For development evaluation,
 review camera/view and session groups without using filenames as evidence, keep
 related recordings and reflected views together, and evaluate on unseen camera
-views when the available development data supports that split. Compare against
-the unchanged model and the position/area baseline required by the steps 3–4
-proposal. If camera diversity is unavailable, report that limit explicitly;
+views when the available development data supports that split. Evaluate the
+selected frozen pipeline against independent human judgments. If camera
+diversity is unavailable, report that limit explicitly;
 several windows from one recording do not supply independent evidence.

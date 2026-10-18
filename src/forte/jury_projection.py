@@ -33,14 +33,13 @@ from forte.contracts import DoneJob, EvidenceFrame, Violation
 from forte.contracts_v2 import ReasoningDoneJob
 from forte.legal_reasoning import (
     ConditionCandidate,
-    EvidenceItem,
     LegalEvidenceService,
-    bounded_observation_evidence,
+    condition_evidence,
     evaluate_candidate,
 )
-from forte.reasoning_pipeline import load_reasoning_config
+from forte.pipeline import load_reasoning_config
 from forte.timeline import Observation
-from forte.video import FrameRef, make_windows, nearest
+from forte.video import make_windows
 
 PROJECTION_VERSION = "forte.jury-v1-projection/1"
 _IDENTIFIER = re.compile(r"[A-Za-z0-9_-]{1,128}\Z")
@@ -223,7 +222,9 @@ def _observations(report, rows):
         _require(
             _IDENTIFIER.fullmatch(row["observation_id"]) and row["observation_id"] not in result
         )
-        value = Observation.model_validate({k: row[k] for k in Observation.model_fields})
+        value = Observation.model_validate(
+            {k: row[k] for k in Observation.model_fields if k in row}
+        )
         refs = {
             value.start_frame_id,
             value.end_frame_id,
@@ -282,63 +283,16 @@ def _exports(files, revision, report, rows):
     return exported
 
 
-def _supplied_evidence(service, card, observations, rows, duration, law, digest):
-    relevant = []
-    for observation in observations.values():
-        hits = service.retrieve_applicable_rules(
-            observation["value"], law.get("operation_context"), law.get("event_date"), limit=5
-        )
-        if {h["provision_id"] for h in hits} & set(card["clause_ids"]):
-            relevant.append(observation)
-    relevant = relevant or list(observations.values())
-    supplied, wanted = bounded_observation_evidence(relevant)
-    frames = [
-        FrameRef(fid, row["ordinal"], row["source_pts"], row["timestamp_sec"])
-        for fid, row in rows.items()
-    ]
-    for observation in supplied:
-        wanted.extend(
-            nearest(frames, max(0, observation["decisive_sec"] + delta)).frame_id
-            for delta in (-1, -0.5, 0.5, 1)
-        )
-    wanted.extend(nearest(frames, duration * i / 7).frame_id for i in range(8))
-    frame_ids = sorted(list(dict.fromkeys(wanted))[:8], key=lambda fid: rows[fid]["timestamp_sec"])
-    participants = sorted({p for o in supplied for p in o["actor_ids"] + o["recipient_ids"]})
-    owners = {fid: set() for fid in frame_ids}
-    for observation in supplied:
-        for fid in observation["evidence_frame_ids"]:
-            owners[fid].update(observation["actor_ids"] + observation["recipient_ids"])
-    evidence = [
-        EvidenceItem(
-            id=fid,
-            kind="frame",
-            source_id=digest,
-            participant_ids=sorted(owners[fid]),
-            frame_ids=[fid],
-            origin="source",
-            visibility="unknown",
-        )
-        for fid in frame_ids
-    ]
-    evidence.extend(
-        EvidenceItem(
-            id=o["observation_id"],
-            kind="observation",
-            source_id=digest,
-            participant_ids=list(dict.fromkeys(o["actor_ids"] + o["recipient_ids"])),
-            actor_ids=o["actor_ids"],
-            frame_ids=o["evidence_frame_ids"],
-            origin="model",
-            visibility="partial" if o["visibility"] == "partly_occluded" else "unknown",
-        )
-        for o in supplied
+def _supplied_evidence(observations, rows, law, digest, actors):
+    packet, evidence, _, frames = condition_evidence(
+        list(observations.values()), law.get("metadata_evidence", []), digest, actors
     )
-    for item in law.get("metadata_evidence", []):
-        metadata = EvidenceItem.model_validate(item)
-        _require(metadata.source_id == digest)
-        if set(metadata.participant_ids) <= set(participants):
-            evidence.append(metadata)
-    return evidence, frame_ids, participants, len(relevant) - len(supplied)
+    return (
+        evidence,
+        sorted(frames, key=lambda fid: rows[fid]["timestamp_sec"]),
+        actors,
+        len(observations) - len(packet),
+    )
 
 
 def _replay(files, revision, report, config, observations, rows):
@@ -363,10 +317,10 @@ def _replay(files, revision, report, config, observations, rows):
             _IDENTIFIER.fullmatch(identifier)
             and identifier not in seen
             and rule in inventory
-            and rule not in seen_rules
+            and (rule, tuple(record["participant_ids"])) not in seen_rules
         )
         seen.add(identifier)
-        seen_rules.add(rule)
+        seen_rules.add((rule, tuple(record["participant_ids"])))
         plan = service.prepare_card(
             rule, event_date=law.get("event_date"), operation_context=law.get("operation_context")
         )
@@ -382,28 +336,33 @@ def _replay(files, revision, report, config, observations, rows):
         matching = [
             (i, r)
             for i, r in enumerate(receipts)
-            if r.get("plan_id") == plan.plan_id and r["rule_id"] == rule and not r.get("error")
+            if r.get("plan_id") == plan.plan_id
+            and r["rule_id"] == rule
+            and r["participant_ids"] == record["participant_ids"]
+            and not r.get("error")
         ]
         _require(len(matching) == 1)
         index, receipt = matching[0]
         evidence, frame_ids, participants, omitted = _supplied_evidence(
-            service,
-            inventory[rule],
-            observations,
-            rows,
-            report["source"]["duration_sec"],
-            law,
-            report["source_sha256"],
+            observations, rows, law, report["source_sha256"], record["participant_ids"]
         )
         _require(
-            receipt["inference_attempted"] is True
-            and receipt["source_frame_ids"] == frame_ids
+            receipt["source_frame_ids"] == frame_ids
             and receipt["participant_ids"] == participants
             and receipt["observations_not_supplied"] == omitted
         )
         candidate, _ = files.json(f"{revision}/legal/condition-reply-{index:03d}.json")
         candidate = ConditionCandidate.model_validate(candidate)
-        evaluated = evaluate_candidate(plan, candidate, evidence, participants)
+        _require(
+            receipt["inference_attempted"] is True
+            or all(c.result == "unknown" for c in candidate.conditions)
+        )
+        evaluated = evaluate_candidate(
+            plan,
+            candidate,
+            evidence,
+            [p["participant_id"] for p in report["timeline"]["participants"]],
+        )
         for key in (
             "assessment",
             "candidate_assessment",
@@ -490,11 +449,15 @@ def _negative(report, inventory, assessments, participants):
     ):
         return False
     windows = coverage.get("windows", [])
-    if not {"overview", "window", "reconcile"} <= {w["phase"] for w in windows} or any(
-        w.get("error")
-        or w.get("capacity_limited") is not False
-        or w.get("visibility") != "visible_samples"
-        for w in windows
+    if (
+        not windows
+        or any(w["phase"] not in {"window", "reinspect"} for w in windows)
+        or any(
+            w.get("error")
+            or w.get("capacity_limited") is not False
+            or w.get("visibility") != "visible_samples"
+            for w in windows
+        )
     ):
         return False
     expected = make_windows(report["source"]["duration_sec"], 16, 12)
@@ -519,11 +482,9 @@ def _negative(report, inventory, assessments, participants):
         return False
     for check in checks:
         record, plan, evaluated = by_rule[check["rule_id"]]
-        if (
-            check.get("status") != "evaluated"
-            or check.get("assessment_id") != record["assessment_id"]
-            or check.get("assessment") != evaluated.assessment
-        ):
+        if check.get("status") != "evaluated" or check.get("assessment_ids") != [
+            record["assessment_id"]
+        ]:
             return False
         if (
             plan.interpretation_status != "approved"
@@ -585,6 +546,7 @@ def _positive(record, plan, evaluated, citations, observations, exported, partia
     required = {fid for o in bound for fid in o["evidence_frame_ids"]}
     if (
         not required
+        or len(required) > 3
         or not required <= exported.keys()
         or not set(record["evidence_frame_ids"]) <= required
     ):

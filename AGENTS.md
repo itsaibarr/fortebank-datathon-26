@@ -1,34 +1,35 @@
 # Agent instructions
 
-Read `CLAUDE.md` for the existing Harness workflow, project state and commands, then `SPEC.md` and `tasks/todo.md`. Use the approved architecture and keep task completion honest.
+Read `report.md` (the sole architecture reference), `CLAUDE.md`, `SPEC.md` and
+`tasks/todo.md`. Latest user decisions override superseded historical receipts.
 
-Private competition data never goes to Git or external AI inference, including frames and scene descriptions. Jury data never enters training or model selection. No GPU rental or paid work without explicit authorization or a user-provided instance and budget.
+One path: source PTS decoding → person tracking/frozen ReID → frozen
+Qwen/Qwen3-VL-8B-Instruct visual facts → local CPU Laya multilingual condition
+proposals → deterministic applicability, evidence, verdicts and templates.
+The same 8B handles specific bounded visual rechecks. No alternative production
+pipeline, larger-model fallback, second legal LLM or weight updates.
 
-Frontend is Next.js with TypeScript. Build it after backend mechanics work, and first ask the user about exact UI libraries. Do not install a design system during setup.
+Preserve the exact `contracts/api-contract.json`; v1 and rich UI/v2 routes adapt
+the same pipeline. Insufficient evidence cannot become a successful v1 negative.
+Keep authentication, principal ownership, cookies/CSRF, atomic jobs and deadlines.
+The approved UI is Next.js/TypeScript, Tailwind, shadcn and Lucide. No library gate
+needs reopening. Do not replace the UI.
 
-Use Octarin when relevant for durable decisions; anchor new decisions to `fortebank-datathon-26` and affected files. Do not import unrelated project memories merely because they also mention Next.js or banking.
+Private recordings, labels, descriptions, frames, results, corrections and
+credentials stay outside Git and external AI inference. No private media through
+remote browser/image/screenshot tools. Only the development neutral/hash allowlist
+may be opened; reserved/jury inputs never enter selection. Private inference needs
+explicit authorization and OS-enforced denied egress. Local cleanup does not
+permit weights downloads, training, paid resources, live service changes,
+deployment, submission or publication. Do not control another session/resources.
 
-## Visual annotation and tracking
+Use `docs/person-tracking.md` for private proposals and human review. Detector,
+tracker, ReID, model and human origins remain separate. Preserve source PTS,
+rotation/crop transforms, immutable corrections/revisions and prior cited frames.
+Reflection views do not create physical people; unknown ownership stays null.
+Role approval does not approve identity, geometry, joins or full action intervals.
+Unresolved identities, drafts and diagnostic recordings cannot become truth.
 
-Use `docs/person-tracking.md` for steps 1–2. Private proposal/review artifacts stay
-under a new versioned directory outside Git. Only the development neutral/hash
-allowlist may be opened; no reserved or jury media. Run private inference with
-outbound networking blocked. Never inspect private frames through remote image,
-screenshot or browser tools; open the local packet for the human reviewer.
-
-A detector box, tracker ID, interpolated box, CVAT attribute and human role fact
-are separate origins and review scopes. No model or JSON schema approves itself.
-Preserve source PTS, human corrections, immutable review revisions and proposed
-joins. Unreviewed geometry, unresolved identity, drafts, unfrozen session splits
-and the diagnostic regression recording cannot become training truth. Keep
-visual facts separate from legal claims and preserve the public API/detector.
-
-Human-reviewed mirror views may share a canonical recording-local person ID.
-Store them as view relationships, not temporal joins or additional physical
-people. Segment/role mapping approval does not establish complete role intervals,
-approve geometry or release training targets. Preserve prior cited frames when
-regenerating a review revision.
-
-A human can confirm a reflection without identifying its owner or role. Preserve
-that as a view observation; unknown ownership stays null and does not become a
-role abstention target. Repeated role words across segments do not approve a join.
+Use only relevant project-scoped Octarin memory, anchored to
+`fortebank-datathon-26` and affected files. Architecture approval, synthetic tests,
+real-model execution, semantic quality and deployment are separate facts.

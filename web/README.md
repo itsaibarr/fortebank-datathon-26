@@ -1,9 +1,9 @@
 # Local video review workspace
 
 Next.js App Router, TypeScript and Tailwind use the user-selected shadcn preset
-`b3d6mT4h6m`: Nova, zinc, sky, Manrope/Geist and Lucide. The previous setup-only
-note is preserved in `README.setup-history.md`; the explicit library approval
-supersedes its unselected-library state.
+`b3d6mT4h6m`: Nova, zinc, sky, Manrope/Geist and Lucide. The sole backend
+architecture is described in [report.md](../report.md): frozen 8B visual
+facts, mandatory CPU Laya condition proposals and deterministic output adapters.
 
 Run from this directory:
 
@@ -46,6 +46,8 @@ video, inspect original frames and participant proposal overlays, check exact
 local provisions and condition findings, or append a scoped correction. The
 condition tab also exposes every recording-wide legal finding and skipped rule.
 The correction history preserves prior revisions and independent review scopes.
+Saving a correction does not establish its use by later inference; automatic
+reviewed-correction replay remains an open [task](../tasks/todo.md).
 
 Browser verification uses only generated synthetic media and explicitly mocked
 API replies in the test browser. Those fixtures are outside the build and are

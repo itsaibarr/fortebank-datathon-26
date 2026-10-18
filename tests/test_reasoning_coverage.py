@@ -1,9 +1,10 @@
 """Completed sampling cannot conceal unresolved visibility or refinement work."""
 
 import pytest
+from synthetic_decisions import UnknownDecisions
 from test_video import make_mov
 
-from forte import frozen_tracking, reasoning_pipeline
+from forte import frozen_tracking, pipeline
 from forte.settings import Settings
 
 
@@ -47,13 +48,14 @@ def test_unresolved_coverage_cannot_be_exported_as_completed_clearance(
                 "metrics": {},
             }
 
-    monkeypatch.setattr(reasoning_pipeline, "scan_recording", scan)
-    result = reasoning_pipeline.analyze_reasoning(
+    monkeypatch.setattr(pipeline, "scan_recording", scan)
+    result = pipeline.analyze_reasoning(
         make_mov(tmp_path / "synthetic.mov"),
         tmp_path / "run",
         Settings(
             "synthetic-key-long-enough", tmp_path, reasoning_config={"tracking": {}, "legal": {}}
         ),
+        decision_backend=UnknownDecisions(),
         backend=Backend(),
         legal=Law(),
         tracking=lambda *args, **kwargs: {"participants": [], "frame_boxes": {}},

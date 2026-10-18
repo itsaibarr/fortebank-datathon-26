@@ -14,7 +14,6 @@ from test_jury_projection import _fixture
 from test_video import make_mov
 
 from forte.api import create_app
-from forte.contracts import DoneJob
 from forte.contracts_v2 import ReasoningDoneJob
 from forte.settings import Settings
 
@@ -48,13 +47,8 @@ def test_opt_in_executes_reasoning_once_and_keeps_v1_owner_and_version(tmp_path,
     cfg = tmp_path / "configuration.json"
     cfg.write_text(json.dumps(configuration()))
     settings = Settings(KEY, tmp_path / "jobs", reasoning_config=cfg, trusted_gateway_token=TOKEN)
-    settings.v1_pipeline = "reasoning"
     calls = []
     projected = []
-
-    async def legacy(*args):
-        calls.append("legacy")
-        return DoneJob(job_id=args[1], verdict="no_violation", violations=[])
 
     async def reasoning(directory, job_id, deadline):
         calls.append("reasoning")
@@ -75,9 +69,7 @@ def test_opt_in_executes_reasoning_once_and_keeps_v1_owner_and_version(tmp_path,
     module.project_reasoning_to_v1 = project
     monkeypatch.setitem(sys.modules, module.__name__, module)
     source = make_mov(tmp_path / "synthetic.mov").read_bytes()
-    with TestClient(
-        create_app(settings, runner=legacy, reasoning_runner=reasoning, ready=lambda: True)
-    ) as client:
+    with TestClient(create_app(settings, runner=reasoning, ready=lambda: True)) as client:
         accepted = client.post(
             "/api/v1/analyze", headers=auth(), files={"file": ("synthetic.mov", source)}
         )
@@ -85,7 +77,7 @@ def test_opt_in_executes_reasoning_once_and_keeps_v1_owner_and_version(tmp_path,
         location = accepted.headers["Location"]
         result = poll(client, location, auth())
         assert calls == ["reasoning"]
-        assert projected == [hashlib.sha256(source).hexdigest()]
+        assert projected == []  # already-insufficient results abstain before artifact replay
         assert result["status"] == "failed"
         assert result["error"]["code"] == "insufficient_evidence"
         assert "api_version" not in result and "result" not in result and "verdict" not in result
@@ -111,7 +103,6 @@ def test_invalid_opt_in_configuration_rejects_before_reading_upload(tmp_path):
         tmp_path / "jobs",
         reasoning_config={"tracking": {}, "legal": {}, "training": {"enabled": True}},
     )
-    settings.v1_pipeline = "reasoning"
     consumed = []
 
     def body():
@@ -128,18 +119,11 @@ def test_invalid_opt_in_configuration_rejects_before_reading_upload(tmp_path):
     assert not list(settings.private_root.glob("*/input.mov"))
 
 
-def test_v1_mode_is_explicit_and_requires_reasoning_configuration(tmp_path, monkeypatch):
+def test_v1_has_no_alternate_pipeline_selector(tmp_path, monkeypatch):
     monkeypatch.setenv("FORTE_API_KEY", KEY)
     monkeypatch.setenv("FORTE_PRIVATE_ROOT", str(tmp_path / "jobs"))
-    monkeypatch.setenv("FORTE_V1_PIPELINE", "reasoning")
-    monkeypatch.delenv("FORTE_REASONING_CONFIG", raising=False)
-    with pytest.raises(ValueError, match="reasoning configuration"):
-        Settings.from_env()
-    monkeypatch.setenv("FORTE_REASONING_CONFIG", str(tmp_path / "config.json"))
-    assert Settings.from_env().v1_pipeline == "reasoning"
-    monkeypatch.setenv("FORTE_V1_PIPELINE", "automatic")
-    with pytest.raises(ValueError, match="v1 pipeline"):
-        Settings.from_env()
+    monkeypatch.setenv("FORTE_V1_PIPELINE", "legacy")
+    assert not hasattr(Settings.from_env(), "v1_pipeline")
 
 
 @pytest.mark.parametrize("draft", [False, True])
@@ -150,7 +134,6 @@ def test_real_projection_through_admission_and_persistence(tmp_path, draft):
         tmp_path / "api-jobs",
         reasoning_config=fixture.settings.reasoning_config,
         trusted_gateway_token=TOKEN,
-        v1_pipeline="reasoning",
     )
     calls = []
 
@@ -165,7 +148,7 @@ def test_real_projection_through_admission_and_persistence(tmp_path, draft):
         shutil.copytree(fixture.revision, directory / fixture.revision.name)
         return ReasoningDoneJob(job_id=job_id, result=fixture.report)
 
-    with TestClient(create_app(settings, reasoning_runner=reasoning, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=reasoning, ready=lambda: True)) as client:
         accepted = client.post(
             "/api/v1/analyze",
             headers=auth(),

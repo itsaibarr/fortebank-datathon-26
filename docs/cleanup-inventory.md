@@ -1,0 +1,144 @@
+# Local consolidation inventory
+
+Recorded before removal on 18 October 2026. Recovery location is outside this checkout; original tracked bytes remain in Git and dirty bytes in the local recovery directory. No private caches/media or live resources are removed.
+
+Keep: video/source transforms; detector/tracker/ReID proposals; annotation/review/corrections; official laws and lexical retrieval; exact API contracts, ownership/session gateway, Next.js UI, atomic job/deadline mechanics, original-JPEG export.
+
+Consolidate: reasoning_pipeline.py → pipeline.py; CPU Laya replaces the legal VLM request; v1 projection and v2 use that one pipeline; one Docker entrypoint plus the existing offline bridge/session gateway replaces installer frameworks. inference.py becomes only the visual transport. model_profile.py verifies only the selected 8B.
+
+Delete after updating consumers (tests containing independent invariants are migrated):
+
+- `APPROACH_REGISTRY.md`
+- `EVALUATION_PROTOCOL.md`
+- `EXECUTION_STATE.json`
+- `HARNESS_EXECUTION_PLAN.md`
+- `SESSION_RECONSTRUCTION.md`
+- `VM_ENVIRONMENT_AUDIT.md`
+- `configs/baseline.json`
+- `contracts/frozen-assets-v1.json`
+- `contracts/frozen-effective-config-v1.json`
+- `contracts/frozen-model-hashes-v1.json`
+- `contracts/frozen-runtime-manifest-v1.json`
+- `deploy/portable/README.md`
+- `deploy/portable/acceptance_receipt.py`
+- `deploy/portable/build_core.py`
+- `deploy/portable/core-111234c.candidate.json`
+- `deploy/portable/core-current.candidate.json`
+- `deploy/portable/host_daemon.py`
+- `deploy/portable/import_handoff.py`
+- `deploy/portable/jury_gateway.py`
+- `deploy/portable/qualification.py`
+- `deploy/portable/runtime.py`
+- `docs/browser-session-handoff.md`
+- `docs/core-completion.md`
+- `docs/deployment/README.md`
+- `docs/deployment/administrator.md`
+- `docs/deployment/api-client.md`
+- `docs/deployment/current-artifact-verification.json`
+- `docs/deployment/current-source-handoff.md`
+- `docs/deployment/current-source-verification.json`
+- `docs/deployment/delivery-20261018/artifact-ae9f819-verification.json`
+- `docs/deployment/delivery-20261018/artifact-verification.json`
+- `docs/deployment/delivery-20261018/handoff.md`
+- `docs/deployment/delivery-20261018/host-inventory.json`
+- `docs/deployment/delivery-20261018/patches/base.json`
+- `docs/deployment/delivery-20261018/patches/mechanic-dispatch-fixture.patch`
+- `docs/deployment/delivery-20261018/provider-readonly.json`
+- `docs/deployment/delivery-20261018/runtime-components.json`
+- `docs/deployment/delivery-20261018/runtime-status.json`
+- `docs/deployment/delivery-20261018/runtime-target.json`
+- `docs/deployment/delivery-20261018/staged-source-check.json`
+- `docs/deployment/delivery-20261018/verification.json`
+- `docs/deployment/e2e-budget-preflight-20261018.json`
+- `docs/deployment/e2e-preflight-refresh-20261018.json`
+- `docs/deployment/execution-20261018.md`
+- `docs/deployment/guided-install.md`
+- `docs/deployment/handoff.md`
+- `docs/deployment/integration-manifest.example.json`
+- `docs/deployment/integration-review-20261018.json`
+- `docs/deployment/integration-review-20261018.md`
+- `docs/deployment/jury-access-contract.json`
+- `docs/deployment/observed-contract.md`
+- `docs/deployment/operations.md`
+- `docs/deployment/patches/README.md`
+- `docs/deployment/patches/base-files.json`
+- `docs/deployment/patches/trusted-principal.patch`
+- `docs/deployment/patches/verification.json`
+- `docs/deployment/release-ebb3d82-verification.json`
+- `docs/deployment/resource-preparation.md`
+- `docs/deployment/reviewer.md`
+- `docs/deployment/unchanged-core-attach.md`
+- `docs/deployment/verification.json`
+- `docs/deployment/vm1108722-access-plan.md`
+- `docs/deployment/vm1108722-transport-verification.json`
+- `docs/development-rehearsal.md`
+- `docs/domain-research.md`
+- `docs/frozen-inference.md`
+- `docs/frozen-integration-20261018.md`
+- `docs/gpu-runbook.md`
+- `docs/handoffs/01-visual-labeling-and-person-tracking.md`
+- `docs/handoffs/02-visual-learning-and-complete-clip-scan.md`
+- `docs/mechanic-validation-20261018.md`
+- `docs/model-size-diagnostic.md`
+- `docs/role-action-training-research.md`
+- `docs/setup-sources.md`
+- `orchestrator_state/README.md`
+- `orchestrator_state/USER_STOP_8B_RECORDS.md`
+- `reports/approach_01/REPORT.md`
+- `reports/approach_01/metrics.json`
+- `reports/approach_03/FAILURE_ANALYSIS.md`
+- `reports/approach_03/REPORT.md`
+- `reports/approach_03/metrics.json`
+- `reports/approach_04/REPORT.md`
+- `reports/approach_04/metrics.json`
+- `scripts/gpu_smoke.py`
+- `scripts/gpu_smoke.sh`
+- `scripts/prepare_legal_index.py`
+- `scripts/rehearse_reasoning_api.py`
+- `scripts/role_benchmark.py`
+- `src/forte/data/resolution231-source.txt`
+- `src/forte/data/rules.json`
+- `src/forte/mechanic_validation.py`
+- `src/forte/reasoning_pipeline.py`
+- `src/forte/role_benchmark.py`
+- `src/forte/rules.py`
+- `tasks/architecture-cleanup-prompt.md`
+- `tasks/plan.md`
+- `tests/deployment/test_acceptance_receipt.py`
+- `tests/deployment/test_client.py`
+- `tests/deployment/test_core_client.py`
+- `tests/deployment/test_hardware.py`
+- `tests/deployment/test_install_flow.py`
+- `tests/deployment/test_installer.py`
+- `tests/deployment/test_jury_gateway.py`
+- `tests/deployment/test_preparation.py`
+- `tests/deployment/test_profile_sessions.py`
+- `tests/deployment/test_public_bundle.py`
+- `tests/deployment/test_qualification.py`
+- `tests/deployment/test_resources.py`
+- `tests/deployment/test_runtime.py`
+- `tests/deployment/test_runtime_ownership.py`
+- `tests/deployment/test_source_image.py`
+- `tests/test_mechanic_validation.py`
+- `tests/test_pipeline.py`
+- `tests/test_reasoning_rehearsal.py`
+- `tests/test_retrieval.py`
+- `tests/test_role_benchmark.py`
+- `tools/forte-admin/build.py`
+- `tools/forte-admin/forte-admin`
+- `tools/forte-admin/forte_admin/__init__.py`
+- `tools/forte-admin/forte_admin/__main__.py`
+- `tools/forte-admin/forte_admin/cli.py`
+- `tools/forte-admin/forte_admin/client.py`
+- `tools/forte-admin/forte_admin/config.py`
+- `tools/forte-admin/forte_admin/diagnostics.py`
+- `tools/forte-admin/forte_admin/hardware.py`
+- `tools/forte-admin/forte_admin/install.py`
+- `tools/forte-admin/forte_admin/preparation.py`
+- `tools/forte-admin/forte_admin/public_bundle.py`
+- `tools/forte-admin/forte_admin/resources.py`
+- `tools/forte-admin/forte_admin/source_image.py`
+
+- `web/README.setup-history.md` (superseded setup instructions)
+- `legal/retrieval-cases.json` (unused comparison query fixture; official corpus/cards retained)
+- `src/forte/retrieval.py` (remaining corpus digest consolidated into legal.py)

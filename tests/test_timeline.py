@@ -129,11 +129,9 @@ def test_loopback_adapter_receives_real_images_for_every_hierarchical_phase(tmp_
     assert report["coverage"]["unexamined_intervals"] == []
     assert report["coverage"]["continuous_visibility_validated"] is False
     assert [c["phase"] for c in report["metrics"]["receipts"]] == [
-        "overview",
         "window",
-        "reconcile",
     ]
-    assert image_counts and routes.count("/v1/chat/completions") == 3
+    assert image_counts and routes.count("/v1/chat/completions") == 1
     assert json.loads((tmp_path / "scan/view-transforms.json").read_text())
 
 
@@ -192,7 +190,9 @@ def test_actor_membership_is_independent_of_known_participant_id(tmp_path):
 
 
 def test_budget_exhaustion_preserves_partial_observations_and_unexamined_ranges(tmp_path):
-    registry = decode_video(make_mov(tmp_path / "synthetic.mov"), tmp_path / "cache")
+    registry = decode_video(
+        make_mov(tmp_path / "synthetic.mov", pts=[0, 100, 200, 300, 400]), tmp_path / "cache"
+    )
 
     class Synthetic:
         last_usage = {"total_tokens": 100}
@@ -205,7 +205,7 @@ def test_budget_exhaustion_preserves_partial_observations_and_unexamined_ranges(
         registry, {}, Synthetic(), tmp_path / "scan", deadline, ScanBounds(deadline, max_calls=1)
     )
     assert report["status"] == "budget_exhausted"
-    assert report["coverage"]["unexamined_intervals"] == [[0, registry.duration]]
+    assert report["coverage"]["unexamined_intervals"] == [[16, registry.duration]]
     assert (tmp_path / "scan/reply-001.json").is_file()
 
 
@@ -298,7 +298,9 @@ def test_output_capacity_is_explicit_and_cannot_become_complete_coverage(tmp_pat
 
 @pytest.mark.parametrize("later_failure", [False, True])
 def test_valid_observations_survive_budget_crossing_or_later_invalid_pass(tmp_path, later_failure):
-    registry = decode_video(make_mov(tmp_path / "synthetic.mov"), tmp_path / "cache")
+    registry = decode_video(
+        make_mov(tmp_path / "synthetic.mov", pts=[0, 100, 200, 300, 400]), tmp_path / "cache"
+    )
 
     class Backend:
         calls = 0
@@ -317,5 +319,46 @@ def test_valid_observations_survive_budget_crossing_or_later_invalid_pass(tmp_pa
     assert report["status"] == ("failed_pass" if later_failure else "budget_exhausted")
     assert len(report["observations"]) == 1
     assert report["observations"][0]["source_sha256"] == registry.source_sha256
-    assert report["coverage"]["unexamined_intervals"] == [[0, registry.duration]]
+    assert report["coverage"]["unexamined_intervals"] == [[16, registry.duration]]
     assert json.loads((tmp_path / "scan/observations.json").read_text()) == report["observations"]
+
+
+def test_specific_rechecks_are_interval_deduplicated_and_globally_bounded(tmp_path):
+    registry = decode_video(
+        make_mov(tmp_path / "synthetic.mov", pts=range(0, 181, 10)), tmp_path / "cache"
+    )
+    contexts = []
+
+    class Backend:
+        last_usage = {"total_tokens": 100}
+
+        def request(self, tools, refs, instruction, schema, pixels, tokens):
+            context = json.loads(instruction.split("JSON schema. Context: ", 1)[1])
+            contexts.append(context)
+            assert len(refs) <= 16 and tokens == 768
+            answer = empty_answer()
+            if context["window_sec"][0] < 1:
+                ids = [row["frame_id"] for row in context["source_frames"]]
+                answer["reinspection_requests"] = [
+                    {
+                        "start_frame_id": ids[0],
+                        "end_frame_id": ids[min(3, len(ids) - 1)],
+                        "actor_ids": [],
+                        "question": "Resolve the same visible dependency.",
+                    }
+                ]
+            return answer
+
+    deadline = time.monotonic() + 20
+    result = scan_recording(
+        registry,
+        {},
+        Backend(),
+        tmp_path / "scan",
+        deadline,
+        ScanBounds(deadline, max_reinspections=2),
+    )
+    assert [context["phase"] for context in contexts] == ["window", "window", "reinspect"]
+    assert result["metrics"]["reinspections"] == 1
+    assert contexts[-1]["window_sec"][1] - contexts[-1]["window_sec"][0] <= 8
+    assert result["unresolved_questions"]

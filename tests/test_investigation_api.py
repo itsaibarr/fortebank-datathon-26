@@ -6,7 +6,7 @@ import json
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
-from test_api_v2 import KEY, correction, negative, uncertain
+from test_api_v2 import KEY, correction, uncertain
 from test_gateway_ownership import TOKEN, headers, submit
 from test_video import make_mov
 
@@ -39,7 +39,7 @@ async def partial(directory, job_id, deadline):
 def test_report_preserves_result_history_and_attachment_without_new_inference(tmp_path):
     settings = Settings(KEY, tmp_path / "jobs", trusted_gateway_token=TOKEN)
     source = make_mov(tmp_path / "synthetic.mov").read_bytes()
-    application = create_app(settings, reasoning_runner=partial, ready=lambda: True)
+    application = create_app(settings, runner=partial, ready=lambda: True)
     with TestClient(application) as client:
         job = submit(client, source)
         prefix = "/api/v2/jobs/" + job["job_id"]
@@ -69,9 +69,7 @@ def test_report_preserves_result_history_and_attachment_without_new_inference(tm
 def test_report_checks_owner_and_auth_before_private_history_access(tmp_path):
     settings = Settings(KEY, tmp_path / "jobs", trusted_gateway_token=TOKEN)
     source = make_mov(tmp_path / "synthetic.mov").read_bytes()
-    application = create_app(
-        settings, runner=negative, reasoning_runner=partial, ready=lambda: True
-    )
+    application = create_app(settings, runner=partial, ready=lambda: True)
     with TestClient(application) as client:
         job = submit(client, source)
         prefix = "/api/v2/jobs/" + job["job_id"]
@@ -95,7 +93,7 @@ def test_report_checks_owner_and_auth_before_private_history_access(tmp_path):
 def test_corruption_returns_sanitized_conflict_for_history_and_report(tmp_path):
     settings = Settings(KEY, tmp_path / "jobs", trusted_gateway_token=TOKEN)
     source = make_mov(tmp_path / "synthetic.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=partial, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=partial, ready=lambda: True)) as client:
         job = submit(client, source)
         prefix = "/api/v2/jobs/" + job["job_id"]
         directory = settings.private_root / job["job_id"] / "corrections"
@@ -115,12 +113,12 @@ def test_processing_and_failed_reports_are_unavailable(tmp_path):
 
     settings = Settings(KEY, tmp_path / "jobs", trusted_gateway_token=TOKEN)
     source = make_mov(tmp_path / "synthetic.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=blocked, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=blocked, ready=lambda: True)) as client:
         accepted = client.post(
             "/api/v2/analyze", headers=headers(), files={"file": ("synthetic.mov", source)}
         )
         assert accepted.status_code == 202
         prefix = accepted.headers["Location"]
         assert client.get(prefix + "/report", headers=headers()).status_code == 409
-    with TestClient(create_app(settings, reasoning_runner=partial, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=partial, ready=lambda: True)) as client:
         assert client.get(prefix + "/report", headers=headers()).status_code == 409

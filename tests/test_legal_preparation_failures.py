@@ -1,15 +1,13 @@
 """Synthetic legal preparation failures must preserve useful partial execution."""
 
-import json
 import time
 from pathlib import Path
 
 import pytest
 from test_video import make_mov
 
-from forte import legal_reasoning
 from forte.legal_reasoning import LegalEvidenceService
-from forte.timeline import EvidenceTools, source_frame_table
+from forte.timeline import source_frame_table
 from forte.video import decode_video
 
 
@@ -29,6 +27,8 @@ def legal_run(tmp_path):
                 "observation_id": "synthetic-observation",
                 "source_sha256": registry.source_sha256,
                 "value": "Synthetic visible context.",
+                "kind": "context",
+                "uncertainty": [],
                 "actor_ids": [],
                 "recipient_ids": [],
                 "evidence_frame_ids": [frame.frame_id],
@@ -58,82 +58,6 @@ class SyntheticBackend:
             ],
             "explanation": "Synthetic unavailable conditions.",
         }
-
-
-@pytest.mark.parametrize("stage", ["source_table", "source_evidence", "condition_prompt"])
-def test_preparation_timeout_returns_incomplete_report_without_inference(
-    legal_run, tmp_path, monkeypatch, stage
-):
-    service, registry, timeline, table = legal_run
-
-    def timeout(*_args, **_kwargs):
-        raise TimeoutError("Synthetic preparation deadline")
-
-    if stage == "source_table":
-        monkeypatch.setattr("forte.timeline.source_frame_table", timeout)
-        table = None
-    elif stage == "source_evidence":
-        monkeypatch.setattr(EvidenceTools, "get_frames", timeout)
-    else:
-        monkeypatch.setattr(legal_reasoning, "build_condition_prompt", timeout)
-    backend = SyntheticBackend()
-    output = tmp_path / "legal"
-    report = service.evaluate_timeline(
-        timeline,
-        registry,
-        backend,
-        output,
-        time.monotonic() + 20,
-        max_calls=1,
-        table=table,
-    )
-    assert backend.calls == 0
-    assert report["status"] == "incomplete" and report["assessments"] == []
-    failed = report["rule_coverage"][0]
-    assert failed["status"] == "evaluation_unavailable"
-    assert failed["reason"] == "legal evidence preparation deadline exhausted"
-    assert failed["stage"] == ("source_evidence" if stage == "source_table" else stage)
-    assert len(report["rule_coverage"]) == 12
-    assert report["metrics"]["calls"] == 0 and report["metrics"]["attempts"] == 1
-    receipt = report["metrics"]["receipts"][0]
-    assert receipt["error"] == "TimeoutError" and receipt["inference_attempted"] is False
-    assert receipt["usage"] == {} and receipt["finish_reason"] is None
-    assert timeline["observations"][0]["observation_id"] == "synthetic-observation"
-    assert json.loads((output / "legal-assessments.json").read_text()) == report
-
-
-def test_later_preparation_timeout_preserves_prior_validated_assessment(
-    legal_run, tmp_path, monkeypatch
-):
-    service, registry, timeline, table = legal_run
-    get_frames = EvidenceTools.get_frames
-    preparations = 0
-
-    def fail_second(tools, ids):
-        nonlocal preparations
-        preparations += 1
-        if preparations == 2:
-            raise TimeoutError("Synthetic later preparation deadline")
-        return get_frames(tools, ids)
-
-    monkeypatch.setattr(EvidenceTools, "get_frames", fail_second)
-    backend = SyntheticBackend()
-    report = service.evaluate_timeline(
-        timeline,
-        registry,
-        backend,
-        tmp_path / "legal",
-        time.monotonic() + 20,
-        max_calls=2,
-        table=table,
-    )
-    assert backend.calls == 1
-    assert len(report["assessments"]) == 1
-    assert report["assessments"][0]["assessment"] == "insufficient_evidence"
-    assert report["rule_coverage"][0]["status"] == "evaluated"
-    assert report["rule_coverage"][1]["status"] == "evaluation_unavailable"
-    assert report["metrics"]["calls"] == 1 and report["metrics"]["attempts"] == 2
-    assert report["metrics"]["receipts"][1]["usage"] == {}
 
 
 @pytest.mark.parametrize("invalid", ["source", "timestamp", "metadata"])
@@ -170,28 +94,5 @@ def test_invalid_ownership_or_metadata_still_fails_before_evidence_preparation(
             time.monotonic() + 20,
             max_calls=1,
             metadata_evidence=metadata,
-        )
-    assert backend.calls == 0
-
-
-def test_source_validation_failure_during_preparation_is_not_hidden(
-    legal_run, tmp_path, monkeypatch
-):
-    service, registry, timeline, table = legal_run
-
-    def invalid_source(*_args, **_kwargs):
-        raise ValueError("Synthetic changed source")
-
-    monkeypatch.setattr(EvidenceTools, "get_frames", invalid_source)
-    backend = SyntheticBackend()
-    with pytest.raises(ValueError, match="changed source"):
-        service.evaluate_timeline(
-            timeline,
-            registry,
-            backend,
-            tmp_path / "legal",
-            time.monotonic() + 20,
-            max_calls=1,
-            table=table,
         )
     assert backend.calls == 0

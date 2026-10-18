@@ -1,23 +1,18 @@
 import copy
-import time
 from datetime import date
 from pathlib import Path
 
 import pytest
-from test_video import make_mov
 
 from forte.legal_reasoning import (
     ConditionCandidate,
     ConditionPlan,
     EvidenceItem,
     LegalEvidenceService,
-    bounded_observation_evidence,
-    build_condition_prompt,
     evaluate_candidate,
     fingerprint,
     require_official_act,
 )
-from forte.video import decode_video
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -327,103 +322,3 @@ def test_role_grounded_duty_holder_cannot_be_replaced_by_another_action_actor():
             [evidence(frame_ids=["f1", "f3"]), evidence(id="f2", participant_ids=["person-2"])],
             ["person-1", "person-2"],
         )
-
-
-def test_prompt_schema_bounds_ids_and_omits_model_approval_fields():
-    p = plan()
-    prompt, schema = build_condition_prompt(p, [], ["person-1"], ["f1"], {})
-    assert "polarity" in prompt and "actual attached source images" in prompt
-    assert "assessment" not in schema["properties"]
-    assert schema["properties"]["plan_id"]["const"] == p.plan_id
-    refs = schema["$defs"]["ConditionResult"]["properties"]["supporting_evidence_ids"]
-    assert refs["items"]["enum"] == ["f1"]
-
-
-def test_legal_image_budget_selects_complete_observations_without_trimming_evidence():
-    observations = [
-        {
-            "observation_id": "first",
-            "evidence_frame_ids": [f"f{i}" for i in range(6)],
-            "decisive_frame_id": "f5",
-        },
-        {
-            "observation_id": "too-many",
-            "evidence_frame_ids": [f"f{i}" for i in range(5, 11)],
-            "decisive_frame_id": "f10",
-        },
-        {"observation_id": "last", "evidence_frame_ids": ["f7"], "decisive_frame_id": "f7"},
-    ]
-    chosen, ids = bounded_observation_evidence(observations)
-    assert [o["observation_id"] for o in chosen] == ["first", "last"]
-    assert len(ids) <= 8
-    assert all(set(o["evidence_frame_ids"]) <= set(ids) for o in chosen)
-
-
-def test_local_timeline_wrapper_attaches_original_images_and_reports_skipped_inventory(
-    service, tmp_path
-):
-    registry = decode_video(make_mov(tmp_path / "synthetic.mov"), tmp_path / "frames")
-    frame = registry.frames[0]
-    timeline = {
-        "source_sha256": registry.source_sha256,
-        "observations": [
-            {
-                "observation_id": "obs-explicit",
-                "source_sha256": registry.source_sha256,
-                "value": "syntheticunrelatedword",
-                "actor_ids": ["person-1"],
-                "recipient_ids": [],
-                "evidence_frame_ids": [frame.frame_id],
-                "visibility": "visible_samples",
-                **{f"{key}_frame_id": frame.frame_id for key in ["start", "end", "decisive"]},
-                **{f"{key}_sec": frame.timestamp_sec for key in ["start", "end", "decisive"]},
-            }
-        ],
-        "participants": [
-            {"participant_id": "person-1"},
-            *[{"participant_id": f"unrelated-{i}"} for i in range(54)],
-        ],
-        "coverage": {"continuous_visibility_validated": False},
-    }
-
-    class LocalSyntheticBackend:
-        calls = 0
-
-        def request(self, actual_registry, frames, prompt, schema, pixels, max_tokens):
-            self.calls += 1
-            assert actual_registry is registry and frames
-            assert len(frames) <= 8 and "unrelated-" not in prompt
-            assert schema["properties"]["participant_ids"]["items"]["enum"] == ["person-1"]
-            assert actual_registry.image_bytes(frames[0], pixels).startswith(b"\xff\xd8")
-            # Synthetic response verifies interface wiring and ID validation only.
-            props = schema["$defs"]["ConditionResult"]["properties"]
-            return {
-                "plan_id": schema["properties"]["plan_id"]["const"],
-                "source_provision_ids": schema["properties"]["source_provision_ids"]["items"][
-                    "enum"
-                ],
-                "participant_ids": ["person-1"],
-                "conditions": [
-                    {
-                        "condition_id": id,
-                        "result": "unknown",
-                        "supporting_evidence_ids": [frame.frame_id, "obs-explicit"],
-                    }
-                    for id in props["condition_id"]["enum"]
-                ],
-                "explanation": "Synthetic unavailable conditions.",
-            }
-
-    backend = LocalSyntheticBackend()
-    report = service.evaluate_timeline(
-        timeline, registry, backend, tmp_path / "legal", time.monotonic() + 30, max_calls=1
-    )
-    assert backend.calls == 1 and report["metrics"]["calls"] == 1
-    assert report["assessments"][0]["assessment"] == "insufficient_evidence"
-    assert report["assessments"][0]["condition_specs"][0]["proposition"]
-    assert report["assessments"][0]["citations"][0]["text"]
-    assert report["assessments"][0]["observation_ids"] == ["obs-explicit"]
-    assert len(report["rule_coverage"]) == 12 and report["status"] == "incomplete"
-    assert sum(c["status"] == "not_evaluated" for c in report["rule_coverage"]) == 11
-    assert report["metrics"]["receipts"][0]["direction"] == "inventory"
-    assert (tmp_path / "legal/legal-assessments.json").is_file()

@@ -16,17 +16,11 @@ class Settings:
     model_revision: str = "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b"
     max_context_tokens: int = 8192
     reasoning_config: Path | dict | None = None
+    laya_url: str = "http://127.0.0.1:8002"
     frontend_root: Path | None = None
     trusted_gateway_token: str | None = None
-    v1_pipeline: str = "legacy"
 
     def __post_init__(self):
-        if self.v1_pipeline not in {"legacy", "reasoning"}:
-            raise ValueError("Select an explicit v1 pipeline: legacy or reasoning")
-        if self.v1_pipeline == "reasoning" and self.reasoning_config is None:
-            raise ValueError(
-                "The reasoning v1 pipeline requires an explicit reasoning configuration"
-            )
         if len(self.api_key) < 16 or not self.api_key.isascii():
             raise ValueError("Set a separate service API key of at least 16 ASCII characters")
         if self.trusted_gateway_token is not None and (
@@ -61,6 +55,7 @@ class Settings:
                 if os.environ.get("FORTE_REASONING_CONFIG")
                 else None
             ),
+            laya_url=os.environ.get("FORTE_LAYA_URL", "http://127.0.0.1:8002"),
             trusted_gateway_token=(
                 Path(os.environ["FORTE_TRUSTED_GATEWAY_TOKEN_FILE"]).read_text().strip()
                 if os.environ.get("FORTE_TRUSTED_GATEWAY_TOKEN_FILE")
@@ -71,5 +66,4 @@ class Settings:
                 if os.environ.get("FORTE_FRONTEND_ROOT")
                 else None
             ),
-            v1_pipeline=os.environ.get("FORTE_V1_PIPELINE", "legacy"),
         )

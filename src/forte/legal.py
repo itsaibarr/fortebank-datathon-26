@@ -12,6 +12,10 @@ from urllib.parse import urljoin, urlsplit
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 
+def corpus_digest(corpus):
+    return hashlib.sha256(corpus.model_dump_json().encode()).hexdigest()
+
+
 class Snapshot(BaseModel):
     model_config = ConfigDict(extra="forbid")
     act_id: str

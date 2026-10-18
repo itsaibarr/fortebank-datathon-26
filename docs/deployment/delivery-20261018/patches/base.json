@@ -1,8 +1,0 @@
-{
-  "base_commit": "6c7bbe05a714172d0f38c2de2b4f907ce8db7522",
-  "file": "tests/test_mechanic_validation.py",
-  "sha256": "b6361841f3f04f7c2831237fa50f754d86f8a4487601cd63825a042c6bf3001c",
-  "applied_to_owned_checkout": false,
-  "purpose": "Update only stale synthetic reasoning configuration and worker signature fixtures after core began freezing admission configuration. No production logic or model changes.",
-  "runtime_ae9f819_status": "Superseded: runtime owner already corrected this fixture independently. Retain only as a base6c7bbe0 proposal and regression receipt."
-}

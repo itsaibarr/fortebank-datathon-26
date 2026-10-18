@@ -81,9 +81,7 @@ def test_dictionary_is_validated_frozen_and_passed_as_path_without_model_launch(
         return b""
 
     monkeypatch.setattr(jobs, "child", synthetic_child)
-    result = asyncio.run(
-        jobs.run_worker(directory, job_id, time.monotonic() + 10, settings, reasoning=True)
-    )
+    result = asyncio.run(jobs.run_worker(directory, job_id, time.monotonic() + 10, settings))
     frozen = directory / "immutable/request-config.json"
     assert result.job_id == job_id and len(calls) == 1
     assert frozen.stat().st_mode & 0o777 == 0o400
@@ -91,9 +89,7 @@ def test_dictionary_is_validated_frozen_and_passed_as_path_without_model_launch(
     assert configuration == original
     before = frozen.read_bytes()
     with pytest.raises(FileExistsError):
-        asyncio.run(
-            jobs.run_worker(directory, job_id, time.monotonic() + 10, settings, reasoning=True)
-        )
+        asyncio.run(jobs.run_worker(directory, job_id, time.monotonic() + 10, settings))
     assert frozen.read_bytes() == before and len(calls) == 1
 
 
@@ -108,10 +104,8 @@ def test_invalid_dictionary_never_reaches_worker_or_creates_snapshot(tmp_path, m
         pytest.fail("Invalid configuration reached the subprocess boundary")
 
     monkeypatch.setattr(jobs, "child", forbidden_child)
-    with pytest.raises(ValueError, match="training"):
-        asyncio.run(
-            jobs.run_worker(tmp_path, uuid4(), time.monotonic() + 10, settings, reasoning=True)
-        )
+    with pytest.raises(ValueError, match="Unknown"):
+        asyncio.run(jobs.run_worker(tmp_path, uuid4(), time.monotonic() + 10, settings))
     assert not (tmp_path / "immutable").exists()
 
 
@@ -140,7 +134,7 @@ def test_path_configuration_is_frozen_before_worker_and_survives_operator_edits(
         return b""
 
     monkeypatch.setattr(jobs, "child", synthetic_child)
-    asyncio.run(jobs.run_worker(tmp_path, job_id, time.monotonic() + 10, settings, reasoning=True))
+    asyncio.run(jobs.run_worker(tmp_path, job_id, time.monotonic() + 10, settings))
     assert (tmp_path / "immutable/request-config.json").is_file()
 
 
@@ -166,7 +160,6 @@ def test_symlink_or_pipe_configuration_never_reaches_worker(tmp_path, monkeypatc
                     uuid4(),
                     time.monotonic() + 10,
                     Settings("synthetic-service-key", tmp_path, reasoning_config=supplied),
-                    reasoning=True,
                 )
             )
     assert not (tmp_path / "immutable").exists()

@@ -1,20 +1,19 @@
 # Browser session continuation
 
-This source-only continuation starts from `131463f` on
-`codex/browser-session-ownership`. The previous verified image/core and its
-frozen runtime manifest remain historical evidence. No GPU allocation,
-publication, live attach or model-quality acceptance is authorized by this plan.
+This guide describes the retained source security boundary. The sole model
+architecture is [report.md](../report.md). Synthetic checks do not approve a built
+image, live host, publication or private-model accuracy.
 
 ## Trust boundary
 
-Apply the reviewed principal patch to the API. Legacy key-only v1/v2 behavior
-remains when trusted-gateway mode is absent. When enabled, every API request
+The API enforces principal ownership in trusted-gateway mode. Key-only v1/v2
+operation remains single-reviewer private when that mode is absent. When enabled, every API request
 requires the separate server-only gateway token and an opaque principal, in
 addition to the service key. Admission persists that principal; every case,
 original, evidence, correction and later range checks it. Ownerless cases deny.
 
-Add an internal authenticated `GET /api/internal/security` capability response
-in trusted mode only. Its exact fields are `schema_version:
+The internal authenticated `GET /api/internal/security` capability response
+exists in trusted mode only. Its exact fields are `schema_version:
 forte.gateway-security/1`, `trusted_gateway_required: true`,
 `principal_ownership: true`, `ownerless_jobs_denied: true`. Every trusted-mode
 API response also carries `X-Forte-Ownership-Mode: principal-v1`.
@@ -63,8 +62,7 @@ false`, and `limits` with `upload_max_bytes`, `max_video_seconds`,
 `upload_timeout_seconds`, `job_timeout_seconds`. Uploads require explicit
 operator configuration, successful ownership handshake and readiness.
 The optional gateway `deployment_mode` selects that label and defaults to `private`.
-It describes where processing is offered, independently from the installer's
-`private|attach` ownership profile. `hosted` does not activate a host, enable
+It describes where processing is offered. `hosted` does not activate a host, enable
 uploads, change authorization or approve publication.
 
 The UI uses same-origin credentials and CSRF; no service-key field or browser
@@ -73,24 +71,13 @@ state and revoke object URLs on logout, expiry or principal change. Recheck on
 focus/pageshow and notify other tabs of auth changes without storing secrets.
 Metadata missing, mismatched origin or unavailable security fails closed.
 
-## Deployment and evidence
+## Runtime interface
 
-Keep current admin-only profiles as the default. Add an explicit browser-session
-profile which runs the host gateway behind the supplied-certificate TLS ingress,
-mounts the separate gateway token into the offline core, and never publishes the
-core/model ports. Setup/up/stop must own only their profile resources and preserve
-private DB, configuration, originals, corrections and credentials.
-
-The CLI may support session credentials from a protected private file; legacy
-operator-key profiles remain explicit. Session profiles never send the service
-key. Administrator archives include public source/metadata only.
-
-## Source integration interface
-
-The independent deployment lane owns `deploy/portable/`, `tools/forte-admin/`,
-`docs/deployment/` and `tests/deployment/`. Session implementation lives separately
-under `tools/forte-session/`. The deployment lane integrates its stable checkpoint;
-session code does not rewrite the deployment lane's active files.
+Use the minimal container entrypoint in [backend.md](backend.md), the existing
+application-only offline bridge, and `tools/forte-session/` behind an authorized
+supplied-certificate TLS ingress. Keep secrets/private SQLite outside Git. Expose
+only the application/session boundary, never either model port. Account setup
+and live activation require their own authorization; no default account is created.
 
 Run `python tools/forte-session/session_gateway.py --config <private-json>`.
 `create_server(config, store=None)` returns a stdlib HTTP server, bound only to

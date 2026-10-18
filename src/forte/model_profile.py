@@ -4,17 +4,10 @@ import hashlib
 import json
 from pathlib import Path
 
-PROFILES = {
-    "baseline8b": {
-        "checkpoint": "Qwen/Qwen3-VL-8B-Instruct",
-        "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
-        "architecture": "Qwen3VLForConditionalGeneration",
-    },
-    "frozen27b": {
-        "checkpoint": "Qwen/Qwen3.8-27B",
-        "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
-        "architecture": "Qwen3_5ForConditionalGeneration",
-    },
+SELECTED_MODEL = {
+    "checkpoint": "Qwen/Qwen3-VL-8B-Instruct",
+    "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "architecture": "Qwen3VLForConditionalGeneration",
 }
 
 
@@ -26,9 +19,9 @@ def hash_file(path):
     return digest.hexdigest()
 
 
-def verify_snapshot(root: Path, profile: str, *, verify_weights=True) -> dict:
+def verify_snapshot(root: Path, *, verify_weights=True) -> dict:
     """A hash manifest establishes bytes/provenance, not model accuracy."""
-    spec = PROFILES[profile]
+    spec = SELECTED_MODEL
     root = root.resolve()
     manifest_path = root / "model-hashes.json"
     manifest = json.loads(manifest_path.read_text())
@@ -70,7 +63,6 @@ def verify_snapshot(root: Path, profile: str, *, verify_weights=True) -> dict:
             raise ValueError("Model asset fingerprint changed")
     return {
         **spec,
-        "profile": profile,
         "manifest_sha256": hash_file(manifest_path),
         "architecture": config["architectures"],
         "precision": "bfloat16",

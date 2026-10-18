@@ -1,7 +1,0 @@
-{
-  "base_commit": "111234c885f0a23d323fe72a81450dfca5aa7e60",
-  "sha256": {
-    "src/forte/api.py": "a321c958fc641b043522945ad39e6b414aff94cc5d8b20bcc39adc496d84055b",
-    "src/forte/settings.py": "79cd66a364ff93db33283dc6d1c2d4fb0c1301b986edc5b8a97e55bc8aac4971"
-  }
-}
