@@ -10,6 +10,15 @@
 - Owned paths: `deploy/portable/`, `tools/forte-admin/`, `docs/deployment/` and
   focused `tests/deployment/`. Core schemas, model/serving parameters, legal
   semantics, UI and final live cutover remain Agent A's ownership.
+- Current deployment checkout before this receipt: clean `8d3c0d2`.
+  Agent A's isolated integration checkout is
+  `/Users/itsaibarr/.t3/worktrees/fortebank-datathon-26/t3-ca5de3e3`, branch
+  `t3/review-agent-b-integration`, checkpoint `e4814e2`.
+- Shared source reservations are now recorded in
+  `/Users/itsaibarr/conductor/repos/fortebank-datathon-26/.git/forte-coordination/ledger.json`,
+  with integrator identity in `owner.json`. Updates use `fcntl.flock` on the
+  adjacent `coordination.lock`, preserve peer entries and replace JSON atomically.
+  This source lock is separate from the held GPU lifecycle lock.
 
 The final publisher commit and file hashes are recorded in the administrator
 archive's `RELEASE.json`. Stable source integration does not approve an image or
@@ -62,6 +71,24 @@ The VM that held that image was deleted. No registry image was published; the
 old candidate remains historical and unapproved, with all five installer
 acceptance flags false. It must not be described as the new session-aware image.
 
+At the 18 October 2026 00:49 UTC coordination checkpoint, a different authorized
+VM, `1108722`, is owned by `mechanic-validation-20261018-01` for three frozen
+baseline cases and verified local backups. Its key-only, network-disabled
+evaluation runtime is not a session-enabled deployment. The owner reported the
+first case's complete local restore with all 100 file hashes verified; cases two
+and three and their preservation were still pending. Agent B has no runtime
+activation handoff. The useful-work cutoff remains 01:08 UTC and the deletion
+deadline remains 01:28:30 UTC, within the existing $3 session cap, $30 project cap
+and $1.50 reserve. These are coordinated bounds, not a fresh credit reading.
+
+The fixed public archive was transferred to Agent B's separate VM staging area;
+a small read-only inspection verified all 187 release hashes after SSH recovery.
+The public CPU build was skipped because too little time remained before its
+00:45 UTC deadline. No new application image was built, and that expired window
+does not authorize another build or activation. The original local operational
+helper's path and cleanup findings were corrected in separate v2 files with 21
+fake-executor regressions passing; neither helper was executed on the VM.
+
 A release archive can export core `e55c0773ea74e2745ea33512d19bfaa38b32d7fb`.
 `install --build-core` builds that snapshot and derives a separate local manifest
 with its new image ID, source/contract fingerprints and preserved ancestry.
@@ -88,7 +115,10 @@ components with synthetic inference and synthetic MOV inputs. They establish
 software mechanics, not actual model analysis or legal/detection accuracy.
 
 The root integrator records the final suite totals and receipt in
-[verification.json](verification.json). No fresh clean-host GPU installation,
+[verification.json](verification.json) and
+[integration-review-20261018.json](integration-review-20261018.json). The fixed
+integration checkpoint passed 706 tests with no skips and four existing warnings;
+its lint and formatting checks passed. No fresh clean-host GPU installation,
 new heavy image build, actual case through this ingress, externally reachable
 HTTPS URL or complete disconnected installation bundle has been verified. The
 historical real core rehearsals and incomplete final-backup preservation are
@@ -99,8 +129,10 @@ this new source image or access stack.
 
 1. On an existing authorized customer/VM host, assign one runtime owner and a
    bounded GPU window. Inspect available capacity, disk, active jobs and budget
-   before changing any runtime. No current GPU host or live hosted URL is
-   available in this handoff, and the old allocation is not a fresh budget.
+   before changing any runtime. VM `1108722` is reserved to the mechanic tester
+   until its explicit preservation handoff; no live hosted URL is verified.
+   Any subsequent build, attach or cutover needs a new bounded engineering
+   handoff within the unchanged timer and cumulative budget.
 2. Build/import the new pinned core image and public resources. Run the local
    qualification on the actual selected device, retain the new immutable image
    and model/corpus/configuration fingerprints, and review the host-specific
