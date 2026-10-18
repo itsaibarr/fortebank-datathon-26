@@ -239,7 +239,7 @@ def test_actual_https_principal_survives_gateway_core_and_media(stack, version):
         return
     result = completed["result"]
     evidence = result["events"][0]["evidence"][0]
-    for resource in ("/source", "/evidence/" + evidence["frame_id"], "/corrections"):
+    for resource in ("/source", "/evidence/" + evidence["frame_id"], "/corrections", "/report"):
         assert bob.get(path + resource).status_code == 404
         assert bob.get(path + resource, headers={"Range": "bytes=0-31"}).status_code == 404
     full = alice.get(path + "/source")
@@ -260,6 +260,12 @@ def test_actual_https_principal_survives_gateway_core_and_media(stack, version):
     )
     assert saved.status_code == 201, saved.text
     assert saved.json()["correction"]["reviewer"] == session_a["principal"]["id"]
+    report = alice.get(path + "/report")
+    assert report.status_code == 200
+    assert report.json()["result"] == result
+    assert report.json()["review_head"] == saved.json()["revision"]
+    assert report.json()["corrections"][0] == saved.json()["correction"]
+    assert "no-store" in report.headers["cache-control"]
 
 
 def test_https_csrf_revocation_and_readiness_are_independent(stack):

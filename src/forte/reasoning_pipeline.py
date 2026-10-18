@@ -46,6 +46,7 @@ def source_code_fingerprints():
         "annotations": "annotations",
         "contracts": "contracts",
         "contracts_v2": "contracts_v2",
+        "investigation_report": "investigation_report",
         "settings": "settings",
         "jobs": "jobs",
         "worker": "worker",
