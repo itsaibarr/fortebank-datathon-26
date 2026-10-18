@@ -59,9 +59,18 @@ def plan(root, changes):
         "bind_address": "127.0.0.1",
         "https_port": 8443,
         "bridge_port": 18001,
+        "gpu_index": None,
+        "gpu_uuid": None,
+        "backend": "cuda",
+        "qualification_timeout": 360,
+        "session_port": 18002,
+        "session_db": str(root / "auth" / "sessions.sqlite3"),
         "attach_upstream": "http://127.0.0.1:18000",
         "core_image": "",
-        "proxy_image": "",
+        "proxy_image": (
+            "nginx@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de"
+        ),
+        "deployment_mode": "private",
         "integration_manifest": "",
         "manifest_sha256": "",
         "resources_root": str(root / "resources"),
@@ -92,11 +101,26 @@ def plan(root, changes):
         "tls_cert",
         "tls_key",
         "htpasswd_file",
+        "session_db",
     ):
         if result.get(name):
             result[name] = str(Path(result[name]).expanduser().resolve())
+    if result.get("backend") != "cuda":
+        raise ConfigError(
+            "This release implements the CUDA backend only; no CPU or hosted fallback was selected."
+        )
+    if result.get("gpu_index") is not None and (
+        type(result["gpu_index"]) is not int or result["gpu_index"] < 0
+    ):
+        raise ConfigError("Select a nonnegative GPU index.")
+    if result.get("gpu_uuid") is not None and not re.fullmatch(
+        r"GPU-[A-Za-z0-9-]+", str(result["gpu_uuid"])
+    ):
+        raise ConfigError("Invalid selected GPU UUID.")
     if result["mode"] not in {"private", "attach"}:
         raise ConfigError("Choose private or attach mode.")
+    if result["deployment_mode"] not in {"private", "hosted"}:
+        raise ConfigError("Choose a private or hosted processing destination label.")
     if not re.fullmatch(r"forte-[a-z0-9-]{1,40}", result["project_name"]):
         raise ConfigError(
             "Project name must begin forte- and use lowercase letters, digits or hyphens."
@@ -112,6 +136,8 @@ def plan(root, changes):
         or origin.path not in {"", "/"}
     ):
         raise ConfigError("Application origin must be a credential-free HTTPS origin.")
+    if origin.path == "/":
+        result["origin"] = origin._replace(path="").geturl()
     try:
         port = origin.port or 443
     except ValueError as exc:
@@ -121,6 +147,8 @@ def plan(root, changes):
     if result.get("integration_manifest"):
         manifest_path = Path(result["integration_manifest"])
         manifest = read_json(manifest_path)
+        if not isinstance(manifest.get("core"), dict):
+            raise ConfigError("Integration manifest requires a core object.")
         result["core_image"] = manifest.get("core", {}).get("image", "")
         result["manifest_sha256"] = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
     return result, previous
@@ -150,6 +178,12 @@ def apply(root, config, render):
         fd = os.open(secret, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(fd, "w") as output:
             output.write(secrets.token_urlsafe(48) + "\n")
+    if config["access_mode"] == "browser-session":
+        token = Path(config["secrets_root"]) / "gateway-token"
+        if not token.exists():
+            descriptor = os.open(token, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(descriptor, "w") as output:
+                output.write(secrets.token_urlsafe(48) + "\n")
     # No imaginary administrator account: browser bootstrap is the core session layer's job.
     paths = render(config, root / "runtime")
     private_write(root / "installation.json", json.dumps(config, indent=2) + "\n")

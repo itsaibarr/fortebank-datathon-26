@@ -1,0 +1,28 @@
+{
+  "schema_version": "forte.deployment-runtime-target/1",
+  "checked_at_utc": "2026-10-18T03:10:35.576412+00:00",
+  "vm_id": 1108896,
+  "status": "ACTIVE",
+  "name": "forte26-frozen-integrated-01",
+  "observed_lifecycle_owner": "integration-completion-20261018-01",
+  "owner_delete_deadline_utc": "2026-10-18T07:00:00+00:00",
+  "owner_session_ceiling_usd": 7,
+  "credit_usd": "23.50281660744413",
+  "b_created_vm": false,
+  "b_created_duplicate_vm": false,
+  "b_runtime_or_firewall_changes": false,
+  "b_runtime_handoff_accepted": false,
+  "gpu_lifecycle_lock": "held by existing owner",
+  "hosted_url": null,
+  "explicit_owner_notice": {
+    "thread": "98fef0e2-ae91-41d5-aa8c-42a9a97e61f6",
+    "source_commit": "ae9f819c3d7063e8bcf0e51855e5b4773c1961df",
+    "branch": "codex/frozen-inference-completion",
+    "useful_stop_utc": "2026-10-18T06:30:00Z",
+    "delete_utc": "2026-10-18T07:00:00Z",
+    "session_cap_usd": 7,
+    "comparison_handoff": "status thread 3b38 after qualification",
+    "b_runtime_changes_permitted": false,
+    "b_staging_permitted": false
+  }
+}

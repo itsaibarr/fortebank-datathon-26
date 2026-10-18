@@ -114,6 +114,20 @@ def test_release_archive_reproducible_and_contains_only_allowed_files(tmp_path):
     with tarfile.open(first) as archive:
         names = archive.getnames()
         assert any(name.endswith("/deploy/portable/runtime.py") for name in names)
+        for relative in (
+            "deploy/portable/acceptance_receipt.py",
+            "deploy/portable/jury_gateway.py",
+            "docs/deployment/jury-access-contract.json",
+            "docs/deployment/current-source-handoff.md",
+            "docs/deployment/current-source-verification.json",
+        ):
+            name = module.PREFIX + "/" + relative
+            assert name in names
+            release = json.load(archive.extractfile(module.PREFIX + "/RELEASE.json"))
+            assert (
+                release["files"][relative]
+                == hashlib.sha256(archive.extractfile(name).read()).hexdigest()
+            )
         assert all(
             not any(part in name for part in (".env", ".mov", "__pycache__", ".pem", ".key"))
             for name in names

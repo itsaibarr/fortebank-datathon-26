@@ -1,0 +1,23 @@
+--- a/tests/test_mechanic_validation.py
++++ b/tests/test_mechanic_validation.py
+@@ -168,12 +168,18 @@
+ 
+     calls = []
+ 
+-    async def worker(directory, job_id, deadline, settings, *, reasoning=False):
++    async def worker(
++        directory, job_id, deadline, settings, *, reasoning=False, frozen_configuration=None
++    ):
+         calls.append(reasoning)
+         return await (uncertain if reasoning else negative)(directory, job_id, deadline)
+ 
+     monkeypatch.setattr(api, "run_worker", worker)
+-    settings = Settings("synthetic-version-two-key", tmp_path / "jobs", reasoning_config={})
++    settings = Settings(
++        "synthetic-version-two-key",
++        tmp_path / "jobs",
++        reasoning_config={"tracking": {"mode": "byte_track"}, "legal": {"release": "/synthetic"}},
++    )
+     with TestClient(api.create_app(settings, ready=lambda: True)) as client:
+         media = make_mov(tmp_path / "synthetic.mov").read_bytes()
+         v1 = submit(client, media, version=1)

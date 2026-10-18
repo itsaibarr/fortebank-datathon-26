@@ -1,0 +1,15 @@
+{
+  "schema_version": "forte.deployment-provider-readonly/1",
+  "checked_at_utc": "2026-10-18T03:02:31.826541+00:00",
+  "vm_count": 0,
+  "vm_rows": 0,
+  "configured_vm_id": 1108722,
+  "configured_vm_present": false,
+  "volume_count": 0,
+  "credit_usd": 23.548040621777464,
+  "read_only": true,
+  "resources_created": false,
+  "service_or_gpu_operations": false,
+  "hosted_url": null,
+  "check_source": "Live authenticated GET inventory, credit and volume endpoints; credentials stayed in the private header file."
+}

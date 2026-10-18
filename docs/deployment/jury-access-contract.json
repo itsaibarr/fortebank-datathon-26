@@ -1,0 +1,131 @@
+{
+  "schema_version": "forte.jury-access-contract/1",
+  "status": "local_source_candidate_not_activated",
+  "core_commit": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3",
+  "implementation": "deploy/portable/jury_gateway.py",
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze",
+      "upload_field": "file",
+      "upload_max_bytes": 268435456,
+      "accepted_body_fields": [
+        "job_id"
+      ],
+      "accepted_header": "Location: /api/v1/jobs/{canonical-lowercase-UUID}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{canonical-lowercase-UUID}"
+    }
+  ],
+  "excluded_routes": [
+    "v2",
+    "OpenAPI",
+    "source",
+    "evidence",
+    "range requests",
+    "corrections",
+    "report",
+    "export",
+    "browser auth",
+    "model service",
+    "health"
+  ],
+  "authentication": {
+    "client": "X-API-Key only; no cookie, CSRF, Origin, Range or If-Range headers",
+    "credential_generation": "Administrator must generate each distinct credential from at least 32 bytes of CSPRNG entropy (for example secrets.token_urlsafe(32)); length validation cannot establish entropy.",
+    "credential_format": "43-128 unpadded base64url/hex-compatible ASCII characters",
+    "upstream": "Separate server-only X-API-Key and X-Forte-Gateway-Token plus the inventory-mapped X-Forte-Principal",
+    "client_identity_headers": "Client principal/token/Authorization headers are discarded; the service credential is never accepted as a jury key.",
+    "principal": "Stable opaque jury_ followed by 32 lowercase hex digits; persist the inventory and never reassign identities across reviewers.",
+    "missing_or_invalid_key": 401,
+    "unreadable_or_invalid_inventory": 503,
+    "sessions": "Separate browser gateway and its database remain unchanged; no jury session database is created.",
+    "invalid_job_identifier": "Authenticate first: missing/invalid key401; valid key422 with the canonical sanitized invalid_request error for a single noncanonical/malformed job identifier. No upstream request or input echo."
+  },
+  "key_inventory": {
+    "schema_version": "forte.jury-keys/1",
+    "root_fields": [
+      "schema_version",
+      "keys"
+    ],
+    "entry_fields": [
+      "key_sha256",
+      "principal",
+      "enabled"
+    ],
+    "max_entries": 64,
+    "max_bytes": 65536,
+    "storage": "Canonical absolute paths, no-follow directory/file FDs, owner-private regular files, single hardlink, bounded unchanged read; no raw jury credential stored in this inventory.",
+    "reload": "Read and validate on every request; disabled or removed keys are denied on the next request. Already-admitted uploads/jobs are not cancelled.",
+    "stable_identity": "Rebinding a previously seen key hash during one process lifetime is refused. Across restarts the persisted administrator inventory is authoritative.",
+    "rotation": "For deliberate rotation, atomically replace the old entry with a newly generated independent key hash retaining that reviewer principal; remove/revoke the old hash. Restart/reload preserves case ownership through the persisted principal. Never transfer that principal to another reviewer."
+  },
+  "transport": {
+    "listener": "127.0.0.1 only; TLS terminates at a separately reviewed ingress",
+    "upstream": "Literal http://127.0.0.1:{port}, excluding model port 8001; one configured core only",
+    "security_handshake": "The existing /api/internal/security handshake must prove principal-v1 ownership and ownerless denial. Health/readiness and the forwarded operation stay on that same checked socket, without capacity probe, reconnect, retry or Expect100.",
+    "request_validation": "Exact configured HTTPS Host authority; canonical raw request target; no query, percent encoding, dot traversal, duplicate sensitive headers, transfer encoding or Expect; bounded framing.",
+    "uploads_default": false,
+    "upload_activation": "Explicit jury_uploads_enabled boolean; this source patch performs no ingress activation or verification-flag promotion.",
+    "upload_timeout_seconds": 30,
+    "response_timeout_seconds": 270,
+    "deadline_handling": "Upload and response bodies use read1; one absolute upload watchdog and one operation-response watchdog interrupt only this request socket/input half. The operation watchdog also bounds final response header trickles. The inherited security and readiness handshake parsers retain their separate socket inactivity timeouts; no absolute handshake-header claim is made. Client writes use the remaining operation budget.",
+    "response_ownership": "Every actual API response must have exactly one principal-v1 marker before any response is forwarded.",
+    "location": "Exactly one relative canonical v1 job Location only on POST202; buffered accepted JSON <=4096 bytes must contain only a matching string job_id.",
+    "retry_after": "Only canonical Retry-After: 5 on429/503; duplicated, misplaced or other values are refused.",
+    "response_framing": "Canonical core JSON responses require one bounded Content-Length and no Transfer-Encoding. A standard HTTPResponse reads the same checked socket without allowing HTTPConnection reconnect or response-driven close racing the uploader. No redirects are followed.",
+    "secrets": "No credential bodies, paths, key bytes, cookies or request data enter access/error logs; response headers exclude upstream credentials and Set-Cookie.",
+    "prebody_admission": "A bounded upload helper streams to the already checked socket while the handler parses its response concurrently. Early final errors stop and join the helper even when the client has sent headers only. No second request or reservation endpoint is added.",
+    "readiness": "Known model-not-ready health returns503/Retry-After5 before any POST; the exact healthy/not-ready proof is validated on the checked socket. Malformed health/security remains502.",
+    "helper_lifecycle": "At most one uploader and two deadline helpers per request, within the inherited32-request admission bound. Every path cancels and joins started helpers, interrupts idle/blocked request-owned socket halves, and closes only that connection. No model/API/service lifecycle operations.",
+    "normal_upload": "The complete declared body is forwarded byte-for-byte. A success arriving before the body is fully forwarded is refused. The component closes each client connection after its response instead of draining a rejected upload."
+  },
+  "ownership": {
+    "component": "The existing trusted-principal core persists ownership at admission and enforces it on reads; this proxy does not create an independent job store.",
+    "cross_owner_and_ownerless": "Actual core returns the same generic404 as missing jobs.",
+    "media": "This jury surface never proxies recordings, evidence, ranges or exports. They remain behind the existing browser session boundary."
+  },
+  "compatibility_limits": [
+    "Transport only. Exact ebb v1 retains its legacy inference path; this proxy does not implement new-mechanic v1 projection or model-quality acceptance.",
+    "The frozen original release archive is unchanged. A separate source/release identity and coordinator security review are required before deployment.",
+    "Synthetic transport tests use generated media and a fake inference runner; real GPU inference, public TLS, external API/browser access and clean installation are unverified."
+  ],
+  "verification_flags_unchanged": {
+    "release": false,
+    "model_workload": false,
+    "offline_analysis": false,
+    "browser_session": false,
+    "ownership": false
+  },
+  "predecessor_review_commit": "0bf409b",
+  "verification_evidence": {
+    "type": "local_synthetic_only",
+    "actual_core_cases": [
+      "headers-only zero-slot429 with Retry-After5 and zero body consumption/inference",
+      "headers-only admission readiness-race503",
+      "known-not-ready503 with zeroPOST",
+      "full generated MOV uploads and unchanged bytes",
+      "two jury owners and ownerless/missing generic404",
+      "actual gateway restart and key rotation retaining the case principal",
+      "actual HTTPS browser-versus-jury principal ownership denial",
+      "malformed job identifier401/422 compared with actual core"
+    ],
+    "failure_cases": [
+      "malformed early responses and missing owner markers",
+      "idle/trickling/disconnected client helper cleanup and subsequent request",
+      "absolute forwarded-operation header and body trickles",
+      "helper start failure cleanup",
+      "hostile/duplicate Location and Retry-After; canonical accepted body binding"
+    ],
+    "excluded_claims": [
+      "real model inference",
+      "model/legal quality",
+      "public ingress/TLS activation",
+      "external browser/API workflow",
+      "clean GPU installation",
+      "v1 new-mechanic projection"
+    ]
+  }
+}

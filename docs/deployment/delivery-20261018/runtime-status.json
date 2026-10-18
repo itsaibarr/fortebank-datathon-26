@@ -1,0 +1,57 @@
+{
+  "schema_version": "forte.runtime-status-handoff/1",
+  "owner_notice_authoritative": true,
+  "owner_thread": "98fef0e2-ae91-41d5-aa8c-42a9a97e61f6",
+  "coordinator": "741",
+  "vm_id": 1108896,
+  "frozen_source_commit": "ae9f819c3d7063e8bcf0e51855e5b4773c1961df",
+  "frozen_source_branch": "codex/frozen-inference-completion",
+  "read_only_observation_utc": "2026-10-18T03:14:31Z",
+  "observations": {
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "driver": "570.195.03",
+    "gpu_memory_used_mib_at_0313": 0,
+    "public_base_image": "vllm/vllm-openai@sha256:a4a4c0437bf7240089da5f08aa370c4aee17ae5290f7a3b468825ee26c4c3a6b",
+    "base_container_gpu_requests": null,
+    "application_image_digest": null,
+    "source_public_build_files_matching": 130,
+    "source_scope": "Public byte inventory, not an image or execution attestation",
+    "staged_effective_config_sha256": "33ec93ba546f7ae836cbcf9270831e701038c9174c5b7200162e907c7899366a"
+  },
+  "declared_model_not_yet_qualified_by_b": {
+    "identity": "Qwen/Qwen3.8-27B",
+    "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "profile": "frozen27b",
+    "weights_frozen": true,
+    "model_hash_inventory_sha256": "d6cf043a326f8cb5b1f6e31ef37c4d650f6fda342b262029c30968174431459b",
+    "full_weight_hashes_and_visual_warmups": "Runtime owner qualification pending; not performed or claimed by B"
+  },
+  "jobs_and_reservations": {
+    "private_media": "Owner reports none uploaded yet",
+    "active_application_jobs": "Not enumerated by B; no model inference observed at timestamp",
+    "runtime_reservation": "Owner public downloads and clean source/static build, then qualification and bounded smoke",
+    "next_reservation": "Serial key-only loopback8002/separate-root legacy-v1 versus reasoning-v2 comparison for status thread3b38 after explicit owner handoff",
+    "product_candidate_test": "No slot or GPU reservation assigned; PRODUCT remains contributor under741 and must return stable source/tests for an assigned serialized candidate window",
+    "b_runtime_reservation": null
+  },
+  "lifecycle": {
+    "useful_stop_utc": "2026-10-18T06:30:00Z",
+    "delete_utc": "2026-10-18T07:00:00Z",
+    "remote_delete_timer": "forte26-budget-delete.timer directly observed for07:00UTC",
+    "local_cleanup_process_recorded_alive": true,
+    "session_cap_usd": 7,
+    "project_cap_usd": 30,
+    "reserve_usd": 1.5,
+    "credit_usd_at_031245": "23.457592593110796",
+    "observed_cumulative_debit_at_031245": "6.542407406889204",
+    "billing_settlement": "not_final"
+  },
+  "b_permissions": {
+    "source_only_work": true,
+    "stage_or_restart": false,
+    "ingress_or_lifecycle_changes": false,
+    "second_vm": false
+  },
+  "deployment_acceptance_promoted": false,
+  "externally_verified_url": null
+}

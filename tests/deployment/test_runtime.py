@@ -27,12 +27,60 @@ def module(name):
 
 runtime = module("runtime")
 bridge = module("bridge")
+acceptance = module("acceptance_receipt")
 CORE = "example.invalid/core@sha256:" + "1" * 64
 PROXY = "example.invalid/nginx@sha256:" + "2" * 64
 
 
+def bind_synthetic_acceptance(manifest, resources):
+    # Consistent test evidence only; these fixtures never attest a real run.
+    manifest["corpus"]["manifest_sha256"] = "5" * 64
+    manifest["deployment"] = {
+        "schema_version": "forte.deployment-identity/1",
+        "proxy_image": PROXY,
+        "files": {
+            name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
+            for name in sorted(acceptance.REQUIRED_FILES)
+        },
+    }
+    checks = {}
+    (resources / "verification").mkdir(exist_ok=True)
+    for flag in acceptance.FLAGS:
+        if manifest["verification"][flag] is not True:
+            checks[flag] = {"status": "not_run", "evidence_level": None, "evidence": []}
+            continue
+        relative = f"verification/{flag}.json"
+        raw = json.dumps({"synthetic_fixture_only": True, "check": flag}).encode()
+        (resources / relative).write_bytes(raw)
+        checks[flag] = {
+            "status": "passed",
+            "evidence_level": acceptance.LEVELS[flag],
+            "evidence": [
+                {
+                    "path": relative,
+                    "sha256": hashlib.sha256(raw).hexdigest(),
+                    "size_bytes": len(raw),
+                }
+            ],
+        }
+    raw = json.dumps(
+        {
+            "schema_version": "forte.deployment-acceptance/1",
+            "subject_sha256": acceptance.subject_sha256(manifest),
+            "completed_at": "2026-10-18T02:00:00Z",
+            "checks": checks,
+        }
+    ).encode()
+    relative = "verification/acceptance.json"
+    (resources / relative).write_bytes(raw)
+    manifest["verification"].update(
+        receipt=relative, receipt_sha256=hashlib.sha256(raw).hexdigest()
+    )
+
+
 @pytest.fixture
 def installation(tmp_path):
+    tmp_path = tmp_path.resolve()
     resources, secrets, data = [tmp_path / name for name in ("resources", "secrets", "cases")]
     for path in (resources, secrets, data):
         path.mkdir()
@@ -40,6 +88,9 @@ def installation(tmp_path):
     asset.write_text("Synthetic resource, never production model weights")
     (resources / "receipt.json").write_text('{"synthetic":true}')
     (secrets / "core-api.key").write_text("a" * 48)
+    token = secrets / "gateway-token"
+    token.write_text("b" * 48)
+    token.chmod(0o600)
     (secrets / "admin.htpasswd").write_text("admin:synthetic-test-only")
     cert, key = secrets / "cert.pem", secrets / "tls.key"
     # A local synthetic matching cert/key, not a trusted production certificate.
@@ -89,6 +140,7 @@ def installation(tmp_path):
         },
     }
     manifest_path = tmp_path / "integration.json"
+    bind_synthetic_acceptance(manifest, resources)
     manifest_path.write_text(json.dumps(manifest))
     config = {
         "schema_version": 1,
@@ -142,7 +194,11 @@ def test_attach_contains_only_ingress_and_preserves_running_core(installation):
     runtime.render(config, target)
     compose = json.loads((target / "compose.json").read_text())
     assert set(compose["services"]) == {"ingress"}
-    assert "18000" in (target / "nginx.conf").read_text()
+    assert "18002" in (target / "nginx.conf").read_text()
+    assert (
+        json.loads((target / "session-config.json").read_text())["upstream"]
+        == "http://127.0.0.1:18000"
+    )
     command = runtime.compose_command(config, target, "stop")
     assert command[-1] == "stop"
     assert "down" not in command and "-v" not in command
@@ -178,6 +234,7 @@ def test_single_admin_key_remains_server_side_and_multiuser_disabled(installatio
     config, manifest, target = installation
     manifest["verification"]["browser_session"] = False
     manifest["verification"]["ownership"] = False
+    bind_synthetic_acceptance(manifest, Path(config["resources_root"]))
     save_manifest(config, manifest)
     config.update(
         access_mode="gateway-single-admin",
@@ -203,6 +260,52 @@ def test_resource_mutation_and_manifest_pin_changes_block_start(installation):
     assert any("SHA256" in item for item in runtime.prerequisites(config))
     config["manifest_sha256"] = "f" * 64
     assert any("no longer matches" in item for item in runtime.prerequisites(config))
+
+
+def test_arbitrary_receipt_cannot_authorize_startup(installation, monkeypatch):
+    config, manifest, target = installation
+    config["gpu_uuid"] = "GPU-synthetic-only"
+    (Path(config["resources_root"]) / manifest["verification"]["receipt"]).write_text(
+        '{"synthetic":true}'
+    )
+    operations = []
+    monkeypatch.setattr(runtime, "_docker", lambda args: operations.append(args))
+    assert runtime.prerequisites(config)
+    report = runtime.lifecycle(config, target, "up")
+    assert report["ok"] is False
+    assert report["errors"]
+    assert operations == []
+    assert not target.exists()
+
+
+@pytest.mark.parametrize("changed", ["model", "evidence", "helper", "ingress"])
+def test_startup_rechecks_exact_acceptance_identity(installation, monkeypatch, changed):
+    config, manifest, target = installation
+    config["gpu_uuid"] = "GPU-synthetic-only"
+    assert runtime.prerequisites(config) == []
+    if changed == "model":
+        manifest["model"]["revision"] = "changed-synthetic-revision"
+        save_manifest(config, manifest)
+    elif changed == "evidence":
+        (Path(config["resources_root"]) / "verification/ownership.json").write_text("changed")
+    elif changed == "helper":
+        name = "deploy/portable/runtime.py"
+        manifest["deployment"]["files"][name] = "9" * 64
+        save_manifest(config, manifest)
+    else:
+        config["proxy_image"] = "example.invalid/different@sha256:" + "9" * 64
+    operations = []
+    monkeypatch.setattr(runtime, "_docker", lambda args: operations.append(args))
+    report = runtime.lifecycle(config, target, "up")
+    assert report["ok"] is False and report["errors"]
+    assert operations == []
+    assert not target.exists()
+
+
+def test_missing_acceptance_component_blocks_startup(installation, monkeypatch, tmp_path):
+    config, _, _ = installation
+    monkeypatch.setattr(runtime, "__file__", str(tmp_path / "missing/runtime.py"))
+    assert "Acceptance verification component is unavailable" in runtime.prerequisites(config)
 
 
 def test_preview_does_not_claim_an_unreleased_candidate(installation):
@@ -231,6 +334,7 @@ def test_preview_does_not_claim_an_unreleased_candidate(installation):
         {"bind_address": "192.0.2.1"},
         {"https_port": 443},
         {"origin": "https://localhost:8443/case"},
+        {"origin": "https://localhost:8443/"},
     ],
 )
 def test_unsafe_configuration_rejected_before_render(installation, change):
@@ -239,6 +343,21 @@ def test_unsafe_configuration_rejected_before_render(installation, change):
     assert runtime.validate(config)
     with pytest.raises(ValueError):
         runtime.render(config, target)
+    assert not target.exists()
+
+
+def test_noncanonical_direct_origin_blocks_before_any_runtime_operation(installation, monkeypatch):
+    config, _, target = installation
+    config["origin"] += "/"
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Invalid origin must be rejected before any Docker or service operation")
+
+    monkeypatch.setattr(runtime, "_docker", forbidden)
+    monkeypatch.setattr(runtime.subprocess, "run", forbidden)
+    result = runtime.lifecycle(config, target, "up")
+    assert result["ok"] is False
+    assert any("origin" in error for error in result["errors"])
     assert not target.exists()
 
 

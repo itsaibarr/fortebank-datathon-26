@@ -1,0 +1,110 @@
+{
+  "schema_version": "forte.deployment-source-integration/1",
+  "checked_at_utc": "2026-10-18T03:26:34.067094+00:00",
+  "branch": "codex/deployment-delivery-b-20261018",
+  "base_core_commit": "ae9f819c3d7063e8bcf0e51855e5b4773c1961df",
+  "deployment_source_commit": "11d3e48b40cf4dc789396fcc1f18b00266f279f8",
+  "owned_paths": [
+    "deploy/portable/",
+    "tools/forte-admin/",
+    "docs/deployment/",
+    "tests/deployment/"
+  ],
+  "core_shared_ui_files_changed": false,
+  "deployment_tests": {
+    "passed": 697,
+    "skipped": 0,
+    "warnings": 1,
+    "elapsed_seconds": 36.64,
+    "command": "FORTE_TEST_DOCKER_PROXY=1 PYTHONPATH=src <existing-venv>/python -m pytest -q tests/deployment --basetemp <outside-git>/deployment-tests",
+    "scope": "generated media, actual FastAPI/session transport, synthetic inference and local cached Nginx; no case footage or GPU"
+  },
+  "whole_source_tests": {
+    "passed": 1083,
+    "skipped": 0,
+    "deselected": 0,
+    "warnings": 4,
+    "elapsed_seconds": 130.2,
+    "command": "FORTE_TEST_DOCKER_PROXY=1 PYTHONPATH=src <existing-venv>/python -m pytest -q --basetemp <outside-git>/full-tests",
+    "scope": "isolated ae9f819 core with complete deployment integration; synthetic/public fixtures only; no real GPU inference"
+  },
+  "initial_test_invocation": {
+    "status": "setup_error",
+    "cause": "missing parent directory for external pytest basetemp",
+    "corrected_rerun": "deployment_tests above; no production code failure"
+  },
+  "source_checks": {
+    "ruff_check": "passed",
+    "ruff_format": "38 deployment Python files passed",
+    "ownership_scope": "passed; only four reserved path trees differ from base",
+    "diff_check": "passed excluding unchanged historical .patch payload; unified patch context blank lines intentionally retained"
+  },
+  "deployed_runtime_mutations": false,
+  "gpu_workload_started": false,
+  "new_paid_resources": false,
+  "other_agents_started": false,
+  "hosted_url": null,
+  "acceptance": {
+    "release": false,
+    "model_workload": false,
+    "offline_analysis": false,
+    "browser_session": false,
+    "ownership": false
+  },
+  "not_verified": [
+    "clean customer GPU installation",
+    "new image build by this continuation",
+    "real model inference through packaged TLS/session profile",
+    "real offline case analysis through packaged profile",
+    "real-case persistence/restart",
+    "external browser and jury API access",
+    "detection or legal accuracy"
+  ],
+  "deployment_python_sha256": {
+    "deploy/portable/__init__.py": "1134c1e12945ff65a460cf3c5d8b5a62a02ae96e944935bd4ef058967ab9968c",
+    "deploy/portable/acceptance_receipt.py": "094c5ff85263c3d1d9063a7de6e06a8dd40429a22a354e183e7badc499081316",
+    "deploy/portable/bridge.py": "b6fdbaacfe0fc74b5ee3d9e5122de12787fc958bc3b99a945793013c10a7a1bd",
+    "deploy/portable/build_core.py": "9d3b7b5bb959b8d2192bb3b63d656e426348a564a285402b3c4d79910bcaf33a",
+    "deploy/portable/host_daemon.py": "35e4b430087a7560fe8b5837c631d58ac2ab31f10ca4cae22f175bb07d6ab358",
+    "deploy/portable/import_handoff.py": "752686b4c5d2504bb3f3f926293cf64aaca92aa4b451bd35dedceaecd05268ef",
+    "deploy/portable/jury_gateway.py": "1c94da9f7eacbfac83f65315614e1d9c566436ee93541a090362769fb6a6a0ab",
+    "deploy/portable/qualification.py": "3ec69c7af0399d9ad48f0bdc4ca2785474304f666aeb7c93abd3b86afd0b26c0",
+    "deploy/portable/runtime.py": "7ba4c707464840820925a7395cd6dca61167659bc7565345a134d9ec18eaf2c0",
+    "tests/deployment/test_acceptance_receipt.py": "08c71de5e9a5db1ea23010eba85069bc8622626846596325680d331ac40f8419",
+    "tests/deployment/test_client.py": "de666ef7274b7ee292d27846e7c76a59ef75073f8134d9c820cb6d14f30f2d99",
+    "tests/deployment/test_core_client.py": "36801843b18557ad160f35fbbd339599b9ce6c5ed1f43907243ea3ee17d1d992",
+    "tests/deployment/test_hardware.py": "93fab830161a67873d3ac956832253fecd4092032ee79c2d7da642ec4e84e6f6",
+    "tests/deployment/test_install_flow.py": "5a46cb2743f667921b57be43c10ee5c8bb484eabaa69527e60962bf9c8a6cc2a",
+    "tests/deployment/test_installer.py": "71f4397e5e316834f88c31ce6d109dbd1ddbae52a6bd3f85dd722eb74b9707c6",
+    "tests/deployment/test_jury_gateway.py": "fd823b7b0db26eb108e9d91ea1559738457acdd5b7bcea42a0801c0475a16b1a",
+    "tests/deployment/test_preparation.py": "fcb3fac4078bf41120edcce77944357c459a8335a71320110f202700a6a99d20",
+    "tests/deployment/test_profile_sessions.py": "23acea716256dd0c3150deca83d40ef9c5fa937fb895896df2e12fd4eaea8982",
+    "tests/deployment/test_public_bundle.py": "06dbd997a82198b73546e6f36bbf407f35d4846ec7fd06bd573bd437c2a43503",
+    "tests/deployment/test_qualification.py": "5969c7479f1bb4e92dc0477f1a2a1ed58a000b47229c84681d9207583a416254",
+    "tests/deployment/test_resources.py": "593a4c11bab40b0749eb0b595c2d6aa2dee67d9151fccd4ae3b593d04c0c4d4b",
+    "tests/deployment/test_runtime.py": "f992cc9e12846c23d40540970b6325b8b3fe4a78e8907acc83213d10c72c014c",
+    "tests/deployment/test_runtime_ownership.py": "1f96cd627449bfab72bde7abe95420359e61556643a06bdb94a2316415bdf068",
+    "tests/deployment/test_source_image.py": "a4ed028cdab773e12317d9a0e8ae8aa98a052046fd46a796b30eab63c7eb27f8",
+    "tools/forte-admin/build.py": "7bd68145083d3dd1e67606a68055a92ca247c4f8a7bc1a2d6509a6a1f165c826",
+    "tools/forte-admin/forte_admin/__init__.py": "6e3c76edd3f973370782c9db93f05651d7162b93e4dcc384028bee206904f16d",
+    "tools/forte-admin/forte_admin/__main__.py": "e2f080af330ae410501c45af56771e7dbec91e02e4cf94add01a2953c5472196",
+    "tools/forte-admin/forte_admin/cli.py": "2ecc46245109bd7cee82ab3844b70061934056aac2d31bac036b0d905c56b1fc",
+    "tools/forte-admin/forte_admin/client.py": "ad068a3449a1e579724f5d32daaa0ed57bc2fb143894729ed79a2ad4ade3853f",
+    "tools/forte-admin/forte_admin/config.py": "89f4f02374ae940e1be0d940f69f156984ad2cf8acdb5a3a81a56352fb9a2f55",
+    "tools/forte-admin/forte_admin/diagnostics.py": "3908cbdee3fb23ce2d9c0260f268b16ea9014361fc122c2e8f87e35315bb8ff0",
+    "tools/forte-admin/forte_admin/hardware.py": "63cafc024c4b9444dbf1a205984db81505f8da465dc6f873c5086c3da414211c",
+    "tools/forte-admin/forte_admin/install.py": "fb3f7746ae2d45e822cef146f0fc073dbd2b721d9c789219ac078008442809e5",
+    "tools/forte-admin/forte_admin/preparation.py": "d611fe3b5d356e8b7966fb4aa037890141134fb38f4e5ad9f1680c364b040476",
+    "tools/forte-admin/forte_admin/public_bundle.py": "99683f1dfb8ccebe8f7738d0f6daa5e6bbc80a6f711a7ec195dc801aca14c754",
+    "tools/forte-admin/forte_admin/resources.py": "adf936ff1650288091d3604b8111e38235082f5df4fe508b07bb3202b8308390",
+    "tools/forte-admin/forte_admin/source_image.py": "1179c4baaf04578d2edbc4d392bc1641f7b6a2c1f5d8672e7a0b3ee13fa76d78"
+  },
+  "final_archive_change_tests": {
+    "passed": 17,
+    "elapsed_seconds": 0.31,
+    "command": "PYTHONPATH=src <existing-venv>/python -m pytest -q tests/deployment/test_installer.py --basetemp <outside-git>/installer-final",
+    "purpose": "verify archive completeness/reproducibility after including the exact v1 contract and current handoff/receipt"
+  },
+  "archive_output": "/Users/itsaibarr/.cache/forte-deploy-b/continuation-20261018/forte-admin-0.2.0-core-ae9f819.tar.gz",
+  "artifact_receipt": "current-artifact-verification.json in the repository (written after archive build; excluded from its own archive to avoid a self-hash cycle)"
+}

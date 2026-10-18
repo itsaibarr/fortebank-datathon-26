@@ -1,198 +1,158 @@
-# Observed application contract
+# Observed application and session contracts
 
-Initial observations on **2026-10-17, approximately 22:50–22:55 UTC** used read-only inspection
-of Agent A's `/Users/itsaibarr/conductor/repos/fortebank-datathon-26` checkout.
-Its branch was `codex/frozen-local-reasoning`, HEAD
-`7d9a1ca2ffda93f6c2dde4eaf8a5ca4c7d247eeb`. The v2 implementation, model
-configuration, frontend and Docker changes were **uncommitted at that time**.
-That original HEAD alone does not contain the inspected application.
+The current deployment worktree consumes stable Agent A source
+`ae9f819c3d7063e8bcf0e51855e5b4773c1961df`. It includes `bdf3173` principal
+ownership, `5be7d78` local browser sessions and `7fa153f` session-aware UI.
+The historical frozen runtime manifest and `core-current.candidate.json` still
+identify core `111234c` and its deleted VM's local image. They do not describe a
+newly built session-aware image or authorize its runtime acceptance.
 
-Agent A subsequently supplied stable checkpoint
-**`111234c885f0a23d323fe72a81450dfca5aa7e60`**, incorporated into the deployment
-worktree through an isolated fast-forward. Its authoritative
-[`contracts/frozen-runtime-manifest-v1.json`](../../contracts/frozen-runtime-manifest-v1.json)
-uses schema **`forte.integration/1`**, release
-`frozen-local-reasoning-20261018-1`. This is a source/runtime handoff, not a
-portable installation acceptance receipt. Its application image exists as local
-ID `sha256:ee82962c4ee4d9026ef499a0854bcb485c94a18db97e07719800ca6dfe4276dd`;
-no registry digest or publication was supplied. The handoff explicitly denies
-runtime-attach authorization and grants no restart, ingress, GPU window or new
-spending. Recheck image availability and acceptance prerequisites before activation.
+Authoritative source contracts are
+[legacy v1](../../contracts/api-contract.json),
+[reasoning v2](../../contracts/reasoning-api-contract.json),
+[browser sessions](../../contracts/browser-session-contract-v1.json),
+[public assets](../../contracts/frozen-assets-v1.json) and
+[effective configuration](../../contracts/frozen-effective-config-v1.json).
+The new source-build receipt records the exported commit, per-file hashes,
+contract hash and resulting local image. The integrator must accept that exact
+release; importing metadata does not approve it.
 
-The deployment branch is `codex/deployment-private-cli`, based on the same full
-original commit. This document records observations and requested interfaces; it does not
-modify the canonical schemas, core API, model settings or UI.
+## Browser access and ownership
 
-The stable handoff authorizes only `single_reviewer_private_only` operation,
-reports shared-key holders can read all jobs in the service root, and prohibits
-multi-user private uploads and public browser uploads. It reports no secure
-session gateway or principal ownership implementation. Browser/private-install
-and external end-to-end acceptance remain incomplete. Its reported 201 Python
-tests, synthetic browser workflow, 161.95-second real **partial** API rehearsal,
-and one validated but semantically unreviewed legal replay assessment establish
-their named scopes only. Final image cold start and concurrent real jobs remain
-pending in that manifest.
+The local gateway is launched with
+`python3 tools/forte-session/session_gateway.py --config <private-json>` and
+listens on configured loopback, default port 18002, behind supplied-certificate
+HTTPS ingress. Its credential-free origin is exact. The upstream must be a
+literal loopback application endpoint; model port 8001 is rejected.
 
-## Contract fingerprints
+Local account administration is
+`python3 tools/forte-session/session_store.py --db <private-db> add <username>`;
+passwords are prompted, not command-line arguments. Disable and password-reset
+commands revoke sessions. The account database directory/file modes are 0700 and
+0600. There is no default account; the installer invokes this real account
+component and preserves existing enabled accounts.
 
-These hashes identify inspected bytes, not an approved release:
+The browser uses `GET /auth/session`, `POST /auth/login` with username/password,
+and `POST /auth/logout`. Its opaque cookie is Secure, HttpOnly, SameSite=Strict,
+Path=/ with no Domain. Mutations require the exact configured Origin and session
+CSRF token; login requires Origin. Session responses provide the principal,
+CSRF token and expiry. `GET /deployment.json` supplies `forte.deployment/1`
+metadata: private/hosted mode, actual destination, browser upload activation,
+readiness, limits, manual retention and training disabled. Service key and
+gateway token stay server-side, outside browser code.
 
-| File in Agent A's checkout | SHA256 |
-| --- | --- |
-| `contracts/api-contract.json` (v1, 1.0.0) | `2f07ca38a89320a97edc1f18cf1401462ce89f6912698245bac4f67bd3cacc05` |
-| `contracts/reasoning-api-contract.json` (v2, 2.0.0) | `26ef3e7f80997e99be2c74c34a0637ce8ad249075b6034667eb3979ac602684c` |
-| `configs/frozen-inference.json` | `c516e8c32a1fa05036f729cb6849cc86d2a570f9cf89632243887e03654d03e4` |
-| `legal/2026-10-17/manifest.json` | `2d91e147f55c9bee54bae22e64126ed0fd00d35bbac3715aeda96075862400a1` |
-| `legal/rule-cards.json` | `71e1d6aaa3d3bb77fac9fb5291fd66023cae24562c3d83628fff907c0e06e804` |
+Trusted core mode is selected with `FORTE_TRUSTED_GATEWAY_TOKEN_FILE`. Alongside
+the service key, the gateway supplies its dedicated token and opaque principal.
+The core advertises authenticated `/api/internal/security` capability and
+`X-Forte-Ownership-Mode: principal-v1`. The gateway validates this capability on
+the same connection used for forwarding and strips client identity credentials.
+Browser uploads remain disabled unless explicitly enabled and both capability
+and model readiness pass.
 
-The inspected generated v2 OpenAPI has incomplete upload and response-media
-schemas. In particular, its upload operation does not declare the multipart
-request body. The implementation and v1 upload contract establish the actual
-`file` field below. Do not generate an upload client from that incomplete
-operation without Agent A supplying the missing schema.
+The core persists ownership at v1/v2 admission, checks every existing poll,
+source, evidence, correction and fresh range request, and attributes corrections
+to the trusted principal. Cross-owner and ownerless requests return generic 404.
+Legacy shared-key behavior remains unchanged only when no trusted gateway token
+is configured; that is an administrative compatibility mode, not browser user
+isolation. The earlier optional patch in `patches/` is historical proposal
+material, superseded by Agent A's accepted source work.
 
-## Routes, transport and result semantics
+## Analysis API and transport
 
-All `/api/` requests require exactly one `X-API-Key` header. The current middleware
-compares it against one shared ASCII service secret of at least sixteen
-characters. No per-user session or ownership enforcement was observed.
+The public analysis endpoints remain:
 
-| Operation | Observed interface |
-| --- | --- |
-| Legacy upload | `POST /api/v1/analyze`, multipart field `file`; 202 `{ "job_id": "<uuid>" }` and `Location` |
-| Legacy poll/result | `GET /api/v1/jobs/{job_id}`; `processing`, `done` or `failed` |
-| Reasoning upload used by UI | `POST /api/v2/analyze`; same file/admission rules; 202 and versioned `Location` |
-| Reasoning poll/result | `GET /api/v2/jobs/{job_id}`; same execution statuses; `done` includes `api_version: 2` and `result` |
-| Original MOV | `GET /api/v2/jobs/{job_id}/source`; only after a completed v2 result; source hash checked; `video/quicktime`, `Cache-Control: no-store` |
-| Source evidence JPEG | `GET /api/v2/jobs/{job_id}/evidence/{frame_id}`; completed result allowlist, safe path and image hash checked; `image/jpeg`, `no-store` |
-| Correction history | `GET /api/v2/jobs/{job_id}/corrections`; immutable revision list |
-| Append correction | `POST /api/v2/jobs/{job_id}/corrections`; 201; source digest, parent revision, scope, target, reviewer and change; conflicts 409 |
-| Reasoning schema | Authenticated `GET /api/v2/openapi.json` |
-| Liveness | Unauthenticated `GET /health/live`; 200 `{ "status": "ok" }` when API is running |
-| Model readiness | Unauthenticated `GET /health/ready`; 200 `{ "status": "ready" }` or 503 `model_not_ready` |
-| Static product | `/`, through `FORTE_FRONTEND_ROOT`; exported Next.js assets served by FastAPI on the same origin |
+- `POST /api/v1/analyze` and `POST /api/v2/analyze`, multipart field `file`, return
+  202 with `job_id` and the versioned polling `Location`.
+- `GET /api/v1/jobs/{job_id}` and `GET /api/v2/jobs/{job_id}` return
+  `processing|done|failed`. A done v2 response includes `api_version: 2` and
+  `result`. Job namespaces are version-separated.
+- `GET /api/v2/jobs/{job_id}/source` serves the completed result's original MOV
+  with source-hash verification and `video/quicktime`.
+- `GET /api/v2/jobs/{job_id}/evidence/{frame_id}` serves only an allowed,
+  hash-verified source JPEG. Source/evidence responses are `no-store`.
+- `GET` and `POST /api/v2/jobs/{job_id}/corrections` read immutable revisions or
+  append a source-bound correction; parent/scope conflicts return 409.
+- `GET /api/v2/jobs/{job_id}/report` returns the source-bound investigation
+  report with the same principal ownership check and no-store delivery. Invalid
+  correction history fails explicitly rather than serving a stale report.
+- `GET /api/v2/openapi.json` requires application authorization. The core serves
+  the exported Next.js application through `FORTE_FRONTEND_ROOT` on the same
+  application origin.
 
-UUID job namespaces are version-separated. A v2 result cannot be read through v1
-and converted into a binary verdict. POST is not idempotent: never automatically
-retry a submission whose response was lost. Polling is safe to repeat.
+Core `/health/live` returns `{"status":"ok"}`; `/health/ready` returns ready or
+503 while the model is unusable. Gateway `/health/live` returns
+`{"status":"alive"}`; its readiness additionally requires trusted ownership
+capability and core readiness. The installer distinguishes core, access and
+external readiness. A live process or local health response alone does not
+verify model warmup, all resources, browser isolation or external reachability.
 
-V1 keeps `no_violation|violation` and the original evidence schema. V2 preserves
-`supported_violation`, `no_violation_observed`, `insufficient_evidence` and
-`not_applicable` under `result.assessment`. A `done` job can have
-`result.execution.status: partial`. Clients must retain unfamiliar additive
-fields and expose uncertainty; a failed, partial or unfamiliar assessment is
-never a clean negative. Core semantics and legal interpretation belong to
-Agent A.
+Uploads accept one `.mov` with actual container/content validation, duration
+`(0,180]` seconds, maximum dimension 4096 and maximum 8.4 million pixels. The
+entire multipart body is limited to 268435456 bytes; the file must leave framing
+space. Upload time is bounded to 30 seconds. Two jobs may be admitted; there is
+no unbounded queue. The overall job deadline is 270 seconds from upload start.
+Observed software states include 408 timeout, 413 body limit, 415 invalid format,
+422 bounds/fields, 429 capacity, 503 unavailable model, 404 denied/unknown job and
+409 result/integrity/correction conflicts. POST is not idempotent; a lost response
+must not trigger an automatic resubmission.
 
-Upload is one `.mov` filename with actual bytes/container validation, no extra
-multipart fields, duration `(0, 180]` seconds, dimensions at most 4,096 on either
-axis and 8.4 million pixels. The **entire multipart body** is capped at
-268,435,456 bytes; file bytes must leave room for multipart framing. Upload body
-time is thirty seconds. The accepted job deadline is 270 seconds from upload
-start; two admitted jobs maximum, no unbounded queue. A slow external connection
-can exceed the upload deadline even for a valid file. No measured public-upload
-capacity or under-300-second whole-workflow guarantee is established.
-
-Observed errors include 401 authentication, 408 upload timeout, 413 body size,
-415 invalid format/container, 422 fields/video bounds, 429 capacity with
-`Retry-After: 5`, 503 unavailable model/configuration, 404 unknown/version-mismatch
-job, and 409 unavailable result, integrity or correction conflict. Failed jobs
-carry an error and no fabricated verdict. Admission checks model health before
-consuming the uploaded recording.
+V1 retains its fixed original verdict schema. The explicit
+`FORTE_V1_PIPELINE=reasoning` selection projects source-verified reasoning into
+that schema; the default remains legacy. Insufficient evidence in this projection
+fails honestly rather than becoming a negative verdict. This source option does
+not promote the historical image or change the selected resident model.
+V2 distinguishes execution from
+assessment: `done` may have partial execution, and assessment may be
+`supported_violation`, `no_violation_observed`, `insufficient_evidence` or
+`not_applicable`. Clients preserve additive fields and uncertainty. Failure,
+partial coverage and unfamiliar assessments are never translated into a clean
+negative. Model semantics and legal interpretation remain Agent A's domain.
 
 ## Runtime and resources
 
-The candidate application container owns the VLM and one API process. Internal
-ports are `127.0.0.1:8001` for vLLM and `8000` for FastAPI. An API worker is a
-bounded subprocess, not a separate queue service. There is no required Redis,
-database or hosted inference service. Exactly one API process may own a job root;
-its filesystem lock rejects a duplicate owner. On restart, previously processing
-jobs become failed/interrupted; completed results and correction files persist.
+The canonical application image contains one resident VLM and FastAPI process;
+its internal model port is 8001 and application port is 8000. Bounded job workers
+are subprocesses and job/correction state is filesystem-backed; there is no
+external queue service. The local session gateway separately uses its private
+SQLite account/session store. Only one API process may own a job root. Restart
+marks interrupted processing explicitly; completed cases and corrections persist.
 
-The inspected entrypoint verifies local model assets, starts the model, runs a
-synthetic multimodal warmup, then starts `forte serve --host 0.0.0.0 --port 8000`.
-`LocalVLM.ready()` itself checks engine health, served model name/revision and
-the 27B profile's local snapshot metadata; it does **not** execute that warmup or
-validate every retrieval/tracking resource. Starting `forte serve` directly
-bypasses the entrypoint warmup. Readiness therefore needs both an immutable
-entrypoint/warmup receipt and HTTP checks, plus a bounded actual workload receipt
-for release acceptance.
+The image entrypoint verifies local assets, starts the pinned model, executes an
+actual synthetic visual warmup, then serves the API/UI. Starting the API directly
+bypasses that warmup. Qualification checks the actual image and fixed readiness
+endpoint within a bounded offline scratch run; it exposes no ingress, stops its
+owned core and returns no browser URL. Its success does not promote acceptance.
 
-| Candidate frozen27b setting | Observed value |
-| --- | --- |
-| Model | `Qwen/Qwen3.8-27B` |
-| Revision | `1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0` |
-| Architecture | `Qwen3_5ForConditionalGeneration`, native vision configuration |
-| Precision/training | BF16, no quantization, no adapters, frozen weights |
-| Model-manifest SHA256 reported by A | `d6cf043a326f8cb5b1f6e31ef37c4d650f6fda342b262029c30968174431459b` |
-| Base engine image | `vllm/vllm-openai@sha256:a4a4c0437bf7240089da5f08aa370c4aee17ae5290f7a3b468825ee26c4c3a6b` |
-| Serving bounds | 16,384 context tokens, one active model sequence, sixteen images/call, processor max 196,608 pixels, GPU allocation 0.90, eager mode |
-| API admission | Two accepted jobs; this is not a two-job latency measurement |
-| Tracking | Pinned YOLOX-s ONNX, ByteTrack and frozen OSNet export; actual detector/ReID files and manifest required |
-| Legal resources | Local `legal/2026-10-17`, official-source-only snapshots and local rule cards; no online legal lookup during a case |
+The selected model remains frozen `Qwen/Qwen3.8-27B`, revision
+`1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0`, native
+`Qwen3_5ForConditionalGeneration`, BF16 without adapters or weight updates. The
+profile retains 16384 context tokens, one active sequence and sixteen images per
+call. Tracking uses pinned YOLOX-s/ByteTrack and frozen OSNet resources; retrieval
+uses the prepared official local law snapshot and cards. Packaging does not
+select a different quantization, tracker or legal interpretation.
 
-The earlier `baseline8b` is an explicitly selected comparison profile with its
-own pinned snapshot, 8,192-token context and two model sequences. It is not an
-automatic failure fallback and must not be loaded alongside Agent A's active
-27B service by an attach deployment. Do not substitute model names, quantization,
-trackers or legal rules in packaging.
+The explicit pinned 8B baseline remains available through its own configuration;
+it is never a second model started by attach or an automatic fallback. Hardware
+checks use the selected CUDA runtime and available device capacity on either a
+physical host or VM. The historical A100 observation is not an exact-device
+requirement. Weight size alone does not include vision/context/cache overhead;
+unknown host minima require measured bounded qualification.
 
-Required configuration is `FORTE_API_KEY_FILE`, `FORTE_PRIVATE_ROOT`,
-`FORTE_MODEL_PATH`, `FORTE_MODEL_PROFILE`, `FORTE_MODEL_NAME`,
-`FORTE_MODEL_REVISION`, `FORTE_MAX_CONTEXT_TOKENS`, `FORTE_REASONING_CONFIG`,
-`FORTE_MODEL_URL` and optional `FORTE_FRONTEND_ROOT`, according to whether the
-entrypoint or existing owned API supplies each value. The VLM adapter accepts
-only a plain HTTP loopback origin, without credentials/query/fragment. Serving
-commands and flags stay in the core image; the deployment layer consumes them.
+Public resources are mounted read-only. Case media, evidence, timelines,
+corrections and job state stay in configured private storage with outbound
+networking denied during processing. Retention is manual, including temporary
+application data and independently managed backups. Uploads are not training
+data. Corpus scope, draft rule cards, recording-date applicability and human
+participant/geometry/legal review remain independent of deployment readiness.
 
-Public assets are read-only mounts. Case media, derivatives, timelines,
-corrections and job state live in the private job root. No cleanup/TTL, backup
-expiry, per-user quota or first-administrator account mechanism was observed.
-Accordingly, current retention is **until the administrator explicitly removes
-the installation's private data and any backups**. Do not display an invented
-automatic deletion period. Uploads are not used for training in this phase.
+## Remaining verification
 
-The legal corpus manifest identifies `corpus_sha256`
-`856f66bc541f92a7c3b0316d43ce9e2664cef321e6db63fc83396007ee561462`, three
-scoped acts and 272 main-clause records. Twelve cards are drafts; this is neither
-all Kazakhstan law nor confirmation of recording-date applicability.
-
-## Required integration changes: pending Agent A ownership
-
-1. The stable committed core above is supplied. Still required: a distributable
-   immutable application image, completed v2
-   contract including upload/error/media/range behavior, actual effective resource
-   configuration and hash-pinned resource inventory. Bind the deployment
-   verification receipt to those exact bytes and the supported hardware.
-2. Supply a server-side browser session/bootstrap contract. Keep the upstream
-   service key server-side; do not compile it into static JavaScript or require
-   reviewers to share it. A reverse proxy's administrator password is not a
-   product account system. Until connected, the gateway's explicit single-admin
-   mode is CLI transport only; browser sessions and private multi-user upload
-   remain disabled.
-3. Propagate a trusted principal from the authenticated session, persist ownership
-   at job creation and enforce it **before existence/media disclosure** for every
-   poll/result, original, evidence frame, correction, future preview/clip/export,
-   and every fresh byte-range request. Strip client-supplied principal headers at
-   the trusted boundary; never trust a raw external user header. Assign correction
-   attribution from the trusted principal. Define migration behavior for existing
-   ownerless jobs; default is administrator-only, not globally readable.
-   A concrete optional gateway/ownership proposal against the stable core is in
-   [patches/README.md](patches/README.md), with base hashes, a ready-to-review
-   unified diff and 31 passing isolated synthetic checks. It has not been applied
-   or accepted and does not implement browser sessions.
-4. Expose non-case deployment information for the UI: hosted/private label, actual
-   processing origin/environment, limits, measured readiness/capacity, real
-   retention for originals/derivatives/temp/backups, and no-training policy.
-   Required endpoint/schema is a proposal to agree with A, not an invented route
-   that this installer calls.
-5. Verify authenticated MOV playback and byte ranges with the packaged framework.
-   `FileResponse` was observed, but code inspection is not a range/playback test.
-   The current UI fetches the complete authenticated MOV to a blob before playback;
-   it does not demonstrate authenticated streamed seeking. Preserve source PTS
-   and evidence semantics in A's pipeline.
-
-These are scoped core requests and an unapplied patch proposal, not accepted
-ownership transfers. This workstream does not edit Agent A's checkout. The shared API key
-currently protects service access but any holder can request another known job
-ID; obscure UUIDs do not create user isolation.
+Source integration and synthetic transport/session tests establish their named
+software scopes. A newly built GPU image, clean customer installation, real
+case through the new HTTPS/session stack and external hosted workflow are still
+required. The deployed stack must recheck two-account denial and later range
+requests, source-PTS/evidence links, large upload/capacity/unavailable-model
+behavior, offline analysis and persistence. Any future preview/clip/export route
+requires its own ownership enforcement and verification. Use only authorized
+development footage, with private frames reviewed locally by a human; never use
+reserved/jury data or describe operational smoke tests as accuracy results.

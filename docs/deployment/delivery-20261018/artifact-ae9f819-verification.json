@@ -1,0 +1,29 @@
+{
+  "schema_version": "forte.deployment-artifact-check/1",
+  "publisher_commit": "4030bf272f413dfbc603d7eb21dc4bbd5399a537",
+  "core_source_commit": "ae9f819c3d7063e8bcf0e51855e5b4773c1961df",
+  "archive": "/Users/itsaibarr/.cache/forte-deploy-b/delivery-20261018/forte-admin-0.2.0-4030bf2-core-ae9f819.tar.gz",
+  "archive_sha256": "a1ec585d641c5dc5ae75c20761482ccc469838cbfa621a82f8450655d1dabf62",
+  "archive_size_bytes": 1937318,
+  "byte_identical_rebuild": true,
+  "release_files_verified": 197,
+  "source_files_verified": 130,
+  "public_core_bytes_equal_previous_6c7bbe0_export": true,
+  "public_resources": 21,
+  "extracted_cli_version": "forte-admin 0.2.0",
+  "extracted_install_preview_exit": 2,
+  "installation_state_created": false,
+  "source_build_preview_ok": true,
+  "source_build_preview_runner_called": false,
+  "core_image_included": false,
+  "weight_shards_included": false,
+  "acceptance_flags": {
+    "release": false,
+    "model_workload": false,
+    "offline_analysis": false,
+    "browser_session": false,
+    "ownership": false,
+    "receipt": "verification/acceptance.json"
+  },
+  "vm_staged_or_activated": false
+}

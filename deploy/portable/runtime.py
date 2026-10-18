@@ -10,9 +10,7 @@ import hashlib
 import http.client
 import json
 import os
-import platform
 import re
-import shutil
 import signal
 import socket
 import ssl
@@ -32,6 +30,7 @@ DEFAULTS = {
     "https_port": 8443,
     "access_mode": "browser-session",
     "multi_user_uploads": False,
+    "session_port": 18002,
 }
 
 
@@ -70,7 +69,7 @@ def validate(config: dict) -> list[str]:
             or not url.hostname
             or url.username
             or url.password
-            or url.path not in {"", "/"}
+            or url.path
             or url.query
             or url.fragment
         ):
@@ -80,10 +79,15 @@ def validate(config: dict) -> list[str]:
             errors.append("origin port must match https_port")
     except (ValueError, TypeError):
         errors.append("origin must be an HTTPS origin without credentials or a path")
-    for name in ("https_port", "bridge_port"):
+    for name in ("https_port", "bridge_port", "session_port"):
         value = c.get(name, 18001)
         if type(value) is not int or not 1024 <= value <= 65535:
             errors.append(f"{name} must be an unprivileged TCP port")
+    ports = [c.get("https_port"), c.get("bridge_port", 18001), c.get("session_port", 18002)]
+    if len(set(map(str, ports))) != len(ports):
+        errors.append("HTTPS, bridge and session listener ports must be distinct")
+    if c.get("gpu_uuid") is not None and not re.fullmatch(r"GPU-[A-Za-z0-9-]+", str(c["gpu_uuid"])):
+        errors.append("gpu_uuid must identify one explicit NVIDIA device")
     # These explicit listen addresses prevent an accidental public default.
     if c["bind_address"] not in {"127.0.0.1", "0.0.0.0"}:
         errors.append("bind_address must be 127.0.0.1 or explicitly 0.0.0.0")
@@ -110,6 +114,8 @@ def validate(config: dict) -> list[str]:
         errors.append("multi_user_uploads must be boolean")
     if c["access_mode"] not in {"browser-session", "gateway-single-admin"}:
         errors.append("access_mode must be browser-session or gateway-single-admin")
+    if c.get("deployment_mode", "private") not in {"private", "hosted"}:
+        errors.append("deployment_mode must be private or hosted")
     if c["access_mode"] == "gateway-single-admin":
         if not _absolute(c.get("htpasswd_file")):
             errors.append("gateway-single-admin requires an absolute htpasswd_file")
@@ -144,6 +150,26 @@ def _load_manifest(c):
         return manifest, hashlib.sha256(raw).hexdigest()
     except (OSError, ValueError, KeyError) as exc:
         raise ValueError("Integration manifest is missing or invalid JSON") from exc
+
+
+def _acceptance_errors(c, manifest):
+    """Bind normal startup to reviewed evidence for this exact helper/image closure."""
+    import importlib.util
+
+    source = Path(__file__).with_name("acceptance_receipt.py")
+    if not source.is_file() or source.is_symlink():
+        return ["Acceptance verification component is unavailable"]
+    spec = importlib.util.spec_from_file_location("forte_acceptance_receipt", source)
+    if spec is None or spec.loader is None:
+        return ["Acceptance verification component is unavailable"]
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    required = module.FLAGS if c["access_mode"] == "browser-session" else module.FLAGS[:3]
+    errors = module.validate(manifest, c["resources_root"], required_flags=required)
+    deployment = manifest.get("deployment", {})
+    if not isinstance(deployment, dict) or deployment.get("proxy_image") != c["proxy_image"]:
+        errors.append("Configured ingress image differs from accepted deployment identity")
+    return errors
 
 
 def _manifest_errors(c, manifest, *, require_release=True):
@@ -213,7 +239,7 @@ def _manifest_errors(c, manifest, *, require_release=True):
     return errors
 
 
-def prerequisites(config: dict) -> list[str]:
+def prerequisites(config: dict, *, qualification=False) -> list[str]:
     """Read-only release/resource/security checks. No Docker or GPU operations."""
     c = _config(config)
     errors = validate(c)
@@ -229,15 +255,15 @@ def prerequisites(config: dict) -> list[str]:
     verification = manifest.get("verification", {})
     if not isinstance(verification, dict):
         return errors + ["manifest verification must be an object"]
-    for key in ("release", "model_workload", "offline_analysis"):
+    for key in () if qualification else ("release", "model_workload", "offline_analysis"):
         if verification.get(key) is not True:
             errors.append(f"core handoff has no verified {key} receipt")
-    if c["access_mode"] == "browser-session":
+    if not qualification and c["access_mode"] == "browser-session":
         if verification.get("browser_session") is not True:
             errors.append("browser session authentication is not verified")
         if verification.get("ownership") is not True:
             errors.append("per-principal job and media ownership enforcement is not verified")
-    if c["multi_user_uploads"] and verification.get("ownership") is not True:
+    if not qualification and c["multi_user_uploads"] and verification.get("ownership") is not True:
         errors.append("multi-user uploads require verified ownership enforcement")
     root = Path(c["resources_root"]).resolve()
     assets = manifest.get("assets", [])
@@ -263,28 +289,23 @@ def prerequisites(config: dict) -> list[str]:
                 errors.append("a pinned resource file failed SHA256 verification")
         except OSError:
             errors.append("a pinned resource file could not be read")
-    receipt = verification.get("receipt")
-    if (
-        not _relative(receipt)
-        or not (root / receipt).resolve().is_relative_to(root)
-        or not (root / receipt).is_file()
-    ):
-        errors.append("local release/workload verification receipt is unavailable")
+    if not qualification:
+        errors += _acceptance_errors(c, manifest)
     tls_available = True
-    for name in ("tls_cert", "tls_key"):
+    for name in () if qualification else ("tls_cert", "tls_key"):
         if not Path(c[name]).is_file():
             errors.append(f"{name} file is unavailable")
             tls_available = False
-    if tls_available:
+    if tls_available and not qualification:
         try:
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             context.load_cert_chain(c["tls_cert"], c["tls_key"])
         except (OSError, ssl.SSLError):
             errors.append("supplied TLS certificate/key could not be loaded as a matching pair")
-    if c["access_mode"] == "gateway-single-admin":
+    if not qualification and c["access_mode"] == "gateway-single-admin":
         if not Path(c["htpasswd_file"]).is_file():
             errors.append("single-administrator password file is unavailable")
-    if c["mode"] == "private" or c["access_mode"] == "gateway-single-admin":
+    if c["mode"] == "private" or not qualification:
         keyfile = Path(c["secrets_root"]) / "core-api.key"
         try:
             key = keyfile.read_text().strip()
@@ -294,122 +315,70 @@ def prerequisites(config: dict) -> list[str]:
             errors.append(
                 "private core-api.key must be a generated 32–256 character URL-safe secret"
             )
+    if not qualification and c["access_mode"] == "browser-session":
+        script = Path(__file__).resolve().parents[2] / "tools/forte-session/session_gateway.py"
+        if not script.is_file() or script.is_symlink():
+            errors.append(
+                "accepted browser session component is missing from the installation bundle"
+            )
+        try:
+            token = Path(c["secrets_root"]) / "gateway-token"
+            if (
+                token.is_symlink()
+                or token.stat().st_uid != os.getuid()
+                or token.stat().st_mode & 0o077
+                or not re.fullmatch(r"[A-Za-z0-9_-]{32,256}", token.read_text().strip())
+            ):
+                raise ValueError
+        except (OSError, ValueError):
+            errors.append(
+                "private gateway-token is missing or invalid; attach requires "
+                "the core owner's matching token"
+            )
     return errors
 
 
+def qualification_prerequisites(config: dict) -> list[str]:
+    """Mandatory provenance and resource checks for a bounded offline first load."""
+    return prerequisites(config, qualification=True)
+
+
 def host_prerequisites(config: dict) -> list[str]:
-    """Bounded read-only checks of the one supported Linux/A10080 target."""
-    c, errors = _config(config), []
-    if sys.platform != "linux" or platform.machine() not in {"x86_64", "amd64"}:
-        return ["Runtime supports Linux x86_64 only; render/preview works elsewhere"]
+    """Read-only capability checks, preserving release acceptance as a separate gate."""
+    # The administrator archive retains this repository layout. Import the same
+    # hardware inspector used by doctor even when runtime.py is loaded directly.
+    import importlib.util
+
+    path = Path(__file__).resolve().parents[2] / "tools/forte-admin/forte_admin/hardware.py"
+    spec = importlib.util.spec_from_file_location("forte_hardware", path)
+    if spec is None or spec.loader is None:
+        return ["Hardware diagnostics are missing from the administrator artifact"]
+    module = importlib.util.module_from_spec(spec)
     try:
-        release = platform.freedesktop_os_release()
-        if release.get("ID") != "ubuntu" or release.get("VERSION_ID") != "24.04":
-            errors.append("Validated runtime target is Ubuntu 24.04 x86_64")
+        spec.loader.exec_module(module)
     except OSError:
-        errors.append("Supported host OS version could not be verified")
-    if not shutil.which("docker"):
-        return ["Docker Engine with Compose v2 is required"]
+        return ["Hardware diagnostics are missing from the administrator artifact"]
+    c = _config(config)
     try:
-        result = _docker(["compose", "version", "--short"])
-        if result.returncode or not result.stdout.strip():
-            errors.append("Docker Compose v2 is unavailable")
-    except (OSError, subprocess.TimeoutExpired):
-        return ["Docker Engine or Compose is unavailable"]
+        manifest, _ = _load_manifest(c)
+    except ValueError:
+        return ["Integration manifest is missing or invalid JSON"]
+    report = module.inspect_host(c, manifest)
+    errors = list(report["blockers"])
     if c["mode"] == "private":
-        try:
-            docker_runtime = _docker(["info", "--format", "{{json .Runtimes}}"])
-            if docker_runtime.returncode or "nvidia" not in json.loads(docker_runtime.stdout):
-                errors.append(
-                    "NVIDIA Container Toolkit Docker runtime is unavailable; "
-                    "no driver/runtime changes made"
-                )
-        except (OSError, ValueError, TypeError, subprocess.TimeoutExpired):
-            errors.append("NVIDIA Container Toolkit Docker runtime could not be verified")
-        try:
-            manifest, _ = _load_manifest(c)
-            requirements = manifest.get("runtime", {}).get("requirements", {})
-            ram_gib = requirements["min_host_ram_gib"]
-            disk_gib = requirements["min_free_disk_gib"]
-            driver_major = requirements["driver_major"]
-            if (
-                type(ram_gib) not in {int, float}
-                or ram_gib <= 0
-                or type(disk_gib) not in {int, float}
-                or disk_gib <= 0
-                or type(driver_major) is not int
-                or driver_major <= 0
-            ):
-                raise ValueError
-        except (ValueError, KeyError, TypeError):
-            return errors + [
-                "Reviewed private workload RAM, free-disk and driver requirements are missing"
-            ]
-        try:
-            result = subprocess.run(
-                [
-                    "nvidia-smi",
-                    "--query-gpu=name,memory.total,driver_version",
-                    "--format=csv,noheader,nounits",
-                ],
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-            lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
-            if result.returncode or len(lines) != 1:
-                raise ValueError
-            name, memory, driver = lines[0].rsplit(",", 2)
-            if "A100" not in name or "80GB" not in name.upper() or int(memory.strip()) < 79000:
-                raise ValueError
-            if int(driver.strip().split(".")[0]) != driver_major:
-                errors.append(
-                    "Installed driver family differs from the reviewed workload; "
-                    "no driver changes made"
-                )
-            occupied = subprocess.run(
-                ["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader,nounits"],
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-            if occupied.returncode or occupied.stdout.strip():
-                errors.append(
-                    "GPU is occupied or its allocation cannot be verified; no model was started"
-                )
-        except (OSError, ValueError, subprocess.TimeoutExpired):
-            errors.append(
-                "Private runtime supports exactly one verified NVIDIA A100 80 GB; "
-                "no fallback selected"
-            )
-        try:
-            pages = os.sysconf("SC_PHYS_PAGES")
-            page_size = os.sysconf("SC_PAGE_SIZE")
-            if pages * page_size < ram_gib * 1024**3:
-                errors.append("Host RAM is below the reviewed workload requirement")
-        except (OSError, ValueError):
-            errors.append("Host physical memory could not be verified")
         for name in ("data_root", "resources_root", "secrets_root"):
             if not Path(c[name]).is_dir():
                 errors.append(
                     f"{name} must already exist; startup never creates shared resource directories"
                 )
-        if (
-            Path(c["data_root"]).is_dir()
-            and shutil.disk_usage(c["data_root"]).free < disk_gib * 1024**3
-        ):
-            errors.append(
-                "Private storage is below the reviewed free-disk requirement "
-                "after resource preparation"
-            )
     for port in (
         [c["https_port"], c.get("bridge_port", 18001)]
         if c["mode"] == "private"
         else [c["https_port"]]
-    ):
+    ) + ([c.get("session_port", 18002)] if c["access_mode"] == "browser-session" else []):
         bind = (
             "127.0.0.1"
-            if port == c.get("bridge_port", 18001) and c["mode"] == "private"
+            if port in {c.get("bridge_port", 18001), c.get("session_port", 18002)}
             else c["bind_address"]
         )
         try:
@@ -445,7 +414,7 @@ def _volume(source, target):
     }
 
 
-def render(config: dict, target: Path) -> list[Path]:
+def render(config: dict, target: Path, *, qualification=False) -> list[Path]:
     """Write only generated files inside target. No resource or secret mutation."""
     c = _config(config)
     errors = validate(c)
@@ -478,6 +447,8 @@ def render(config: dict, target: Path) -> list[Path]:
         if c["mode"] == "attach"
         else f"http://127.0.0.1:{c.get('bridge_port', 18001)}"
     )
+    if c["access_mode"] == "browser-session" and not qualification:
+        upstream = f"http://127.0.0.1:{c.get('session_port', 18002)}"
     # An unverified session layer never becomes an open shared-key gateway.
     verified = manifest.get("verification", {})
     api_enabled = c["access_mode"] == "gateway-single-admin" or (
@@ -566,6 +537,23 @@ http {{
 }}
 """
     files.append(_write(target / "nginx.conf", nginx))
+    if c["access_mode"] == "browser-session" and not qualification:
+        session = {
+            "origin": c["origin"],
+            "deployment_mode": c.get("deployment_mode", "private"),
+            "upstream": c.get("attach_upstream", "http://127.0.0.1:18000")
+            if c["mode"] == "attach"
+            else f"http://127.0.0.1:{c.get('bridge_port', 18001)}",
+            "listen_host": "127.0.0.1",
+            "listen_port": c.get("session_port", 18002),
+            "service_key_file": str(Path(c["secrets_root"]) / "core-api.key"),
+            "gateway_token_file": str(Path(c["secrets_root"]) / "gateway-token"),
+            "session_db": c.get(
+                "session_db", str(Path(c["data_root"]).parent / "auth/sessions.sqlite3")
+            ),
+            "browser_uploads_enabled": bool(api_enabled),
+        }
+        files.append(_write(target / "session-config.json", json.dumps(session, indent=2) + "\n"))
     services = {
         "ingress": {
             "image": c["proxy_image"],
@@ -605,16 +593,30 @@ http {{
         environment = manifest.get("runtime", {}).get("environment", {}) | {
             "FORTE_PRIVATE_ROOT": "/data",
             "FORTE_API_KEY_FILE": "/run/secrets/core-api.key",
+            **(
+                {"FORTE_TRUSTED_GATEWAY_TOKEN_FILE": "/run/secrets/gateway-token"}
+                if c["access_mode"] == "browser-session" and not qualification
+                else {}
+            ),
             "HF_HUB_OFFLINE": "1",
             "TRANSFORMERS_OFFLINE": "1",
             "HF_HUB_DISABLE_TELEMETRY": "1",
             "DO_NOT_TRACK": "1",
             "VLLM_NO_USAGE_STATS": "1",
         }
+        if c["access_mode"] == "browser-session" and not qualification:
+            mounts.append(
+                _volume(Path(c["secrets_root"]) / "gateway-token", "/run/secrets/gateway-token")
+            )
         services["core"] = {
             "image": c["core_image"],
             "network_mode": "none",
-            "gpus": "all",
+            "gpus": [
+                {
+                    "driver": "nvidia",
+                    **({"device_ids": [c["gpu_uuid"]]} if c.get("gpu_uuid") else {"count": 1}),
+                }
+            ],
             "restart": "unless-stopped",
             "init": True,
             "ipc": manifest.get("runtime", {}).get("ipc", "host"),
@@ -624,6 +626,8 @@ http {{
             "logging": {"driver": "none"},
         }
     compose = {"name": c["project_name"], "services": services}
+    for service in services.values():
+        service["labels"] = {"org.forte.installation": _installation_identity(target)}
     files.append(_write(target / "compose.json", json.dumps(compose, indent=2) + "\n"))
     files.append(_write(target / "installation.json", json.dumps(c, indent=2) + "\n"))
     return files
@@ -634,6 +638,10 @@ def compose_command(config: dict, target: Path, action: str) -> list[str]:
     errors = validate(c)
     if action == "up":
         errors += prerequisites(c)
+        if c.get("mode") == "private" and not c.get("gpu_uuid"):
+            errors.append(
+                "Resolve the selected GPU through install before startup; no device was selected"
+            )
     if errors:
         raise ValueError("; ".join(dict.fromkeys(errors)))
     operations = {
@@ -659,39 +667,163 @@ def _docker(args):
     return subprocess.run(["docker", *args], capture_output=True, text=True, timeout=30)
 
 
-def _container(c, target):
-    result = subprocess.run(
-        compose_command(c, target, "status")[:-3] + ["ps", "-q", "core"],
-        capture_output=True,
-        text=True,
-        timeout=30,
+def _installation_identity(target):
+    return hashlib.sha256(str(Path(target).absolute()).encode()).hexdigest()
+
+
+def _local_engine():
+    endpoint = os.environ.get("DOCKER_HOST") if not os.environ.get("DOCKER_CONTEXT") else None
+    if endpoint is None:
+        result = _docker(["context", "inspect", "--format", "{{json .Endpoints.docker.Host}}"])
+        try:
+            endpoint = json.loads(result.stdout) if not result.returncode else None
+        except ValueError:
+            endpoint = None
+    if not isinstance(endpoint, str) or not endpoint.startswith("unix:///"):
+        raise RuntimeError(
+            "A verified local Docker Unix socket is required; no remote runtime was changed"
+        )
+
+
+def _owned_services(c, target):
+    """Inspect exact container identities before reuse or any shutdown signal."""
+    _local_engine()
+    listed = _docker(
+        [
+            "ps",
+            "--all",
+            "--quiet",
+            "--filter",
+            "label=com.docker.compose.project=" + c["project_name"],
+        ]
     )
-    value = result.stdout.strip()
-    if result.returncode or not re.fullmatch(r"[0-9a-f]{12,64}", value):
-        raise RuntimeError("Installer-owned core container is not available")
-    inspected = _docker(["inspect", value])
+    if listed.returncode:
+        raise RuntimeError("Owned container inventory is unavailable; no service was changed")
+    identities = listed.stdout.split()
+    if any(not re.fullmatch(r"[0-9a-f]{12,64}", item) for item in identities):
+        raise RuntimeError("Owned container inventory is invalid; no service was changed")
+    owned = {}
+    for identity in identities:
+        inspected = _docker(["inspect", identity])
+        try:
+            item = json.loads(inspected.stdout)[0]
+            labels = item["Config"]["Labels"]
+            service = labels["com.docker.compose.service"]
+            expected_services = {"core", "ingress"} if c["mode"] == "private" else {"ingress"}
+            if (
+                inspected.returncode
+                or service not in expected_services
+                or service in owned
+                or labels.get("org.forte.installation") != _installation_identity(target)
+                or labels.get("com.docker.compose.project") != c["project_name"]
+            ):
+                raise ValueError
+            expected_image = c["core_image"] if service == "core" else c["proxy_image"]
+            image = _docker(["image", "inspect", "--format", "{{.Id}}", expected_image])
+            if (
+                image.returncode
+                or item["Image"] != image.stdout.strip()
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", image.stdout.strip())
+            ):
+                raise ValueError
+            mounts = {entry["Destination"]: entry for entry in item["Mounts"]}
+            if service == "core":
+                if (
+                    item["HostConfig"]["NetworkMode"] != "none"
+                    or mounts["/data"]["Source"] != c["data_root"]
+                    or mounts["/data"]["RW"] is not True
+                    or mounts["/resources"]["Source"] != c["resources_root"]
+                    or mounts["/resources"]["RW"] is not False
+                ):
+                    raise ValueError
+                devices = item["HostConfig"]["DeviceRequests"]
+                if (
+                    len(devices) != 1
+                    or devices[0].get("DeviceIDs") != [c.get("gpu_uuid")]
+                    or not c.get("gpu_uuid")
+                ):
+                    raise ValueError
+            elif (
+                item["HostConfig"]["NetworkMode"] != "host"
+                or mounts["/etc/nginx/nginx.conf"]["Source"]
+                != str(Path(target).absolute() / "nginx.conf")
+                or mounts["/etc/nginx/nginx.conf"]["RW"] is not False
+            ):
+                raise ValueError
+            owned[service] = {"id": identity, "running": item["State"]["Running"] is True}
+        except (ValueError, KeyError, IndexError, TypeError, AttributeError):
+            raise RuntimeError(
+                "Container release, GPU, storage or installation ownership differs; "
+                "no service was changed"
+            ) from None
+    return owned
+
+
+def owned_running(config, target):
+    c = _config(config)
+    if not (Path(target) / "compose.json").is_file():
+        return False
+    owned = _owned_services(c, target)
+    return (
+        owned.get("core", {}).get("running") is True
+        if c["mode"] == "private"
+        else owned.get("ingress", {}).get("running") is True
+    )
+
+
+def _container(c, target):
+    owned = _owned_services(c, target)
+    if owned.get("core", {}).get("running") is True:
+        return owned["core"]["id"]
+    raise RuntimeError("Installer-owned running core container is not available")
+
+
+def _bridge_state(c, target, container=None):
+    path = Path(target).absolute() / "bridge.json"
+    if path.is_symlink() or path.stat().st_uid != os.getuid() or path.stat().st_mode & 0o077:
+        raise RuntimeError("Bridge identity state is not private; no process was changed")
     try:
-        item = json.loads(inspected.stdout)[0]
-        labels = item["Config"]["Labels"]
+        state = json.loads(path.read_text())
         if (
-            labels["com.docker.compose.project"] != c["project_name"]
-            or labels["com.docker.compose.service"] != "core"
-            or item["HostConfig"]["NetworkMode"] != "none"
+            not isinstance(state, dict)
+            or type(state.get("pid")) is not int
+            or state["pid"] <= 1
+            or not re.fullmatch(r"[0-9a-f]{32}", str(state.get("token", "")))
+            or not re.fullmatch(r"[0-9a-f]{12,64}", str(state.get("container", "")))
+            or state.get("port") != c.get("bridge_port", 18001)
+            or (container and state["container"] != container)
         ):
             raise ValueError
-    except (ValueError, KeyError, IndexError, TypeError):
+        command = Path(f"/proc/{state['pid']}/cmdline").read_bytes().split(b"\0")
+        expected = [
+            str(Path(__file__).with_name("bridge.py")),
+            "--token",
+            state["token"],
+            "--state",
+            str(path),
+            "--container",
+            state["container"],
+            "--port",
+            str(state["port"]),
+        ]
+        if not all(value.encode() in command for value in expected):
+            raise ValueError
+        return state
+    except (ValueError, KeyError, TypeError):
         raise RuntimeError(
-            "Core container ownership or offline network identity does not match"
+            "Bridge process identity could not be verified; no signal sent"
         ) from None
-    return value
 
 
 def _bridge_start(c, target, container):
     target = Path(target).absolute()
     pidfile = target / "bridge.json"
     if pidfile.exists():
-        # Never silently replace a daemon; its endpoint may still be in use.
-        raise RuntimeError("Bridge state already exists; run status then stop this installation")
+        try:
+            _bridge_state(c, target, container)
+            return
+        except FileNotFoundError:
+            pidfile.unlink(missing_ok=True)
     import secrets
 
     token = secrets.token_hex(16)
@@ -733,22 +865,8 @@ def _bridge_stop(c, target):
     if sys.platform != "linux":
         raise RuntimeError("Bridge process identity verification requires the supported Linux host")
     try:
-        state = json.loads(path.read_text())
-        pid = int(state["pid"])
-        # Linux process command line verifies token, script, state and container.
-        command = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
-        expected = [
-            str(Path(__file__).with_name("bridge.py")),
-            "--token",
-            state["token"],
-            "--state",
-            str(path),
-            "--container",
-            state["container"],
-        ]
-        if not all(value.encode() in command for value in expected):
-            raise ValueError
-        os.kill(pid, signal.SIGTERM)
+        state = _bridge_state(c, target)
+        os.kill(state["pid"], signal.SIGTERM)
     except FileNotFoundError:
         path.unlink(missing_ok=True)
         return
@@ -776,6 +894,7 @@ def status(config: dict, target: Path) -> dict:
     result = {
         "mode": c["mode"],
         "origin": c["origin"],
+        "deployment_mode": c.get("deployment_mode", "private"),
         "live": False,
         "ready": False,
         "core_ready": False,
@@ -812,13 +931,14 @@ def status(config: dict, target: Path) -> dict:
         verification = manifest.get("verification", {})
         if not isinstance(verification, dict):
             raise ValueError
-        result["browser_access_verified"] = (
+        browser_release = (
             c["access_mode"] == "browser-session"
             and verification.get("browser_session") is True
             and verification.get("ownership") is True
+            and not _acceptance_errors(c, manifest)
         )
     except ValueError:
-        pass
+        browser_release = False
     result["core_ready"] = result["ready"]
     # Probe this installation's actual HTTPS listener on loopback. Use the
     # configured hostname for SNI and certificate matching; never resolve it to
@@ -852,14 +972,96 @@ def status(config: dict, target: Path) -> dict:
                     )
     except (OSError, ValueError, http.client.HTTPException, UnicodeError):
         pass
+    if browser_release and result["access_ready"]:
+        try:
+            metadata = _https_json(c, "/deployment.json")
+            session = _https_json(c, "/auth/session")
+            result["browser_access_verified"] = (
+                metadata.get("schema_version") == "forte.deployment/1"
+                and metadata.get("auth_mode") == "browser_session"
+                and metadata.get("destination") == c["origin"]
+                and metadata.get("mode") == c.get("deployment_mode", "private")
+                and metadata.get("ready") is True
+                and metadata.get("browser_uploads_enabled") is True
+                and metadata.get("training_enabled") is False
+                and metadata.get("retention") == "manual"
+                and session.get("authenticated") is False
+            )
+        except (OSError, ValueError, http.client.HTTPException, UnicodeError):
+            pass
     result["ready"] = result["core_ready"] and result["access_ready"]
     result["ok"] = result["live"] and result["ready"]
     return result
 
 
+def _https_json(c, endpoint):
+    """Probe fixed public access metadata on the actual local TLS listener."""
+    if endpoint not in {"/deployment.json", "/auth/session"}:
+        raise ValueError("Unsupported access probe")
+    origin = urllib.parse.urlsplit(c["origin"])
+    context = ssl.create_default_context()
+    context.load_verify_locations(cafile=c["tls_cert"])
+    with socket.create_connection(("127.0.0.1", c["https_port"]), timeout=3) as plain:
+        with context.wrap_socket(plain, server_hostname=origin.hostname) as secured:
+            secured.sendall(
+                (
+                    "GET "
+                    + endpoint
+                    + " HTTP/1.1\r\nHost: "
+                    + origin.netloc
+                    + "\r\nConnection: close\r\n\r\n"
+                ).encode("ascii")
+            )
+            response = http.client.HTTPResponse(secured)
+            response.begin()
+            raw = response.read(8193)
+            payload = json.loads(raw)
+            if response.status != 200 or len(raw) > 8192 or not isinstance(payload, dict):
+                raise ValueError("Access metadata is not ready")
+            return payload
+
+
+def _session_daemon(c, target, action):
+    import importlib.util
+
+    source = Path(__file__).with_name("host_daemon.py")
+    spec = importlib.util.spec_from_file_location("forte_host_daemon", source)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if action == "stop":
+        return module.stop(Path(target) / "session-daemon.json")
+    script = Path(__file__).resolve().parents[2] / "tools/forte-session/session_gateway.py"
+    return module.start(
+        script, Path(target) / "session-config.json", Path(target) / "session-daemon.json"
+    )
+
+
+def _runtime_adapter():
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        prerequisites=prerequisites, render=render, validate=validate, _load_manifest=_load_manifest
+    )
+
+
 def lifecycle(config: dict, target: Path, action: str) -> dict:
     """Run only this installation's services; return sanitized operational facts."""
     c, target = _config(config), Path(target).absolute()
+    if action == "qualify":
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "forte_qualification", Path(__file__).with_name("qualification.py")
+        )
+        if spec is None or spec.loader is None:
+            return {"ok": False, "errors": ["Qualification module is unavailable"]}
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.qualify(
+            c,
+            target,
+            __import__(__name__, fromlist=["*"]) if __name__ in sys.modules else _runtime_adapter(),
+        )
     if action == "status":
         return status(c, target)
     if action == "logs":
@@ -872,9 +1074,31 @@ def lifecycle(config: dict, target: Path, action: str) -> dict:
     try:
         command = compose_command(c, target, action)
         if action == "up":
-            host_errors = host_prerequisites(c)
-            if host_errors:
-                raise ValueError("; ".join(host_errors))
+            owned = _owned_services(c, target)
+            existing_core = owned.get("core", {}).get("running") is True
+            resuming = existing_core or (
+                c["mode"] == "attach" and owned.get("ingress", {}).get("running") is True
+            )
+            if not resuming:
+                if c["mode"] == "private" and (
+                    owned.get("ingress", {}).get("running") is True
+                    or (target / "session-daemon.json").exists()
+                    or (target / "bridge.json").exists()
+                ):
+                    # A stopped model still needs fresh GPU and free-port checks.
+                    # Release only verified access helpers before those probes.
+                    if c["access_mode"] == "browser-session":
+                        _session_daemon(c, target, "stop")
+                    _bridge_stop(c, target)
+                    ingress = owned.get("ingress", {})
+                    if (
+                        ingress.get("running") is True
+                        and _docker(["stop", ingress["id"]]).returncode
+                    ):
+                        raise RuntimeError("Owned ingress could not be stopped for recovery")
+                host_errors = host_prerequisites(c)
+                if host_errors:
+                    raise ValueError("; ".join(host_errors))
             render(c, target)
             # No implicit downloads and no rebuild of a changing application.
             for image in {c["proxy_image"], *([c["core_image"]] if c["mode"] == "private" else [])}:
@@ -884,23 +1108,23 @@ def lifecycle(config: dict, target: Path, action: str) -> dict:
                         "acquire it explicitly before startup"
                     )
             if c["mode"] == "private":
-                # Create no duplicate model if the project is already running.
-                running = subprocess.run(
-                    compose_command(c, target, "status"), capture_output=True, text=True, timeout=30
-                )
-                if running.returncode == 0 and running.stdout.strip() not in {"", "[]"}:
-                    raise ValueError(
-                        "Installation already has services; "
-                        "use status or stop before applying a release"
+                if not existing_core:
+                    core_command = command[:-4] + ["up", "-d", "--pull", "never", "core"]
+                    started = subprocess.run(
+                        core_command, capture_output=True, text=True, timeout=120
                     )
-                core_command = command[:-4] + ["up", "-d", "--pull", "never", "core"]
-                started = subprocess.run(core_command, capture_output=True, text=True, timeout=120)
-                if started.returncode:
-                    raise RuntimeError(
-                        "Owned core startup failed; existing services were not changed"
-                    )
+                    if started.returncode:
+                        raise RuntimeError(
+                            "Owned core startup failed; existing services were not changed"
+                        )
                 _bridge_start(c, target, _container(c, target))
-            result = subprocess.run(command, capture_output=True, text=True, timeout=120)
+            if c["access_mode"] == "browser-session":
+                _session_daemon(c, target, "start")
+            # Start only ingress here; re-running Compose for core could restart
+            # the model during an administrator's readiness retry.
+            result = subprocess.run(
+                command + ["ingress"], capture_output=True, text=True, timeout=120
+            )
         elif action == "stop":
             try:
                 compose = json.loads((target / "compose.json").read_text())
@@ -911,9 +1135,15 @@ def lifecycle(config: dict, target: Path, action: str) -> dict:
                 raise RuntimeError(
                     "Rendered profile ownership does not match; no services stopped"
                 ) from None
+            owned = _owned_services(c, target)
+            if c["access_mode"] == "browser-session":
+                _session_daemon(c, target, "stop")
             if c["mode"] == "private":
                 _bridge_stop(c, target)
-            result = subprocess.run(command, capture_output=True, text=True, timeout=120)
+            identities = [item["id"] for item in owned.values() if item["running"]]
+            result = (
+                _docker(["stop", *identities]) if identities else subprocess.CompletedProcess([], 0)
+            )
         else:
             raise ValueError("unsupported deployment operation")
         if result.returncode:
@@ -921,6 +1151,7 @@ def lifecycle(config: dict, target: Path, action: str) -> dict:
         if action == "up":
             report = status(c, target)
             report["started"] = True
+            report["already_running"] = resuming
             if not report["core_ready"]:
                 report["message"] = (
                     "Services started; model warmup/readiness is still pending. Run status."
