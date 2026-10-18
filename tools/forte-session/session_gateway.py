@@ -39,6 +39,7 @@ LIMITS = {
     "upload_timeout_seconds": 30,
     "job_timeout_seconds": 270,
 }
+LOGIN_BODY_TIMEOUT_SECONDS = 5
 SENSITIVE = {
     "host",
     "cookie",
@@ -105,6 +106,13 @@ def _length(headers):
     if len(values) > 1 or values and LENGTH.fullmatch(values[0]) is None:
         raise Unavailable
     return int(values[0]) if values else None
+
+
+def _remaining(deadline):
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise TimeoutError
+    return remaining
 
 
 class OneConnection(http.client.HTTPConnection):
@@ -362,9 +370,20 @@ class GatewayHandler(BaseHTTPRequestHandler):
             self.wfile.write(raw)
 
     def validated_request(self):
-        if len(self.path) > 8192 or not self.path.startswith("/") or self.path.startswith("//"):
+        # BaseHTTPRequestHandler normalizes leading // before dispatch. Reject
+        # the original target, rather than accepting its rewritten path.
+        words = self.raw_requestline.decode("iso-8859-1").split()
+        if len(words) != 3:
             raise ValueError
-        parsed = urlsplit(self.path)
+        target = words[1]
+        if (
+            target != self.path
+            or len(target) > 8192
+            or not target.startswith("/")
+            or target.startswith("//")
+        ):
+            raise ValueError
+        parsed = urlsplit(target)
         decoded = unquote(parsed.path)
         if (
             (
@@ -397,6 +416,23 @@ class GatewayHandler(BaseHTTPRequestHandler):
         if self.command in {"GET", "HEAD"} and length:
             raise ValueError
         return parsed.path, length or 0
+
+    def body_blocks(self, length, deadline):
+        """Read available bytes once, then recheck the absolute body deadline.
+
+        Buffered read(n) may perform many socket reads to fill n; a continuous
+        trickle can reset its idle timeout indefinitely. read1 performs at most
+        one raw read, so every incoming block returns to the monotonic check.
+        """
+        remaining = length
+        while remaining:
+            self.connection.settimeout(_remaining(deadline))
+            block = self.rfile.read1(min(65536, remaining))
+            _remaining(deadline)
+            if not block:
+                raise ValueError
+            remaining -= len(block)
+            yield block
 
     def session_token(self):
         tokens = []
@@ -433,10 +469,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             or self.headers.get("Content-Type", "").split(";", 1)[0].strip() != "application/json"
         ):
             return self.json_response(400, {"error": {"code": "request_rejected"}})
-        self.connection.settimeout(5)
-        raw = self.rfile.read(length)
-        if len(raw) != length:
-            raise ValueError
+        raw = b"".join(self.body_blocks(length, time.monotonic() + LOGIN_BODY_TIMEOUT_SECONDS))
         try:
             credentials = json.loads(raw)
             if not isinstance(credentials, dict) or set(credentials) != {"username", "password"}:
@@ -484,18 +517,10 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 connection.putheader("Content-Length", str(length))
             connection.endheaders()
             upload_deadline = time.monotonic() + self.gateway.limits["upload_timeout_seconds"]
-            remaining = length
-            while remaining:
-                timeout = upload_deadline - time.monotonic()
-                if timeout <= 0:
-                    raise TimeoutError
-                self.connection.settimeout(timeout)
-                connection.sock.settimeout(timeout)
-                block = self.rfile.read(min(65536, remaining))
-                if not block:
-                    raise ValueError
+            for block in self.body_blocks(length, upload_deadline):
+                connection.sock.settimeout(_remaining(upload_deadline))
                 connection.send(block)
-                remaining -= len(block)
+                _remaining(upload_deadline)
             deadline = time.monotonic() + self.gateway.limits["job_timeout_seconds"]
             connection.sock.settimeout(self.gateway.limits["job_timeout_seconds"])
             response = connection.getresponse()
@@ -539,18 +564,19 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 return
             copied = 0
             while True:
-                timeout = deadline - time.monotonic()
-                if timeout <= 0:
-                    raise TimeoutError
+                timeout = _remaining(deadline)
                 if connection.sock is not None:
                     connection.sock.settimeout(timeout)
-                block = response.read(min(65536, maximum - copied + 1))
+                block = response.read1(min(65536, maximum - copied + 1))
+                _remaining(deadline)
                 if not block:
                     break
                 copied += len(block)
                 if copied > maximum:
                     raise Unavailable
+                self.connection.settimeout(_remaining(deadline))
                 self.wfile.write(block)
+                _remaining(deadline)
             if size is not None and copied != size:
                 raise Unavailable
         finally:
