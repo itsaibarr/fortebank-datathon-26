@@ -10,10 +10,12 @@ import argparse
 import collections
 import hashlib
 import hmac
+import http.client
 import json
 import os
 import re
 import signal
+import socket
 import stat
 import sys
 import threading
@@ -208,6 +210,34 @@ class JuryGateway(Gateway):
             self.bindings.update({key: identity[0] for key, identity in keys.items()})
             return keys
 
+    def jury_ready_on(self, connection, original):
+        self.same_socket(connection, original)
+        connection.request("GET", "/health/ready")
+        response = connection.getresponse()
+        size = _length(response.headers)
+        if (
+            response.will_close
+            or size is None
+            or size > 4096
+            or response.headers.get_all("Transfer-Encoding")
+        ):
+            raise Unavailable
+        raw = response.read(4097)
+        if len(raw) != size:
+            raise Unavailable
+        value = json.loads(raw, object_pairs_hook=unique_object)
+        self.same_socket(connection, original)
+        if response.status == 200 and value == {"status": "ready"}:
+            return True
+        if (
+            response.status == 503
+            and response.headers.get_all("Retry-After") == ["5"]
+            and value
+            == {"error": {"code": "model_not_ready", "message": "The local model is not ready."}}
+        ):
+            return False
+        raise Unavailable
+
     def authenticate(self, credential):
         keys = self.load_keys()  # Revocation is effective on the next admitted request.
         if not isinstance(credential, str) or KEY.fullmatch(credential) is None:
@@ -218,6 +248,90 @@ class JuryGateway(Gateway):
             if hmac.compare_digest(digest, known) and enabled:
                 principal = identity
         return principal
+
+
+def shutdown_socket(connection, how):
+    try:
+        connection.shutdown(how)
+    except OSError:
+        pass
+
+
+class UploadPump:
+    """One bounded uploader while the handler reads the same socket's response.
+
+    The uploader only uses the already checked socket's sendall: it cannot ask
+    HTTPConnection to reconnect. Response parsing stays in the handler thread.
+    Shutdown of these request-owned socket halves wakes an idle reader or writer.
+    """
+
+    def __init__(self, handler, upstream, length, timeout):
+        self.handler, self.upstream, self.length = handler, upstream, length
+        self.deadline = time.monotonic() + timeout
+        self.stop = threading.Event()
+        self.done = threading.Event()
+        self.failed = False
+        self.sent = 0
+        self.worker = threading.Thread(target=self.run, name="forte-jury-upload", daemon=True)
+        self.timer = threading.Timer(timeout, self.abort)
+        self.timer.name = "forte-jury-upload-deadline"
+        self.timer.daemon = True
+
+    def start(self):
+        self.timer.start()
+        self.worker.start()
+
+    def abort(self):
+        if not self.done.is_set() and not self.stop.is_set():
+            self.failed = True
+            self.stop.set()
+            shutdown_socket(self.handler.connection, socket.SHUT_RD)
+            shutdown_socket(self.upstream, socket.SHUT_RDWR)
+
+    def run(self):
+        try:
+            while self.sent < self.length and not self.stop.is_set():
+                remaining = self.deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError
+                self.handler.connection.settimeout(remaining)
+                block = self.handler.rfile.read1(min(65536, self.length - self.sent))
+                if self.stop.is_set():
+                    break
+                if not block or time.monotonic() >= self.deadline:
+                    raise ValueError
+                self.upstream.sendall(block)
+                self.sent += len(block)
+                if time.monotonic() >= self.deadline:
+                    raise TimeoutError
+        except Exception:
+            if not self.stop.is_set():
+                self.failed = True
+                self.stop.set()
+                shutdown_socket(self.upstream, socket.SHUT_RDWR)
+        finally:
+            self.done.set()
+            self.timer.cancel()
+
+    def close(self):
+        self.stop.set()
+        self.timer.cancel()
+        if not self.done.is_set():
+            shutdown_socket(self.handler.connection, socket.SHUT_RD)
+            shutdown_socket(self.upstream, socket.SHUT_WR)
+        if self.worker.ident is not None:
+            self.worker.join(1)
+        if self.timer.ident is not None:
+            self.timer.join(1)
+        if self.worker.is_alive() or self.timer.is_alive():
+            shutdown_socket(self.upstream, socket.SHUT_RDWR)
+            shutdown_socket(self.handler.connection, socket.SHUT_RD)
+            if self.worker.ident is not None:
+                self.worker.join(1)
+            if self.timer.ident is not None:
+                self.timer.join(1)
+            if self.worker.is_alive() or self.timer.is_alive():
+                raise Unavailable
 
 
 class JuryHandler(GatewayHandler):
@@ -232,9 +346,19 @@ class JuryHandler(GatewayHandler):
         if upload and not self.gateway.uploads:
             return self.json_response(403, {"error": {"code": "uploads_disabled"}})
         connection, original = self.gateway.checked_connection(principal)
+        pump = response = watchdog = None
         try:
-            if upload:
-                self.gateway.ready_on(connection, original)
+            if upload and not self.gateway.jury_ready_on(connection, original):
+                return self.json_response(
+                    503,
+                    {
+                        "error": {
+                            "code": "model_not_ready",
+                            "message": "The local model is not ready.",
+                        }
+                    },
+                    {"Retry-After": "5"},
+                )
             self.gateway.same_socket(connection, original)
             connection.putrequest(self.command, self.path, skip_accept_encoding=True)
             for key, value in self.headers.items():
@@ -246,26 +370,34 @@ class JuryHandler(GatewayHandler):
             if upload:
                 connection.putheader("Content-Length", str(length))
             connection.endheaders()
-            upload_deadline = time.monotonic() + self.gateway.limits["upload_timeout_seconds"]
-            remaining = length
-            while remaining:
-                timeout = upload_deadline - time.monotonic()
-                if timeout <= 0:
-                    raise TimeoutError
-                self.connection.settimeout(timeout)
-                connection.sock.settimeout(timeout)
-                block = self.rfile.read1(min(65536, remaining))
-                if not block:
-                    raise ValueError
-                timeout = upload_deadline - time.monotonic()
-                if timeout <= 0:
-                    raise TimeoutError
-                connection.sock.settimeout(timeout)
-                connection.send(block)
-                remaining -= len(block)
             deadline = time.monotonic() + self.gateway.limits["job_timeout_seconds"]
-            connection.sock.settimeout(self.gateway.limits["job_timeout_seconds"])
-            response = connection.getresponse()
+            original.settimeout(self.gateway.limits["job_timeout_seconds"])
+
+            def expire_response():
+                # Closing the checked request socket bounds header parsing too;
+                # an idle or trickling upstream cannot reset this absolute timer.
+                shutdown_socket(original, socket.SHUT_RDWR)
+                if pump is not None:
+                    pump.stop.set()
+                    shutdown_socket(self.connection, socket.SHUT_RD)
+
+            watchdog = threading.Timer(self.gateway.limits["job_timeout_seconds"], expire_response)
+            watchdog.name = "forte-jury-response-deadline"
+            watchdog.daemon = True
+            watchdog.start()
+            if upload:
+                pump = UploadPump(
+                    self, original, length, self.gateway.limits["upload_timeout_seconds"]
+                )
+                pump.start()
+            # HTTPResponse parses only the already checked socket. Direct use
+            # avoids HTTPConnection's response-driven close racing the uploader.
+            response = http.client.HTTPResponse(original, method=self.command)
+            response.begin()
+            if pump is not None:
+                pump.close()  # Early final response stops even a headers-only client.
+                if response.status < 400 and (pump.failed or pump.sent != length):
+                    raise Unavailable
             headers = response.headers
             counts = collections.Counter(key.lower() for key in headers)
             if (
@@ -350,7 +482,17 @@ class JuryHandler(GatewayHandler):
                     self.connection.settimeout(timeout)
                     self.wfile.write(block)
         finally:
-            connection.close()
+            try:
+                if pump is not None:
+                    pump.close()
+            finally:
+                if watchdog is not None:
+                    watchdog.cancel()
+                    if watchdog.ident is not None:
+                        watchdog.join(1)
+                if response is not None:
+                    response.close()
+                connection.close()
 
     def dispatch(self):
         try:
@@ -366,11 +508,10 @@ class JuryHandler(GatewayHandler):
                 raise ValueError
         except (ValueError, Unavailable):
             return self.json_response(400, {"error": {"code": "request_rejected"}})
-        method = "POST" if path == "/api/v1/analyze" else "GET" if JOB.fullmatch(path) else None
+        job_path = re.fullmatch(r"/api/v1/jobs/[^/]+", path) is not None
+        method = "POST" if path == "/api/v1/analyze" else "GET" if job_path else None
         if method is None:
             return self.json_response(404, {"error": {"code": "not_found"}})
-        if self.command != method:
-            return self.json_response(405, {"error": {"code": "method_not_allowed"}})
         try:
             principal = self.gateway.authenticate(self.headers.get("X-API-Key"))
         except (OSError, ValueError, UnicodeError, TypeError, KeyError):
@@ -379,6 +520,18 @@ class JuryHandler(GatewayHandler):
             )
         if principal is None:
             return self.json_response(401, {"error": {"code": "authentication_required"}})
+        if self.command != method:
+            return self.json_response(405, {"error": {"code": "method_not_allowed"}})
+        if job_path and JOB.fullmatch(path) is None:
+            return self.json_response(
+                422,
+                {
+                    "error": {
+                        "code": "invalid_request",
+                        "message": "Invalid request fields or job ID.",
+                    }
+                },
+            )
         if method == "POST" and not self.headers.get_all("Content-Length"):
             return self.json_response(411, {"error": {"code": "request_rejected"}})
         return self.forward_jury(length, principal)
