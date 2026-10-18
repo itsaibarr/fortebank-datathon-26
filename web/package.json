@@ -10,7 +10,7 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test lib/browser-session.test.mjs"
+    "test": "node --experimental-strip-types --test lib/*.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

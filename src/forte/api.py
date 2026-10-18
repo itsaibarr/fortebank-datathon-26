@@ -1,10 +1,12 @@
 """Exact asynchronous jury API; one process, private files, no external inference."""
 
 import asyncio
+import copy
 import hashlib
 import hmac
 import json
 import re
+import shutil
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -20,7 +22,14 @@ from starlette.formparsers import MultiPartException, MultiPartParser
 from forte.contracts import AcceptedJob, FailedJob, ProcessingJob
 from forte.contracts_v2 import CorrectionRequest, ReasoningDoneJob
 from forte.inference import LocalVLM
-from forte.jobs import JobStore, failure, probe, run_worker
+from forte.jobs import (
+    JobStore,
+    failure,
+    freeze_reasoning_configuration,
+    probe,
+    reasoning_configuration,
+    run_worker,
+)
 from forte.settings import Settings
 
 
@@ -116,6 +125,11 @@ async def upload_stream(request, settings):
 
 
 def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=None):
+    if settings.v1_pipeline not in {"legacy", "reasoning"}:
+        raise ValueError("Select an explicit v1 pipeline: legacy or reasoning")
+    v1_reasoning = settings.v1_pipeline == "reasoning"
+    if v1_reasoning and settings.reasoning_config is None:
+        raise ValueError("The reasoning v1 pipeline requires an explicit reasoning configuration")
     backend = LocalVLM(
         settings.model_url,
         settings.model_name,
@@ -176,22 +190,47 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                 "ownerless_jobs_denied": True,
             }
 
-    async def process(id, deadline, version=1):
+    async def process(id, deadline, version=1, *, reasoning=False, frozen_configuration=None):
         nonlocal admitted
         try:
             remaining = max(0.001, deadline - time.monotonic())
-            selected_runner = reasoning_runner if version == 2 else runner
+            selected_runner = reasoning_runner if reasoning else runner
             operation = (
                 selected_runner(store.directory(id), id, deadline)
                 if selected_runner
-                else run_worker(store.directory(id), id, deadline, settings, reasoning=version == 2)
+                else run_worker(
+                    store.directory(id),
+                    id,
+                    deadline,
+                    settings,
+                    reasoning=reasoning,
+                    frozen_configuration=frozen_configuration,
+                )
             )
             result = await asyncio.wait_for(operation, remaining)
+            if result.job_id != id:
+                raise ValueError("Job ID mismatch")
+            if version == 1 and reasoning and result.status == "done":
+                if not isinstance(result, ReasoningDoneJob):
+                    raise ValueError("The reasoning runner returned another result type")
+                from forte.jury_projection import project_reasoning_to_v1
+
+                snapshot = copy.copy(settings)
+                snapshot.reasoning_config = frozen_configuration
+                result = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        project_reasoning_to_v1,
+                        id,
+                        result.result,
+                        store.directory(id),
+                        snapshot,
+                        deadline=deadline,
+                    ),
+                    max(0.001, deadline - time.monotonic()),
+                )
             if time.monotonic() > deadline:
                 store.finish(failure(id, "processing_timeout"))
                 return
-            if result.job_id != id:
-                raise ValueError("Job ID mismatch")
             if (version == 2) != isinstance(result, ReasoningDoneJob) and result.status == "done":
                 raise ValueError("Wrong API result version")
             store.finish(result)
@@ -200,6 +239,15 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
         except asyncio.CancelledError:
             store.finish(failure(id, "interrupted"))
             raise
+        except ValueError as exc:
+            store.finish(
+                failure(
+                    id,
+                    "insufficient_evidence"
+                    if str(exc) == "insufficient_evidence"
+                    else "analysis_failed",
+                )
+            )
         except Exception:
             store.finish(failure(id, "analysis_failed"))
         finally:
@@ -373,6 +421,20 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
         id = uuid4()
         directory = store.directory(id)
         try:
+            reasoning = version == 2 or v1_reasoning
+            snapshot = None
+            if reasoning and settings.reasoning_config is not None:
+                try:
+                    snapshot = copy.copy(settings)
+                    snapshot.reasoning_config = await asyncio.to_thread(
+                        reasoning_configuration, settings
+                    )
+                except (OSError, TypeError, ValueError) as exc:
+                    raise Problem(
+                        503,
+                        "reasoning_config_invalid",
+                        "The local reasoning configuration is unavailable.",
+                    ) from exc
             if not await asyncio.to_thread(ready):
                 raise Problem(503, "model_not_ready", "The local model is not ready.")
             try:
@@ -419,14 +481,31 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                     )
             except (ValueError, TimeoutError) as exc:
                 raise Problem(415, "invalid_video", "Unsupported or corrupt video.") from exc
+            frozen = freeze_reasoning_configuration(directory, snapshot) if snapshot else None
             store.create(id)
             from forte.jobs import atomic_json
 
             metadata = {"api_version": version}
+            if frozen is not None:
+                metadata["pipeline"] = "reasoning"
+                metadata["reasoning_config_sha256"] = hashlib.sha256(
+                    frozen.read_bytes()
+                ).hexdigest()
+            if version == 1 and reasoning:
+                metadata["pipeline"] = "reasoning"
+                metadata["projection"] = "forte.jury-v1/1"
             if settings.trusted_gateway_token is not None:
                 metadata["owner_principal"] = request.state.forte_principal
             atomic_json(directory / "request.json", metadata)
-            task = asyncio.create_task(process(id, started + settings.job_timeout, version))
+            task = asyncio.create_task(
+                process(
+                    id,
+                    started + settings.job_timeout,
+                    version,
+                    reasoning=reasoning,
+                    frozen_configuration=frozen,
+                )
+            )
             tasks.add(task)
             task.add_done_callback(tasks.discard)
             queued = True
@@ -446,8 +525,7 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                 await form.close()
             if not queued:
                 if directory.exists():
-                    (directory / "input.mov").unlink(missing_ok=True)
-                    directory.rmdir()
+                    shutil.rmtree(directory)
                 async with lock:
                     admitted -= 1
 

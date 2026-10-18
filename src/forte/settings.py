@@ -18,8 +18,15 @@ class Settings:
     reasoning_config: Path | dict | None = None
     frontend_root: Path | None = None
     trusted_gateway_token: str | None = None
+    v1_pipeline: str = "legacy"
 
     def __post_init__(self):
+        if self.v1_pipeline not in {"legacy", "reasoning"}:
+            raise ValueError("Select an explicit v1 pipeline: legacy or reasoning")
+        if self.v1_pipeline == "reasoning" and self.reasoning_config is None:
+            raise ValueError(
+                "The reasoning v1 pipeline requires an explicit reasoning configuration"
+            )
         if len(self.api_key) < 16 or not self.api_key.isascii():
             raise ValueError("Set a separate service API key of at least 16 ASCII characters")
         if self.trusted_gateway_token is not None and (
@@ -64,4 +71,5 @@ class Settings:
                 if os.environ.get("FORTE_FRONTEND_ROOT")
                 else None
             ),
+            v1_pipeline=os.environ.get("FORTE_V1_PIPELINE", "legacy"),
         )
