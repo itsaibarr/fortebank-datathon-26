@@ -10,21 +10,55 @@
 - Owned paths: `deploy/portable/`, `tools/forte-admin/`, `docs/deployment/` and
   focused `tests/deployment/`. Core schemas, model/serving parameters, legal
   semantics, UI and final live cutover remain Agent A's ownership.
-- Current deployment checkout before this receipt: clean `8d3c0d2`.
+- The operational documentation chain starts at `8d3c0d2`; the current B head
+  and standalone receipts are recorded in the shared ledger's B reservation.
   Agent A's isolated integration checkout is
   `/Users/itsaibarr/.t3/worktrees/fortebank-datathon-26/t3-ca5de3e3`, branch
-  `t3/review-agent-b-integration`, checkpoint `e4814e2`.
+  `t3/review-agent-b-integration`. Its final application snapshot is
+  `ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3`.
 - Shared source reservations are now recorded in
   `/Users/itsaibarr/conductor/repos/fortebank-datathon-26/.git/forte-coordination/ledger.json`,
   with integrator identity in `owner.json`. Updates use `fcntl.flock` on the
   adjacent `coordination.lock`, preserve peer entries and replace JSON atomically.
-  This source lock is separate from the held GPU lifecycle lock.
+  This source lock is separate from the GPU lifecycle lock.
 
 The final publisher commit and file hashes are recorded in the administrator
 archive's `RELEASE.json`. Stable source integration does not approve an image or
-activate a runtime. No VM/GPU process, driver, firewall, DNS or live ingress was
+activate a runtime. No core/API/model process, driver, firewall, DNS or live ingress was
 changed by this lane. No additional paid machine, GPU workload or heavyweight
 image build was run. Agent A remains the default release integrator.
+
+## Final operational state
+
+The evaluation lifecycle is closed. TEST's public receipt
+`.context/verify/mechanic-validation-lifecycle-20261018.json`, integrated at
+`2fd219175fe61ebb389568a11e74615a4acdb692`, reports zero provider VMs and volumes
+at **2026-10-18 01:03:11 UTC**. All three baseline archives and 436 file hashes,
+plus the final runtime archive's three checks, were restored locally. Observed
+shared spend was $1.379332437 against the $3 cap, subject to billing settlement.
+No deadline was extended. There is no active deployment VM or verified live
+hosted URL. Agent B has no further VM, model, build or service operation queued.
+
+The final application-source GPU/API test was not executed: the separate-process
+proposal missed the agreed 01:00 start cutoff. Earlier real baseline inference
+and B's unchanged-core transport checks do not validate the final application.
+Session, private-installer, public HTTPS/browser and quality acceptance remain
+unestablished.
+
+The new source/admin archive exports exact application commit `ebb3d82` from a
+separate clean detached publisher at that same full commit. Its filename is
+`forte-admin-0.2.0-integrated-ebb3d82e8728.tar.gz`, SHA256
+`5a22ba3def3af670c4862d64edf26257a476e51be3598f51fd153aacb324a7b9`,
+1,901,392 bytes. Two local builds are byte-identical. The original `e55c077`
+archive, SHA256 `7fdd77bfd6e8485254395a7c0a7fa9338ed993430037ae5ea35e830ce79f2b41`,
+is unchanged. Lifecycle closure is documented separately; the completed archive
+is not overwritten or relabeled to a later documentation commit.
+The [release and closure receipt](release-ebb3d82-verification.json) records all
+192 release hashes, the complete 128-file immutable Git source export, 21 public
+assets, extracted CLI/import/preview checks and two identical builds. Matching
+`.verification.json` and `.checks.json` sidecars sit beside the archive. All five
+installer acceptance flags remain false; no image build or final-source model
+execution is implied.
 
 ## Implemented independent deliverables
 
@@ -147,10 +181,11 @@ this new source image or access stack.
 
 1. On an existing authorized customer/VM host, assign one runtime owner and a
    bounded GPU window. Inspect available capacity, disk, active jobs and budget
-   before changing any runtime. VM `1108722` is reserved to the mechanic tester
-   until its explicit preservation handoff; no live hosted URL is verified.
-   Any subsequent build, attach or cutover needs a new bounded engineering
-   handoff within the unchanged timer and cumulative budget.
+   before changing any runtime. VM `1108722` has been deleted after complete
+   preservation; no active deployment target or live hosted URL remains. No new
+   rental is authorized by this handoff. Further real-installation or external
+   access checks require a separately assigned existing authorized environment
+   and bounded runtime handoff; source packaging does not create that resource.
 2. Build/import the new pinned core image and public resources. Run the local
    qualification on the actual selected device, retain the new immutable image
    and model/corpus/configuration fingerprints, and review the host-specific
