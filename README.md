@@ -2,7 +2,7 @@
 
 Source-bound video review for cash operations. Forte Review turns an authorized MOV into a chronological review of possible issues, original timestamped JPEG evidence and explicit legal-condition findings. It preserves uncertainty and human corrections so a reviewer can check what supports each result.
 
-[**Try the live UI demo**](https://fortebank-review-demo.vercel.app) · [**Jury documentation**](docs-site/introduction.mdx) · [**v1 API contract**](contracts/api-contract.json) · [**v2 review API**](contracts/reasoning-api-contract.json)
+[**Try the live UI demo**](https://fortebank-review-demo.vercel.app) · [**Jury documentation**](https://datathon-f289adc4.mintlify.site/introduction) · [**v1 API contract**](contracts/api-contract.json) · [**v2 review API**](contracts/reasoning-api-contract.json)
 
 > **Current boundary:** the Vercel site is a generated-data interface demo. Click **Load sample review**; no account is required. It does not analyze your own video or connect to the GPU evaluation. Real inference requires a prepared, authorized local CUDA service. Recognition and legal accuracy have not passed acceptance.
 
@@ -42,7 +42,7 @@ The selected `frozen27b` profile pins Qwen/Qwen3.8-27B revision `1d4bf0f2ff6012f
 The repository is currently private; authorized GitHub access is required. The documentation is validated against application source `ae9f819c3d7063e8bcf0e51855e5b4773c1961df`.
 
 ```bash
-git clone https://github.com/itsaibarr/fortebank-datathon-26.git
+git clone --branch main https://github.com/itsaibarr/fortebank-datathon-26.git
 cd fortebank-datathon-26
 uv sync --frozen
 uv run forte --help
@@ -62,11 +62,11 @@ npm --prefix web run lint
 npm --prefix web run build
 ```
 
-The export is `web/out`. A standalone frontend server does not supply sessions or the inference API. Follow [installation](docs-site/guides/installation.mdx), [environment configuration](docs-site/guides/configuration.mdx) and [startup/readiness](docs-site/guides/operations.mdx) for the real service. Compatible Linux x86_64/NVIDIA CUDA hardware and hash-verified public model/tracking/legal assets are separate prerequisites.
+The export is `web/out`. A standalone frontend server does not supply sessions or the inference API. Follow [installation](https://datathon-f289adc4.mintlify.site/guides/installation), [environment configuration](https://datathon-f289adc4.mintlify.site/guides/configuration) and [startup/readiness](https://datathon-f289adc4.mintlify.site/guides/operations) for the real service. Compatible Linux x86_64/NVIDIA CUDA hardware and hash-verified public model/tracking/legal assets are separate prerequisites.
 
 ## API usage
 
-[Generate or configure a private service key](docs-site/api/authentication.mdx). Set `BASE_URL` to your own ready inference origin, `SAMPLE_FILE` to an authorized MOV and `FORTE_EXAMPLE_ROOT` to private client storage. The demo URL is not that origin.
+[Generate or configure a private service key](https://datathon-f289adc4.mintlify.site/api/authentication). Set `BASE_URL` to your own ready inference origin, `SAMPLE_FILE` to an authorized MOV and `FORTE_EXAMPLE_ROOT` to private client storage. The demo URL is not that origin.
 
 ```bash
 curl --fail-with-body --silent --show-error \
@@ -76,11 +76,11 @@ curl --fail-with-body --silent --show-error \
   "$BASE_URL/api/v1/analyze"
 ```
 
-POST returns **202 with `job_id`**. Poll `GET /api/v1/jobs/{job_id}` with the same `X-API-Key` until `processing` becomes `done` or `failed`. A successful v1 result uses only `violation` or `no_violation`; supported events contain one to three original JPEGs and source timestamps. See the [complete v1 workflow](docs-site/api/v1.mdx).
+POST returns **202 with `job_id`**. Poll `GET /api/v1/jobs/{job_id}` with the same `X-API-Key` until `processing` becomes `done` or `failed`. A successful v1 result uses only `violation` or `no_violation`; supported events contain one to three original JPEGs and source timestamps. See the [complete v1 workflow](https://datathon-f289adc4.mintlify.site/api/v1).
 
-[V2](docs-site/api/v2.mdx) adds original source/evidence resources, participants, legal conditions, coverage, corrections and reports. `done` with `insufficient_evidence` is a successful abstention, not a clean negative. V1 defaults to the legacy detector; explicit `FORTE_V1_PIPELINE=reasoning` requires the reasoning configuration and conservatively projects into the unchanged jury schema.
+[V2](https://datathon-f289adc4.mintlify.site/api/v2) adds original source/evidence resources, participants, legal conditions, coverage, corrections and reports. `done` with `insufficient_evidence` is a successful abstention, not a clean negative. V1 defaults to the legacy detector; explicit `FORTE_V1_PIPELINE=reasoning` requires the reasoning configuration and conservatively projects into the unchanged jury schema.
 
-Actual limits: MOV, 256 MiB complete multipart body, 180 seconds, 30-second upload deadline, 270-second job budget and two admitted jobs. Readiness must be 200 before upload. See [errors](docs-site/api/errors.mdx).
+Actual limits: MOV, 256 MiB complete multipart body, 180 seconds, 30-second upload deadline, 270-second job budget and two admitted jobs. Readiness must be 200 before upload. See [errors](https://datathon-f289adc4.mintlify.site/api/errors).
 
 ## Verified results and reproducibility
 
@@ -94,11 +94,11 @@ Actual limits: MOV, 256 MiB complete multipart body, 180 seconds, 30-second uplo
 
 The historical final production delta was not fully preserved. Do not claim complete result replay from that archive. The current evaluation remains separate until its results and identities are verified.
 
-Reproduce the [software and private evaluation procedures](docs-site/evaluation/reproduce.mdx). `forte evaluate` accepts completed **v1** development client directories, checks source hashes and reports counts, failure-aware accuracy/effective recall, point proximity and latency. V2 abstentions need their own explicit protocol. No jury/reserved media enter training or model selection; no weight training or adaptation is authorized.
+Reproduce the [software and private evaluation procedures](https://datathon-f289adc4.mintlify.site/evaluation/reproduce). `forte evaluate` accepts completed **v1** development client directories, checks source hashes and reports counts, failure-aware accuracy/effective recall, point proximity and latency. V2 abstentions need their own explicit protocol. No jury/reserved media enter training or model selection; no weight training or adaptation is authorized.
 
 ## Documentation and project layout
 
-The Mintlify source is [`docs-site/`](docs-site/docs.json). It covers the complete jury journey, configuration, authentication, API examples, review, evaluation, troubleshooting and limitations. [Maintain and validate it](docs-site/guides/documentation.mdx). A hosted Mintlify URL is added only after actual publishing succeeds.
+The Mintlify source is [`docs-site/`](docs-site/docs.json). It covers the complete jury journey, configuration, authentication, API examples, review, evaluation, troubleshooting and limitations. [Maintain and validate it](https://datathon-f289adc4.mintlify.site/guides/documentation). The [live Mintlify site](https://datathon-f289adc4.mintlify.site/introduction) is deployed from `main` and linked from the app header.
 
 | Path | Contents |
 | --- | --- |
@@ -109,4 +109,4 @@ The Mintlify source is [`docs-site/`](docs-site/docs.json). It covers the comple
 | `docs-site/` | Jury-facing Mintlify documentation. |
 | [`docs/`](docs/README.md), `.context/verify/` | Engineering history, decisions and preserved evidence. |
 
-Private originals, annotations, frames, outputs, service keys and backups remain outside Git. Real browser sessions keep service secrets server-side and enforce case ownership. Retention is manual. Read [technical limitations](docs-site/evaluation/limitations.mdx) before comparing or deploying the system.
+Private originals, annotations, frames, outputs, service keys and backups remain outside Git. Real browser sessions keep service secrets server-side and enforce case ownership. Retention is manual. Read [technical limitations](https://datathon-f289adc4.mintlify.site/evaluation/limitations) before comparing or deploying the system.

@@ -13,14 +13,14 @@ description: "Install the actual Python package and build the frontend without d
 ## Install the foundation
 
 ```bash
- git clone https://github.com/itsaibarr/fortebank-datathon-26.git
+ git clone --branch main https://github.com/itsaibarr/fortebank-datathon-26.git
  cd fortebank-datathon-26
  uv sync --frozen
  uv run forte --help
  uv run pytest -q
 ```
 
-Run these commands at the source revision named in [verified results](/evaluation/results). If the default branch is older, use the documented source commit from a fetched repository branch. The lockfile installs software dependencies; it does not download model weights, install CUDA or make inference ready.
+The published `main` branch includes the application and this documentation verifier. The application reference commit is named in [verified results](/evaluation/results); historical experiments retain their own source/runtime identities. The lockfile installs software dependencies; it does not download model weights, install CUDA or make inference ready.
 
 ## Build the interface
 
