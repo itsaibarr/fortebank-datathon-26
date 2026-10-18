@@ -377,6 +377,20 @@ def reconcile_segments(segments, config):
                 }
             )
             continue
+        if segment["tracker_id"] < 0:
+            # A negative adapter key retains one detection, not an association.
+            # Even a clear crop cannot turn an unmatched box into a participant.
+            segment["participant_id"] = None
+            unresolved.append(
+                {
+                    "segment_id": segment["segment_id"],
+                    "reason": "unassociated_detection",
+                    "candidate_participant_ids": [],
+                    "evidence_frame_ids": [o["frame_id"] for o in segment["observations"]],
+                    "review_status": "unresolved",
+                }
+            )
+            continue
         candidates = []
         if config.mode == "reid" and segment["gallery"]:
             for person in participants:
@@ -571,15 +585,21 @@ def analyze_participants(
                 or not box[1] < box[3]
                 or not math.isfinite(score)
                 or not 0 <= score <= 1
-                or tracker_id in seen_track_ids
+                or (tracker_id >= 0 and tracker_id in seen_track_ids)
             ):
                 raise ValueError("Invalid or duplicate tracked detection")
             seen_track_ids.add(tracker_id)
             zone_id = view_zone(box, config.camera_zones)
+            associated = tracker_id >= 0
             entry = _box_embedding(
-                frame.image, box, score, ref, config, embedder if config.mode == "reid" else None
+                frame.image,
+                box,
+                score,
+                ref,
+                config,
+                embedder if associated and config.mode == "reid" else None,
             )
-            segment = active.get(tracker_id)
+            segment = active.get(tracker_id) if associated else None
             conflict = None
             if segment and entry and segment["gallery"]:
                 if similarity(segment["gallery"], [entry]) < config.switch_similarity:
@@ -598,6 +618,9 @@ def analyze_participants(
                 segment = {
                     "segment_id": f"s{len(segments) + 1:05d}",
                     "tracker_id": int(tracker_id),
+                    "association_status": "tracker_proposal"
+                    if associated
+                    else "unassociated_detection",
                     "participant_id": None,
                     "reflection_zone_id": zone_id,
                     "observations": [],
@@ -606,7 +629,8 @@ def analyze_participants(
                     "review_status": "model_proposal",
                 }
                 segments.append(segment)
-                active[tracker_id] = segment
+                if associated:
+                    active[tracker_id] = segment
             segment["observations"].append(
                 {
                     "frame_id": ref.frame_id,
@@ -616,7 +640,7 @@ def analyze_participants(
                     "confidence": float(score),
                     "origin": "detector",
                     "geometry_origin": "yolox_person_detection",
-                    "tracker_id_origin": "ByteTrack_motion_association",
+                    "tracker_id_origin": "ByteTrack_motion_association" if associated else None,
                     "geometry_review": "unreviewed",
                 }
             )
