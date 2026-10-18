@@ -159,3 +159,25 @@ failure simulation instead of stopping another owner's model. Use only footage
 authorized for the selected environment; reserved/jury recordings are excluded.
 Never inspect private frames through remote browser/image tools. Operational
 smoke tests are not legal/detection-quality acceptance.
+
+## Cached proxy test on macOS and Colima
+
+The optional native proxy check mounts pytest's generated configuration into a
+cached local container. An active Colima VM may not share macOS's default
+`/private/var/folders/...` temporary directory. In that environment Docker can
+return 125 with `bind source path does not exist` before the check starts. Use a
+new test directory inside an existing Colima-shared `/Users/...` location:
+
+```text
+FORTE_TEST_DOCKER_PROXY=1 PYTHONPATH=src <python-environment>/bin/pytest -q \
+  --basetemp <unique-shared-Users-directory> \
+  tests/deployment/test_runtime.py::test_cached_nginx_starts_with_readonly_root_and_no_capabilities
+```
+
+At integrated Python source `53ebe49`, the normal suite passed 749 tests with one
+optional Docker skip and four existing warnings. The same unmodified optional
+check then passed separately in 1.05 seconds from a unique shared directory,
+using the cached image without a network pull. These are 750 distinct checks
+across separate runs, not one 750-test suite run. The first environment failure
+remains recorded in the CORE verification handoff; no installer or test change
+was required.
