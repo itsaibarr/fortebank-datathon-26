@@ -1,0 +1,33 @@
+{
+  "browser": {
+    "mode": "launch",
+    "executable_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  },
+  "start_url": {
+    "url": "https://www.axxonsoft.com/ai-video-analytics/vision-language-model-vlm"
+  },
+  "actions": [
+    {
+      "step_id": "wait-visible-body",
+      "action": "wait_for",
+      "locator": {
+        "kind": "css",
+        "selector": "body"
+      },
+      "state": "visible",
+      "timeout_ms": 15000
+    },
+    {
+      "step_id": "settle",
+      "action": "wait_for_timeout",
+      "duration_ms": 1000
+    }
+  ],
+  "capture": {
+    "at_end": [
+      "dom",
+      "accessibility",
+      "url"
+    ]
+  }
+}

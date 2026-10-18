@@ -1,0 +1,2788 @@
+{
+  "schema_version": "forte.product-research-findings/1",
+  "generated_date": "2026-10-18",
+  "workstream": "PRODUCT_W1",
+  "source_record_count": 49,
+  "distinct_source_url_count": 48,
+  "finding_count": 58,
+  "classification_legend": {
+    "OBSERVED": "Directly observed public runtime/page or shipped promotional artifact; scope and limits stated.",
+    "DOCUMENTED": "Explicit official operational documentation or publisher release description; execution is not implied.",
+    "CLAIMED": "Vendor marketing/self-declared capability without independent execution.",
+    "INFERRED": "Our interpretation/adaptation proposal, identified as such.",
+    "UNKNOWN": "Not established within permitted accessible evidence."
+  },
+  "delivery": {
+    "base_commit": "e4814e2",
+    "contributor_commits": [
+      "7d34fae3ac774c032e4410df54d4e674f95754b2",
+      "1098dc24c8a9b424f9260ba367b30077cc58a41e",
+      "22c991fc05149c7ced111a4a9e27e39c7374c17d"
+    ],
+    "contributor_head": "22c991fc05149c7ced111a4a9e27e39c7374c17d",
+    "changed_product_files": [
+      "web/app/page.tsx",
+      "web/lib/review-types.ts",
+      "web/lib/investigation.ts",
+      "web/lib/investigation.test.mjs",
+      "web/components/investigation-tools.tsx",
+      "src/forte/api.py",
+      "src/forte/investigation_report.py",
+      "tests/test_investigation_report.py",
+      "tests/test_investigation_api.py"
+    ],
+    "integration_status": "integrated; source and final local synthetic browser workflow verified",
+    "integration_owner": "Existing designated integration owner A; no ownership transfer asserted",
+    "authoritative_served_revision": null,
+    "final_runtime_verified": false,
+    "fresh_private_inference_for_these_slices": false,
+    "final_manifest": "docs/product-research/final-verification.json; actual synthetic runtime and source identities, not real-model/deployment acceptance",
+    "integrated_application_revision": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3",
+    "verified_local_synthetic_application_revision": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3",
+    "final_synthetic_browser_verified": true,
+    "production_status": "Not qualified or deployed; final candidate GPU/API start blocked by missed 01:00 UTC TEST cutoff",
+    "resource_status": "All owned QA processes stopped; sessions logged out and owned tabs closed; no product VM/model actions"
+  },
+  "baseline": {
+    "source_manifest": "Authoritative current split-manifest checked by parent against neutral/hash batch projection",
+    "development_recordings": 31,
+    "reserved_recordings": 9,
+    "exact_membership_in_report": false,
+    "grouping_status": "unfrozen; counts are not a reconstructed session split",
+    "development_only_iteration": true,
+    "reserved_and_derivatives_excluded": true,
+    "missing_requested_brief": "fortebank_rea_visual_detail_prompt.txt absent after bounded filename searches; not treated as read",
+    "weights": "frozen; no training or model replacement",
+    "resource_constraints": "Reuse one existing model service; USD30 cumulative authorization is not a fresh budget; no new paid resource or expensive model job by research/product slices",
+    "latency_targets_sec": {
+      "internal": 270,
+      "end_to_end_less_than": 300
+    },
+    "latency_acceptance": "No new inference-latency or end-to-end quality acceptance from these contributor checks"
+  },
+  "methodology": {
+    "agent_reach": {
+      "agent_reach": "1.5.0; check-update reported current",
+      "reader": "Jina Reader via curl; service version not exposed",
+      "browser": "T3 preview tools; server/browser version not captured",
+      "rea": "Not executed by this research child; parent owns actual REA execution"
+    },
+    "public_browser": "T3 preview: passive DOM/snapshot inspection and declared public menu/anchor interactions; no installed analytic workflow tested",
+    "rea_runs": [
+      {
+        "vendor": "Mikshi",
+        "tool": "REA",
+        "version": "6.5.0",
+        "evidence_id": "ev_16a4a8c8a6de206322c16e1322fb4dc670eef9ec73bbe5902e8dc7fe954867d4",
+        "target": "https://mikshi.mantratec.com/CommingSoon",
+        "operation": "capture-browser-scenario <inputJson>; declared launch, visible-body wait and one-second settle; completed DOM/accessibility/final URL captures",
+        "status": "executed_completed",
+        "browser": "owned Chrome 155.0.8059.82",
+        "cleanup": "owned browser terminated",
+        "network_body_capture": false,
+        "private_data": false,
+        "evidence_record": "docs/product-research/REA.md; parent-owned export/manifest",
+        "cli_package": "rea-agents@6.5.0",
+        "scenario": "docs/product-research/mikshi-vlm-scenario.json"
+      },
+      {
+        "vendor": "AxxonSoft",
+        "tool": "REA",
+        "version": "6.5.0",
+        "evidence_id": "ev_d3386afde38a5765b8ce523b77b4a4b8165434d332b735e22f9201786a752a64",
+        "target": "https://www.axxonsoft.com/ai-video-analytics/vision-language-model-vlm",
+        "operation": "capture-browser-scenario <inputJson>; declared launch, visible-body wait and one-second settle; completed DOM/accessibility/final URL captures",
+        "status": "executed_completed",
+        "browser": "owned Chrome 155.0.8059.82",
+        "cleanup": "owned browser terminated",
+        "network_body_capture": false,
+        "private_data": false,
+        "evidence_record": "docs/product-research/REA.md; parent-owned export/manifest",
+        "cli_package": "rea-agents@6.5.0",
+        "scenario": "docs/product-research/axxon-vlm-scenario.json"
+      }
+    ],
+    "rea_scope_limit": "Completed public page launches demonstrate observed public surface only; not detector, tracker, VLM action accuracy or authenticated product execution.",
+    "source_inspection": "Ordinary local source inspection used for ForteBank implementation; no hidden vendor server internals inferred from client artifacts.",
+    "constraints": [
+      "No forms/accounts/vendor contact/auth bypass/hidden API probing",
+      "No private recordings/frames/crops/embeddings/case prompts/model responses sent to external services",
+      "No cloud inference fallback or new paid resources",
+      "Official Kazakhstan legal sources remain separate and exclusively NBRK/adilet.zan.kz for normative grounding"
+    ],
+    "rea_guidance": {
+      "revision": "bbfe6edd60290f9bfbec68c8a0bcf605d8bbf5b3",
+      "skill_version": 42,
+      "guide": "https://github.com/morluto/rea/blob/main/.agents/skills/reverse-engineer-anything/references/runtime-observation.md",
+      "schema_and_help_inspected": true,
+      "node": "24.16.0"
+    },
+    "rea_limitations": [
+      "No passive capture, native VMS analysis, model query, execution coverage or network-body capture.",
+      "Browser artifact identity not established; website/server builds remain unpinned.",
+      "Read-only doctor showed missing/drifted Codex MCP registration and native engines; supported CLI fallback completed browser scenarios without configuration/install changes."
+    ]
+  },
+  "sources": [
+    {
+      "id": "AX-S01",
+      "title": "Documentation overview",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/overview",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-09-11",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Current documentation identifies 3.0/3.1; full Integration API documentation is expressly gated to representative/request form.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S02",
+      "title": "Axxon One API",
+      "url": "https://www.axxonsoft.com/support/sdk-axxon-one",
+      "product_version": "public API landing page, 2026",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_product_page",
+      "last_updated": null,
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Names HTTP API, gRPC API and embeddable web video component; Learn more points into documentation.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S03",
+      "title": "Axxon One license types",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314535932/Axxon%2BOne%2Blicense%2Btypes",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-09-11",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Six license types; extensive feature/add-on table and country restrictions.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S04",
+      "title": "IP device discovery and configuration",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314536014/Search%2Badd%2Bconfigure%2Band%2Bremove%2BIP%2Bdevices",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-09-11",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Automatic/manual/CSV add; support status; immutable camera ID; archive and recording choices.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S05",
+      "title": "Events search",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314538772/Events%2Bsearch",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-07-07",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Camera and time scope; event type, initiator and assessment comment; permission/configured detector prerequisites; time synchronization warning.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S06",
+      "title": "Working with search results",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314538879/Working%2Bwith%2Bsearch%2Bresults",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-08-07",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Timestamped frames, result stars, crop zoom, source playback, context offset and saved criteria.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S07",
+      "title": "Meta search",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/393412610/Meta%2Bsearch",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-09-18",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "English query, similarity 1–99 default 60, similarity/time sort, merges detections within 5 seconds, licensed metadata prerequisite.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S08",
+      "title": "VLM semantic detection and archive search",
+      "url": "https://www.axxonsoft.com/ai-video-analytics/vision-language-model-vlm",
+      "product_version": "VLM Pack, Detector Pack >=3.14 for Meta Search",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_product_page",
+      "last_updated": null,
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Explicitly describes stored frame vectors and text-vector similarity, live threshold 20 and search 60 defaults; no checkpoint disclosed.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S09",
+      "title": "Configuring Meta-detector",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314537259/Configuring%2Bthe%2BMeta-detector",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-10-03",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Up to 3 English prompts, 1 processed fps default, 15 consecutive matching measurements default; search storage disabled by default and similar-frame skipping enabled.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S10",
+      "title": "Functions of Meta-detector",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314537256/Functions%2Bof%2Bthe%2BMeta-detector",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-02-04",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Predefined scenarios absent; Neuro Pack and specific license required; recommends external Florence-2 description service.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S11",
+      "title": "Configuring Neural tracker",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314536630/Configuring%2Bthe%2BNeural%2Btracker",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-01-29",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Track recording, fps, class, confidence, retention and minimum triggers; optional similarity and custom models; detection and ignore zones.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S12",
+      "title": "Multi-camera tracker",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/398917757/Multi-camera%2Btracker",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-09-11",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Calibrated map/cameras plus per-camera neural tracker similarity required; empirical per-track settings; license + Neuro Pack.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S13",
+      "title": "Assessing an alarm event",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314538623/Assessing%2Ban%2Balarm%2Bevent",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-04-09",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Operator assigns confirmed, suspicious or false; can escalate; skipped timeout; timeline status; assessment permission.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S14",
+      "title": "Multi-user alarm processing limitation",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314538646/Limitations%2Bwhen%2Bworking%2Bwith%2Balarm%2Bevents%2Bin%2Bcase%2Bof%2Bmulti-user%2Bprocessing",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-04-09",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Exactly one processing operator; other clients play with limited controls; idle release condition.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S15",
+      "title": "Export",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/357662840/Export",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-07-20",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Permissions; source-preserving defaults; overlays/crops/masks transcode; optional player; storyboard kit; SHA-256 watermark claim.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S16",
+      "title": "Synchronized archive playback",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314538666/Synchronized%2Bplayback%2Bof%2Barchives",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-04-09",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Multiple cameras can share playback controls with corresponding archive time axes.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S17",
+      "title": "Role",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314537649/Role",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-09-10",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Separate search, alarm view/assessment, export, masking, device and archive permissions; role membership is authorization, not an observed scene role.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S18",
+      "title": "System log",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314539169/System%2Blog",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-05-19",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Logs login failures, configuration/permission/comment changes and exports; user IP; log search/view/export and jump to archive.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S19",
+      "title": "Backup and restore utility",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314539417/Backup%2Band%2Brestore%2Butility",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-12-15",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Configuration changes create revision history; local and shared/domain scope; build/version compatibility required for restore.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S20",
+      "title": "Protect video from FIFO overwrite",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314536423/Protecting%2Bvideo%2Brecordings%2Bfrom%2BFIFO%2Boverwriting",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-04-09",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Loop recording can overwrite; protection uses replication and macro to another archive.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S21",
+      "title": "Queue detector configuration",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314537282/Configuring%2Bthe%2BQueue%2Bdetector",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-11-25",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Queue threshold default 5, scene zone and minimum person size; report interval defaults to zero/no emitted statistics.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S22",
+      "title": "Area occupancy detector functions",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/349307124/Functions%2Bof%2Bthe%2BArea%2Boccupancy%2Bdetector",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-07-01",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Measures fraction of area occupied by distinguishable objects; licensing and Neuro Pack required.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S23",
+      "title": "Loitering in area",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314536544/Configuring%2BLoitering%2Bin%2Barea",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-08-07",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Time-in-zone default 30 seconds; speed/size/class and group-trigger conditions are explicit configuration.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S24",
+      "title": "Automatic rules",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314536526/Automatic%2Brules",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-04-09",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "One or more configured macro-style actions follow detector events.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S25",
+      "title": "VSaaS Datacenter",
+      "url": "https://www.axxonsoft.com/products/cloud-solutions/video-surveillance-as-a-service-platform",
+      "product_version": "public VSaaS offering, 2026",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_product_page",
+      "last_updated": null,
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Provider/private infrastructure or public cloud; true cloud camera-only site versus local VMS hybrid with optional cloud snippets.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S26",
+      "title": "AxxonNet cloud-managed VMS",
+      "url": "https://www.axxonsoft.com/products/cloud-solutions/cloud-managed-vms",
+      "product_version": "public AxxonNet offering, 2026",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_product_page",
+      "last_updated": null,
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Internet-linked on-prem VMS; remote web/mobile, analytics report collection, cloud-synced watchlists; existing installed system prerequisite.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S27",
+      "title": "Axxon PSIM",
+      "url": "https://www.axxonsoft.com/products/psim",
+      "product_version": "public PSIM offering, 2026",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_product_page",
+      "last_updated": null,
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Distributed integration and event-driven automation of video and external security/business systems; distinct offering from Axxon One.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S28",
+      "title": "Banking and financial institutions",
+      "url": "https://www.axxonsoft.com/industries/banking-financial-institutions-bank-surveillance-cameras-solution",
+      "product_version": "public banking solution, 2026",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_product_page",
+      "last_updated": null,
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "ATM transaction open data associated with video and searchable by transaction fields; branch security devices and operations; these facts are external-system inputs.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S29",
+      "title": "AxxonData reports",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/anet/pages/248426347/AxxonData%2BReports",
+      "product_version": "AxxonData/AxxonNet documentation",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2023-01-09",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Dedicated alarm/visitor/queue reports; report export/print, creation/edit and scheduled send documented as separate actions.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S30",
+      "title": "Offline Analytics",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/one1en/pages/226952536/Analyzing%2Bvideo%2Bfrom%2Bexternal%2Bsystems%2BOffline%2BAnalytics",
+      "product_version": "Axxon One 1.0 historical",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2022-11-16",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Import and index external video before MomentQuest, face, plate, comment search and compressed playback. Historical feature only.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S31",
+      "title": "Viewing external archive",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314538692/Viewing%2Bexternal%2Barchive",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2025-04-09",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Time-referenced external videos with gaps; overlapping files rendered as one track with first video taking priority.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S32",
+      "title": "Axxon One requirements",
+      "url": "https://docs.axxonsoft.com/confluence/spaces/ONE2025/pages/314535866/Axxon%2BOne%2Brequirements",
+      "product_version": "Axxon One 3.0/3.1",
+      "checked_at": "2026-10-18",
+      "source_kind": "official_operational_documentation",
+      "last_updated": "2026-07-14",
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Client/server version matching and mandatory clock sync; hardware, OS, network and UI resolution prerequisites.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "id": "AX-S33",
+      "title": "Public VMS page observed",
+      "url": "https://www.axxonsoft.com/products/video-management-software",
+      "product_version": "public website observed 2026-10-18",
+      "checked_at": "2026-10-18",
+      "source_kind": "public_ui_observation",
+      "last_updated": null,
+      "acquisition": "web.run official-page read; selected sources also agent-reach Jina Reader",
+      "evidence_summary": "Watch in action navigates to #discover on marketing page; live demo links are contact/booking; no usable logged-in VMS was exercised.",
+      "vendor": "AxxonSoft",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/axxon"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S01",
+      "url": "https://mikshi.mantratec.com/",
+      "artifact": "browser-observations.json",
+      "method": "T3 public navigation and DOM inspection",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S02",
+      "url": "https://mikshi.mantratec.com/Product/Analytics",
+      "artifact": "analytics.reader.md",
+      "method": "Official page read via agent-reach Jina Reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S03",
+      "url": "https://mikshi.mantratec.com/Solutions/Banking",
+      "artifact": "banking.reader.md",
+      "method": "Official page reader + T3 DOM; module clicks did not verify",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S04",
+      "url": "https://mikshi.mantratec.com/CommingSoon",
+      "artifact": "browser-observations.json#mikshi_vlm_dom",
+      "method": "T3 clicked public Product > VLM",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S05",
+      "url": "https://mikshi.mantratec.com/usecase/person-vehicle-search",
+      "artifact": "person-search.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S06",
+      "url": "https://mikshi.mantratec.com/usecase/queue-length-wait-time-monitoring",
+      "artifact": "queue.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S07",
+      "url": "https://mikshi.mantratec.com/usecase/staff-presence-counter-coverage-tracking",
+      "artifact": "counter-coverage.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S08",
+      "url": "https://mikshi.mantratec.com/usecase/restricted-area-access-monitoring",
+      "artifact": "restricted-area.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S09",
+      "url": "https://mikshi.mantratec.com/usecase/after-hours-intrusion-detection",
+      "artifact": "after-hours.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S10",
+      "url": "https://mikshi.mantratec.com/usecase/customer-dwell-time-heatmap-analytics",
+      "artifact": "dwell.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S11",
+      "url": "https://mikshi.mantratec.com/usecase/workforce-attendance-movement-tracking",
+      "artifact": "workforce.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S12",
+      "url": "https://mikshi.mantratec.com/usecase/staff-presence-monitoring",
+      "artifact": "staff-presence.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S13",
+      "url": "https://mikshi.mantratec.com/Support",
+      "artifact": "support.reader.md",
+      "method": "Official page reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S14",
+      "url": "https://app.mikshi.ai/auth/login",
+      "artifact": "operations.json",
+      "method": "Linked destination; bounded T3/direct HTTP attempts failed",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S15",
+      "url": "https://play.google.com/store/apps/details?id=com.mantra.mikshi",
+      "artifact": "mobile-app.reader.md",
+      "method": "Officially linked publisher listing via agent-reach Jina Reader",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-S16",
+      "url": "https://play.google.com/store/apps/details?id=com.mantra.mikshi",
+      "artifact": "mobile-assets-ledger.json",
+      "method": "Downloaded five normally delivered publisher screenshots; local view_image inspection",
+      "checked_date": "2026-10-18",
+      "artifact_base": "/tmp/forte-product-w1/mikshi"
+    }
+  ],
+  "findings": [
+    {
+      "id": "AX-001",
+      "dimension": "product_scope",
+      "title": "Edition and add-on boundaries",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S03"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Demo, Free, Start, Professional, Enterprise and Unified differ materially. Neural tracking, archive search, re-identification, integration, failover and private-cloud unification are license-dependent; several functions are country-restricted.",
+      "uncertainty": "Table establishes entitlement, not installed modules or measured performance.",
+      "transfer_mechanism": "Show actual available capabilities/configuration and explain absent prerequisites; never present the entire vendor catalogue as one proven product.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "vendor": "AxxonSoft",
+      "statement": "Demo, Free, Start, Professional, Enterprise and Unified differ materially. Neural tracking, archive search, re-identification, integration, failover and private-cloud unification are license-dependent; several functions are country-restricted.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "product_scope"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "decisions": []
+    },
+    {
+      "id": "AX-002",
+      "dimension": "acquisition",
+      "title": "Camera identity and device readiness",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S04"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Device onboarding supports discovery, manual entry and CSV. Results distinguish supported, manual-configuration and unsupported status. Immutable camera identity maintains archive continuity while display names may change.",
+      "uncertainty": "No cameras were connected; hardware driver support not tested.",
+      "transfer_mechanism": "Retain immutable source recording IDs; expose readiness and connection/processing state independently of names.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Device onboarding supports discovery, manual entry and CSV. Results distinguish supported, manual-configuration and unsupported status. Immutable camera identity maintains archive continuity while display names may change.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "acquisition"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-03"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-003",
+      "dimension": "acquisition",
+      "title": "External-file ingestion differs from live-camera ingestion",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S30",
+        "AX-S31"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Historical Offline Analytics imports and indexes external recordings for search. Current 3.0/3.1 documents time-referenced external archives and visible gaps/overlaps.",
+      "uncertainty": "Current public import/index flow and arbitrary-file UX were not executed; historical import mechanics must not be attributed unchanged to 3.1.",
+      "transfer_mechanism": "Prefer our existing upload path with explicit timestamp origin/coverage and reject ambiguous concatenation or overlap.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Historical Offline Analytics imports and indexes external recordings for search. Current 3.0/3.1 documents time-referenced external archives and visible gaps/overlaps.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "acquisition"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-03"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-004",
+      "dimension": "scene_analysis",
+      "title": "Tracker configuration is empirical and resource-sensitive",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S11"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Neural tracking exposes frame rate, detection threshold, minimum trigger count, track retention, selected classes and zones. Similarity search and metadata recording impose extra computation; default people tracking is not role classification.",
+      "uncertainty": "Vendor threshold values and accuracy claims are not ForteBank measurements.",
+      "transfer_mechanism": "Display existing tracker/config version and coverage; keep detector geometry, identity continuity and human role facts distinct.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Neural tracking exposes frame rate, detection threshold, minimum trigger count, track retention, selected classes and zones. Similarity search and metadata recording impose extra computation; default people tracking is not role classification.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "scene_analysis"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-03"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-005",
+      "dimension": "tracking",
+      "title": "Cross-camera continuity requires calibration and similarity",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S12"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Multi-camera tracker combines map calibration, camera mappings, per-camera neural trackers and similarity search under extra modules. It shows movement on a map.",
+      "uncertainty": "No end-to-end re-identification or identity accuracy was observed. It supplies no bank employee/client role ground truth.",
+      "transfer_mechanism": "Preserve explicit human-reviewed identity/view relationships; defer general multi-camera re-identification absent camera topology and reviewed evidence.",
+      "proposed_delivery": "deferred_exploration",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "Multi-camera tracker combines map calibration, camera mappings, per-camera neural trackers and similarity search under extra modules. It shows movement on a map.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "tracking"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "deferred_exploration",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Additional integration/identity/deployment breadth",
+          "decision": "deferred",
+          "reason": "Missing authorized interfaces, topology, reviewed identity/geometry, hardware or deployment prerequisites."
+        }
+      ]
+    },
+    {
+      "id": "AX-006",
+      "dimension": "search",
+      "title": "Scoped event retrieval exposes human review state",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S05"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Archive event retrieval selects camera/time, event type, initiator and assessment comment. Confirmed, suspicious, false and unclassified alarms remain distinct from detector triggers. Search requires permissions and configured detectors.",
+      "uncertainty": "Documented controls were not used inside an installed VMS.",
+      "transfer_mechanism": "Add local case/video/time/type/review-state/comment filters and result counts while preserving unresolved states.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-01; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Archive event retrieval selects camera/time, event type, initiator and assessment comment. Confirmed, suspicious, false and unclassified alarms remain distinct from detector triggers. Search requires permissions and configured detectors.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "search"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-007",
+      "dimension": "search",
+      "title": "Search results lead back to source context",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S06"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Results carry frame date/time, support selected-result marking and object zoom, and open the corresponding archive video with a configurable nearby playback start. Saved search criteria do not save the time range.",
+      "uncertainty": "Result ranking/count latency not independently measured.",
+      "transfer_mechanism": "Each result should preserve event/source IDs, source timestamps, preview and seek action; contextual playback and saved filters can reduce review effort.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-01, AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Results carry frame date/time, support selected-result marking and object zoom, and open the corresponding archive video with a configurable nearby playback start. Saved search criteria do not save the time range.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "search"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01",
+        "AD-03"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-008",
+      "dimension": "search",
+      "title": "Semantic retrieval is documented as frame-vector matching",
+      "classification": "CLAIMED",
+      "source_ids": [
+        "AX-S08"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "The official VLM page says Meta Detector stores numerical frame descriptions; Meta Search compares text against those vectors and ranks similarity. Live and archive semantics share a retrieval mechanism.",
+      "uncertainty": "Marketing page does not disclose exact checkpoint, embedding architecture, temporal receptive field or measured action accuracy.",
+      "transfer_mechanism": "Label retrieval as candidate discovery. Never promote a score into proof, completed action, participant identity or Kazakhstan-law conclusion.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-01; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "The official VLM page says Meta Detector stores numerical frame descriptions; Meta Search compares text against those vectors and ranks similarity. Live and archive semantics share a retrieval mechanism.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "search"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01"
+      ],
+      "decisions": [
+        {
+          "mechanism": "Semantic embeddings/chat/VLM replacement",
+          "decision": "deferred",
+          "reason": "No validated local index/model contract or temporal reasoning evidence; existing frozen inference stays unchanged."
+        }
+      ]
+    },
+    {
+      "id": "AX-009",
+      "dimension": "scene_analysis",
+      "title": "Semantic event smoothing is consecutive matching, not proven action reasoning",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S09",
+        "AX-S10"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Meta-detector accepts up to three English queries and requires consecutive matched measurements before a trigger. Search indexing is separately enabled and similar frames may be skipped. It requires Neuro Pack/licensing.",
+      "uncertainty": "Defaults/configurability do not demonstrate multi-frame causal understanding. External caption/chatbot recommendations are not architecture disclosure or approved data handling.",
+      "transfer_mechanism": "Keep local-only prompts, truthful sampling/indexing coverage and explicit event-condition evidence. Do not copy an external caption-generation workflow.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Meta-detector accepts up to three English queries and requires consecutive matched measurements before a trigger. Search indexing is separately enabled and similar frames may be skipped. It requires Neuro Pack/licensing.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "scene_analysis"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-03"
+      ],
+      "decisions": [
+        {
+          "mechanism": "Semantic embeddings/chat/VLM replacement",
+          "decision": "deferred",
+          "reason": "No validated local index/model contract or temporal reasoning evidence; existing frozen inference stays unchanged."
+        }
+      ]
+    },
+    {
+      "id": "AX-010",
+      "dimension": "search",
+      "title": "Time-only semantic grouping is unsuitable for actor-specific cases",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S07"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Meta search offers similarity/time sorting and combines matches separated by at most five seconds. Its query language and licensed index prerequisites are explicit.",
+      "uncertainty": "Temporal merging can combine different actors or operations; vendor documentation does not state actor-aware resolution.",
+      "transfer_mechanism": "Reject direct time-only dedupe. Group only with explicit source/event/participant/operation compatibility, retaining original result lineage.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-01; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Meta search offers similarity/time sorting and combines matches separated by at most five seconds. Its query language and licensed index prerequisites are explicit.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "search"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01"
+      ],
+      "decisions": [
+        {
+          "mechanism": "Merge all matches separated by at most five seconds",
+          "decision": "rejected",
+          "reason": "Time alone does not establish same actor or operation; source/event adjacency is preserved."
+        }
+      ]
+    },
+    {
+      "id": "AX-011",
+      "dimension": "incident_workflow",
+      "title": "Human assessment is a separate state transition",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S13"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "An operator assesses an alarm as confirmed, suspicious or false, may escalate it, and timeline indicators reflect the assessment. An unhandled alarm may become skipped.",
+      "uncertainty": "An alarm confirmation is an operational review decision, not a legally binding compliance finding.",
+      "transfer_mechanism": "Persist review decisions and notes separately from original model outputs and legal assessment; keep unresolved available and record revision history.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-02, AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "An operator assesses an alarm as confirmed, suspicious or false, may escalate it, and timeline indicators reflect the assessment. An unhandled alarm may become skipped.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "incident_workflow"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-02",
+        "AD-03"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-012",
+      "dimension": "incident_workflow",
+      "title": "Multi-user processing distinguishes view from mutation",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S14"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "One operator owns an alarm while other clients retain playback with limited controls; the UI identifies the processing owner. Documented inactivity conditions release ownership.",
+      "uncertainty": "Lock recovery and race behavior were not tested.",
+      "transfer_mechanism": "Use optimistic revision checks or reviewer ownership to avoid lost updates, while retaining read access under existing case authorization.",
+      "proposed_delivery": "later_hardening",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "One operator owns an alarm while other clients retain playback with limited controls; the UI identifies the processing owner. Documented inactivity conditions release ownership.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "incident_workflow"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "id": "AX-013",
+      "dimension": "evidence",
+      "title": "Original and transformed exports have different costs and meaning",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S15"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Export defaults preserve source settings; overlays, crops, masks and some formats transcode. Frame/video export checks user permissions. Storyboards collect selected incident fragments; exported data has a documented integrity watermark.",
+      "uncertainty": "Watermark mechanism is a vendor claim, not independently checked; no exported artifact was generated.",
+      "transfer_mechanism": "Keep original media separate from derived overlays, export a provenance manifest with source/time/config/review revision, and disclose transformations.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-02; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Export defaults preserve source settings; overlays, crops, masks and some formats transcode. Frame/video export checks user permissions. Storyboards collect selected incident fragments; exported data has a documented integrity watermark.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "evidence"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-02"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-014",
+      "dimension": "evidence",
+      "title": "Synchronized playback shares a time axis",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S16"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Several camera archives can play simultaneously through one playback panel, with a time axis for each archive.",
+      "uncertainty": "Synchronization assumes valid source timing; no multi-camera playback was exercised.",
+      "transfer_mechanism": "Maintain source PTS and explicit alignment metadata. Add synchronized playback only if authorized footage actually has multiple aligned camera views.",
+      "proposed_delivery": "deferred_exploration",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "Several camera archives can play simultaneously through one playback panel, with a time axis for each archive.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "evidence"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "deferred_exploration",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Additional integration/identity/deployment breadth",
+          "decision": "deferred",
+          "reason": "Missing authorized interfaces, topology, reviewed identity/geometry, hardware or deployment prerequisites."
+        }
+      ]
+    },
+    {
+      "id": "AX-015",
+      "dimension": "administration",
+      "title": "Function permission and scene role are separate concepts",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S17"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Roles separately control archive search, alarm viewing/assessment, exports, confidential bookmarks, masked footage, camera groups and archives.",
+      "uncertainty": "The authorization role system says nothing about people observed in footage. Scope enforcement was not penetration-tested.",
+      "transfer_mechanism": "Continue existing user/case checks on every media/export/review path; never conflate app administrator/reviewer with teller/client identities.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-02; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Roles separately control archive search, alarm viewing/assessment, exports, confidential bookmarks, masked footage, camera groups and archives.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "administration"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-02"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-016",
+      "dimension": "administration",
+      "title": "User actions belong in a local audit trail",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S18"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "The system log records configuration and permission changes, comments, exports and authentication activity; operators can search/view/export entries and navigate to related video.",
+      "uncertainty": "Retention, append-only guarantees and complete alarm-assessment lineage are not established by this page.",
+      "transfer_mechanism": "Record append-only local review/export changes with user, time, case/event IDs and prior revision, without case data in external telemetry.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-02, AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "The system log records configuration and permission changes, comments, exports and authentication activity; operators can search/view/export entries and navigate to related video.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "administration"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-02",
+        "AD-03"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-017",
+      "dimension": "administration",
+      "title": "Configuration rollback is version-bound",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S19"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Server/domain configuration changes create revisions; backup/restore is explicit and restore compatibility depends on product/build and server identity.",
+      "uncertainty": "No backup recovery was executed. This does not mean media itself is backed up.",
+      "transfer_mechanism": "Include actual served revision, config hashes and compatible rollback steps in the delivery manifest; distinguish database/media/config backups.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "vendor": "AxxonSoft",
+      "statement": "Server/domain configuration changes create revisions; backup/restore is explicit and restore compatibility depends on product/build and server identity.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "administration"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "decisions": []
+    },
+    {
+      "id": "AX-018",
+      "dimension": "evidence",
+      "title": "Evidence retention differs from archive rotation",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S20"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Ordinary archive recording rotates; protected video is replicated into another archive through configured macros.",
+      "uncertainty": "Protected status is not immutable chain-of-custody and requires correct replication configuration.",
+      "transfer_mechanism": "Preserve source files and human review revisions explicitly; do not imply that an event bookmark alone protects underlying media.",
+      "proposed_delivery": "later_hardening",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "Ordinary archive recording rotates; protected video is replicated into another archive through configured macros.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "evidence"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "id": "AX-019",
+      "dimension": "operations",
+      "title": "Queue thresholds require scene configuration and reporting opt-in",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S21"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Queue analysis configures detection/ignore areas, minimum person size, sensitivity and a queue-count threshold. Statistic transmission is disabled when the reporting interval is zero.",
+      "uncertainty": "Queue count is not queue wait time, service quality or counter coverage. Accuracy under our scenes is unknown.",
+      "transfer_mechanism": "Defer automated queue analytics until reviewed footage and valid zones exist; if offered, show precise metric, coverage, units and configuration.",
+      "proposed_delivery": "later_hardening",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "Queue analysis configures detection/ignore areas, minimum person size, sensitivity and a queue-count threshold. Statistic transmission is disabled when the reporting interval is zero.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "operations"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "id": "AX-020",
+      "dimension": "operations",
+      "title": "Occupancy percentage is distinct from person count",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S22"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Area occupancy reports visually occupied area fraction, based on objects separable from their background.",
+      "uncertainty": "Does not establish number of clients, role identity, density safety limits or counter availability.",
+      "transfer_mechanism": "Use clear metric definitions and abstain where an operational conclusion requires unavailable facts.",
+      "proposed_delivery": "later_hardening",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "Area occupancy reports visually occupied area fraction, based on objects separable from their background.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "operations"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "id": "AX-021",
+      "dimension": "operations",
+      "title": "Dwell events are explicit temporal predicates",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S23"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Loitering uses configured time in area alongside object class, size/speed and optional group conditions.",
+      "uncertainty": "A duration threshold is business configuration; it is not official legal authority or a learned violation.",
+      "transfer_mechanism": "Represent rule conditions and temporal evidence explicitly; keep operational thresholds separate from official Kazakhstan-law provenance.",
+      "proposed_delivery": "later_hardening",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "Loitering uses configured time in area alongside object class, size/speed and optional group conditions.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "operations"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "id": "AX-022",
+      "dimension": "rules",
+      "title": "Event automation does not equal legal reasoning",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S24"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Automatic rules execute configured actions after a detector event and use the macro configuration system.",
+      "uncertainty": "No evidence of automatic interpretation of Kazakhstan legal acts.",
+      "transfer_mechanism": "Keep rule trigger/action settings separate from legal assessment; expose which observed conditions are supported, missing or unresolved.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Automatic rules execute configured actions after a detector event and use the macro configuration system.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "rules"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-03"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-023",
+      "dimension": "deployment",
+      "title": "VSaaS and hybrid have materially different data flow",
+      "classification": "CLAIMED",
+      "source_ids": [
+        "AX-S25"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "VSaaS Datacenter can use provider-owned or public-cloud infrastructure. True-cloud sites send camera data to cloud VMS; hybrid retains local recording while optionally sharing chosen clips and remote management.",
+      "uncertainty": "No deployment/network capture verified actual flow or guarantees.",
+      "transfer_mechanism": "Document ForteBank actual local/private-VM mode and network boundary; do not add cloud inference or hosted evidence services.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "vendor": "AxxonSoft",
+      "statement": "VSaaS Datacenter can use provider-owned or public-cloud infrastructure. True-cloud sites send camera data to cloud VMS; hybrid retains local recording while optionally sharing chosen clips and remote management.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "deployment"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "decisions": []
+    },
+    {
+      "id": "AX-024",
+      "dimension": "deployment",
+      "title": "AxxonNet is remote management of installed on-prem VMS",
+      "classification": "CLAIMED",
+      "source_ids": [
+        "AX-S26"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "AxxonNet links on-site Axxon One servers over the Internet, collects analytics for dashboards and centralizes watchlists. Web/mobile clients provide retrieval and evidence actions.",
+      "uncertainty": "Remote/cloud service is distinct from a fully offline local VMS; specific retention and transport implementation were not verified.",
+      "transfer_mechanism": "Deliver browser access to our approved VM directly with existing controls; truthful readiness/configuration can borrow its first-result workflow without adopting cloud transport.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "vendor": "AxxonSoft",
+      "statement": "AxxonNet links on-site Axxon One servers over the Internet, collects analytics for dashboards and centralizes watchlists. Web/mobile clients provide retrieval and evidence actions.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "deployment"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "decisions": []
+    },
+    {
+      "id": "AX-025",
+      "dimension": "integration",
+      "title": "SDK names are public, detailed protocol is gated",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S01",
+        "AX-S02"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Public SDK landing names HTTP, gRPC and an embeddable video component; the current documentation explicitly withholds detailed Integration API documentation until a representative/request workflow.",
+      "uncertainty": "Older indexed API artifacts are not authority for currently supported protocols. No hidden endpoint probing or vendor contact performed.",
+      "transfer_mechanism": "Reuse our documented current API contracts. Treat vendor integration as deferred until authorized public/test interface is available.",
+      "proposed_delivery": "deferred_exploration",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "Public SDK landing names HTTP, gRPC and an embeddable video component; the current documentation explicitly withholds detailed Integration API documentation until a representative/request workflow.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "integration"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "deferred_exploration",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Additional integration/identity/deployment breadth",
+          "decision": "deferred",
+          "reason": "Missing authorized interfaces, topology, reviewed identity/geometry, hardware or deployment prerequisites."
+        }
+      ]
+    },
+    {
+      "id": "AX-026",
+      "dimension": "integration",
+      "title": "PSIM combines heterogeneous externally supplied events",
+      "classification": "CLAIMED",
+      "source_ids": [
+        "AX-S27"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Axxon PSIM is marketed as a distributed platform integrating video, access cards, alarms and business/security devices with event-driven automation, separate from the Axxon One offering.",
+      "uncertainty": "No connector schemas or production integration behavior inspected.",
+      "transfer_mechanism": "Keep sensor/transaction/access facts as separate evidence origins; avoid fabricating them from camera-only observations.",
+      "proposed_delivery": "later_hardening",
+      "implementation_status": "not_implemented_in_current_delivery",
+      "vendor": "AxxonSoft",
+      "statement": "Axxon PSIM is marketed as a distributed platform integrating video, access cards, alarms and business/security devices with event-driven automation, separate from the Axxon One offering.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "integration"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "id": "AX-027",
+      "dimension": "integration",
+      "title": "Bank transaction search relies on transaction data",
+      "classification": "CLAIMED",
+      "source_ids": [
+        "AX-S28"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "The banking solution links ATM transaction open fields to video and lets operators retrieve by transaction parameters. It also markets queue/heatmap and hardware monitoring.",
+      "uncertainty": "This is not camera-based cash denomination or monetary amount recognition, nor normative local compliance proof.",
+      "transfer_mechanism": "Do not infer POS/ATM facts or exact cash amounts without provided integrations; label observable object handling separately.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "vendor": "AxxonSoft",
+      "statement": "The banking solution links ATM transaction open fields to video and lets operators retrieve by transaction parameters. It also markets queue/heatmap and hardware monitoring.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "integration"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "decisions": []
+    },
+    {
+      "id": "AX-028",
+      "dimension": "reporting",
+      "title": "Reporting is a distinct operator deliverable",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S29"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "AxxonData documentation separates alarm, visitor and queue reports from dashboard composition, report export/printing and scheduled send.",
+      "uncertainty": "Current installed feature/license availability and data accuracy were not exercised.",
+      "transfer_mechanism": "Create local case report/export with source IDs, event/review state, uncertainty, rule provenance and run/config identity; defer scheduled external delivery.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-02; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "AxxonData documentation separates alarm, visitor and queue reports from dashboard composition, report export/printing and scheduled send.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "reporting"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-02"
+      ],
+      "decisions": []
+    },
+    {
+      "id": "AX-029",
+      "dimension": "user_experience",
+      "title": "Public first access is marketing/documentation, not a live VMS demo",
+      "classification": "OBSERVED",
+      "source_ids": [
+        "AX-S33",
+        "AX-S01"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "A fresh incognito public VMS page loaded and its Watch in action anchor navigated within the marketing page. Documentation loaded without authentication and displayed the API access gate. Live demo links lead to booking/contact.",
+      "uncertainty": "No account, form, vendor message, private media or installed vendor client was used; reviewer error/empty states and first useful analytic result remain unobserved.",
+      "transfer_mechanism": "Do not claim hands-on deployed analytics. Prioritize our real first-upload/readiness/result/error path as an independently designed product improvement.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "vendor": "AxxonSoft",
+      "statement": "A fresh incognito public VMS page loaded and its Watch in action anchor navigated within the marketing page. Documentation loaded without authentication and displayed the API access gate. Live demo links lead to booking/contact.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "user_experience"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "decisions": []
+    },
+    {
+      "id": "AX-030",
+      "dimension": "deployment",
+      "title": "Timing and build identity are operational prerequisites",
+      "classification": "DOCUMENTED",
+      "source_ids": [
+        "AX-S32"
+      ],
+      "observed_at": "2026-10-18",
+      "finding": "Current requirements require synchronized clocks and matching client/server versions. Embedded-device archives need server/device clock synchronization or event database timing can be wrong.",
+      "uncertainty": "Vendor operational requirements do not validate our app performance targets.",
+      "transfer_mechanism": "Store source timing separately from processing time and record actual build/runtime/config identity in acceptance evidence.",
+      "proposed_delivery": "current_delivery",
+      "implementation_status": "Transferable mechanism informs delivered AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "vendor": "AxxonSoft",
+      "statement": "Current requirements require synchronized clocks and matching client/server versions. Embedded-device archives need server/device clock synchronization or event database timing can be wrong.",
+      "observed_date": "2026-10-18",
+      "dimensions": [
+        "deployment"
+      ],
+      "original_research_status": "research_only; root maps to implemented slices",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-03"
+      ],
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-001",
+      "classification": "OBSERVED",
+      "dimensions": [
+        "product/version",
+        "semantic search",
+        "UX"
+      ],
+      "statement": "The public Product menu's VLM link reaches /CommingSoon and renders a launch placeholder.",
+      "source_ids": [
+        "MK-S01",
+        "MK-S04"
+      ],
+      "limitations": "Website availability does not establish that all Mikshi products lack VLM capability.",
+      "fortebank_relevance": "Do not present an unimplemented assistant or semantic search as operational.",
+      "uncertainty": "Website availability does not establish that all Mikshi products lack VLM capability.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "decisions": [
+        {
+          "mechanism": "Semantic embeddings/chat/VLM replacement",
+          "decision": "deferred",
+          "reason": "No validated local index/model contract or temporal reasoning evidence; existing frozen inference stays unchanged."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-002",
+      "classification": "DOCUMENTED",
+      "dimensions": [
+        "search",
+        "tracking"
+      ],
+      "statement": "The person-search FAQ explicitly distinguishes visual-attribute image matching from continuous tracking and biometric identity.",
+      "source_ids": [
+        "MK-S05"
+      ],
+      "limitations": "Runtime performance and ranking are not observed.",
+      "fortebank_relevance": "Keep retrieval candidates separate from persistent participant identity and event proof.",
+      "uncertainty": "Runtime performance and ranking are not observed.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-01; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-003",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "search",
+        "evidence"
+      ],
+      "statement": "Reference-image search uses clothing/accessories or vehicle attributes across connected cameras and returns matches with timestamps and locations, with search reports.",
+      "source_ids": [
+        "MK-S05"
+      ],
+      "limitations": "No accessible query execution, confidence calibration, temporal scope control, grouping, or source-playback behavior verified.",
+      "fortebank_relevance": "Scope local investigation by source/time/participant, preserve source seek, and label ranking as retrieval.",
+      "uncertainty": "No accessible query execution, confidence calibration, temporal scope control, grouping, or source-playback behavior verified.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-01; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-004",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "acquisition",
+        "integration"
+      ],
+      "statement": "Mikshi advertises compatibility with existing IP cameras and NVRs; its homepage includes an RTSP integration testimonial.",
+      "source_ids": [
+        "MK-S01",
+        "MK-S13"
+      ],
+      "limitations": "No supported-protocol matrix, codec specification, setup execution, or stream-health semantics found.",
+      "fortebank_relevance": "Use existing uploaded recording pipeline; defer live-camera adapters without real interfaces.",
+      "uncertainty": "No supported-protocol matrix, codec specification, setup execution, or stream-health semantics found.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-005",
+      "classification": "UNKNOWN",
+      "dimensions": [
+        "acquisition",
+        "archive",
+        "timestamps"
+      ],
+      "statement": "Uploaded-video analytics, archive retention, stream recovery, ingest clock alignment, source PTS preservation, and evidence timebase guarantees were not established.",
+      "source_ids": [
+        "MK-S02",
+        "MK-S03",
+        "MK-S13"
+      ],
+      "limitations": "Absence in inspected material is not proof of absence from the product.",
+      "fortebank_relevance": "Keep ForteBank's source identity/timestamp contracts explicit; do not copy assumed VMS behaviors.",
+      "uncertainty": "Absence in inspected material is not proof of absence from the product.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-006",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "scene analysis",
+        "incidents",
+        "reporting"
+      ],
+      "statement": "The banking page describes camera capture, on-prem/cloud inference, structured event generation, and downstream dashboards, alerts, reports, and IoT actions.",
+      "source_ids": [
+        "MK-S03"
+      ],
+      "limitations": "No event schema or integration execution visible.",
+      "fortebank_relevance": "One persisted event/evidence representation should feed investigation and export.",
+      "uncertainty": "No event schema or integration execution visible.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-02"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-02; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-007",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "operations",
+        "configuration"
+      ],
+      "statement": "Queue analytics estimates queue length and waiting time; thresholds vary by time, counter, or location, with congestion alerts and period reports. The FAQ says it does not measure identity.",
+      "source_ids": [
+        "MK-S06"
+      ],
+      "limitations": "No accuracy, calibration, occlusion behavior, or timing implementation verified.",
+      "fortebank_relevance": "Defer queue measurements until reliable reviewed trajectories and counter geometry exist; offer truthful coverage.",
+      "uncertainty": "No accuracy, calibration, occlusion behavior, or timing implementation verified.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-008",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "operations",
+        "scene analysis",
+        "configuration"
+      ],
+      "statement": "Counter coverage uses visually defined counters and unattended-duration thresholds. It distinguishes presence at a counter from individual productivity.",
+      "source_ids": [
+        "MK-S07"
+      ],
+      "limitations": "The page mixes unrelated abandoned-bag industry examples into counter coverage content; outcome percentages lack a supplied evaluation.",
+      "fortebank_relevance": "A future zone/time policy should expose its inputs and unknown coverage rather than fabricate productivity.",
+      "uncertainty": "The page mixes unrelated abandoned-bag industry examples into counter coverage content; outcome percentages lack a supplied evaluation.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-009",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "roles",
+        "operations",
+        "configuration"
+      ],
+      "statement": "Staff-presence monitoring logs timestamped presence/absence in configured operational zones and required shifts/time windows; it disclaims personal productivity assessment.",
+      "source_ids": [
+        "MK-S12"
+      ],
+      "limitations": "Staff-role attribution method, continuity, and uncertainty treatment are unspecified.",
+      "fortebank_relevance": "Show role evidence and interval uncertainty independently; do not infer employee identity from a role word.",
+      "uncertainty": "Staff-role attribution method, continuity, and uncertainty treatment are unspecified.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-03"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-010",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "rules",
+        "scene analysis",
+        "integration"
+      ],
+      "statement": "Restricted-area monitoring combines defined zones with working-hours/shift rules and reports timestamped visual evidence. The FAQ treats it as visual verification complementing access control.",
+      "source_ids": [
+        "MK-S08"
+      ],
+      "limitations": "No reliable authorization source or visual identity mechanism demonstrated.",
+      "fortebank_relevance": "Separate observed entry from externally supplied authorization and policy/legal conclusions.",
+      "uncertainty": "No reliable authorization source or visual identity mechanism demonstrated.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-03"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-011",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "rules",
+        "temporal conditions",
+        "incidents"
+      ],
+      "statement": "After-hours monitoring applies configured business hours, holidays, and night windows to human-presence events, with visual reports and alarm/access-control integration.",
+      "source_ids": [
+        "MK-S09"
+      ],
+      "limitations": "No timezone/daylight handling, false-positive study, deduplication, or actual hardware action observed.",
+      "fortebank_relevance": "Make rule conditions/time bounds visible; external automation belongs after validated integration.",
+      "uncertainty": "No timezone/daylight handling, false-positive study, deduplication, or actual hardware action observed.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-012",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "operations",
+        "privacy"
+      ],
+      "statement": "Dwell and heatmaps aggregate anonymous movement by area, identifying traffic and congestion without personal identification.",
+      "source_ids": [
+        "MK-S10"
+      ],
+      "limitations": "No dwell estimator, coordinate calibration, or coverage guarantee provided.",
+      "fortebank_relevance": "Aggregate operations must remain distinct from person-role/legal evidence; defer metrics without inputs.",
+      "uncertainty": "No dwell estimator, coordinate calibration, or coverage guarantee provided.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-013",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "tracking",
+        "administration",
+        "integration"
+      ],
+      "statement": "Workforce pages describe shift/zone attendance and movement reports, understaffing alerts, and HRMS integration based on visual presence rules.",
+      "source_ids": [
+        "MK-S11"
+      ],
+      "limitations": "No demonstrated identity continuity, roster interface, or authoritative attendance reconciliation.",
+      "fortebank_relevance": "Do not turn incomplete visual presence into employment attendance truth.",
+      "uncertainty": "No demonstrated identity continuity, roster interface, or authoritative attendance reconciliation.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "later_hardening",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Operational/enterprise extension",
+          "decision": "later_hardening",
+          "reason": "Requires validated scene geometry, coverage, policy facts, retention or reviewer-concurrency contracts."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-014",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "evidence",
+        "reports"
+      ],
+      "statement": "Restricted-area and after-hours pages promise timestamped reports containing visual evidence.",
+      "source_ids": [
+        "MK-S08",
+        "MK-S09"
+      ],
+      "limitations": "Original versus derived media, hashes, chain of custody, synchronized playback, bookmarks, clip export, and correction history remain unknown.",
+      "fortebank_relevance": "Export source IDs, original timestamps, uncertainty, evidence links, and review lineage.",
+      "uncertainty": "Original versus derived media, hashes, chain of custody, synchronized playback, bookmarks, clip export, and correction history remain unknown.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-02",
+        "AD-03"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-02, AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-015",
+      "classification": "UNKNOWN",
+      "dimensions": [
+        "incidents",
+        "review"
+      ],
+      "statement": "Severity, deduplication, triage assignment, correction, resolution, retention of original assessments, and incident audit-history mechanics were not verified.",
+      "source_ids": [
+        "MK-S02",
+        "MK-S03",
+        "MK-S14"
+      ],
+      "limitations": "Web application inaccessible in this environment; public pages alone cannot establish workflow.",
+      "fortebank_relevance": "Implement explicit local review states and immutable correction history independently.",
+      "uncertainty": "Web application inaccessible in this environment; public pages alone cannot establish workflow.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01",
+        "AD-02"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-01, AD-02; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-016",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "deployment",
+        "data flow"
+      ],
+      "statement": "The homepage and Analytics page describe edge processing and cloud management/archives, while banking permits on-premise, cloud, or hybrid processing.",
+      "source_ids": [
+        "MK-S01",
+        "MK-S02",
+        "MK-S03"
+      ],
+      "limitations": "Exact data flows depend on configuration; no packet capture, storage policy, processor identity, hardware sizing, or licensing agreement observed.",
+      "fortebank_relevance": "ForteBank must retain all case data locally/approved VM; no cloud fallback or vendor dashboard dependency.",
+      "uncertainty": "Exact data flows depend on configuration; no packet capture, storage policy, processor identity, hardware sizing, or licensing agreement observed.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-017",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "administration",
+        "security",
+        "reporting"
+      ],
+      "statement": "Public FAQs advertise encrypted, access-controlled data, remote dashboards/mobile access, and customizable daily/weekly/monthly reports; Analytics mentions masking.",
+      "source_ids": [
+        "MK-S01",
+        "MK-S02"
+      ],
+      "limitations": "Permission matrix, encryption scope, tenant isolation, audit logs, masking implementation, and recovery procedures are unspecified.",
+      "fortebank_relevance": "Reuse actual ownership checks and local reporting; show deployment/readiness rather than generic security promises.",
+      "uncertainty": "Permission matrix, encryption scope, tenant isolation, audit logs, masking implementation, and recovery procedures are unspecified.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-02"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-02; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-018",
+      "classification": "OBSERVED",
+      "dimensions": [
+        "UX",
+        "administration"
+      ],
+      "statement": "The public first-access path offers sales/demo requests and Login; Support shows onboarding/tutorial headings but no substantive linked technical guides in the inspected content.",
+      "source_ids": [
+        "MK-S01",
+        "MK-S13"
+      ],
+      "limitations": "No form submitted or vendor contacted.",
+      "fortebank_relevance": "Provide a self-contained first-result path and accurate empty/error states.",
+      "uncertainty": "No form submitted or vendor contacted.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-019",
+      "classification": "OBSERVED",
+      "dimensions": [
+        "UX",
+        "access boundary"
+      ],
+      "statement": "The officially linked web application could not be inspected: browser navigation/evaluation timed out, the linked popup became chrome-error://chromewebdata/, and direct HTTPS timed out.",
+      "source_ids": [
+        "MK-S14"
+      ],
+      "limitations": "This is an environment-specific reachability result, not evidence that the service is globally down.",
+      "fortebank_relevance": "Record unavailable features accurately; preserve the working local build.",
+      "uncertainty": "This is an environment-specific reachability result, not evidence that the service is globally down.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-020",
+      "classification": "DOCUMENTED",
+      "dimensions": [
+        "product/version",
+        "administration",
+        "integration"
+      ],
+      "statement": "The linked Android publisher listing names face-library administration, enrollment, VIP/blacklist alerts, email/SMS notifications, DVR/NVR support, and edge deployment.",
+      "source_ids": [
+        "MK-S15"
+      ],
+      "limitations": "Publisher description; no installation or authenticated execution. Binary version unknown; listing updated 2026-08-24.",
+      "fortebank_relevance": "Study alert/context patterns; defer face recognition and new external integrations.",
+      "uncertainty": "Publisher description; no installation or authenticated execution. Binary version unknown; listing updated 2026-08-24.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "deferred_exploration",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Additional integration/identity/deployment breadth",
+          "decision": "deferred",
+          "reason": "Missing authorized interfaces, topology, reviewed identity/geometry, hardware or deployment prerequisites."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-021",
+      "classification": "DOCUMENTED",
+      "dimensions": [
+        "VLM",
+        "UX"
+      ],
+      "statement": "August 2026 Android release notes mention Watch AI with Chat and cookie-based sessions.",
+      "source_ids": [
+        "MK-S15"
+      ],
+      "limitations": "No chat executed; architecture, model/checkpoint, temporal reasoning, and connection to the public VLM placeholder remain unknown.",
+      "fortebank_relevance": "Do not infer multi-frame action reasoning from a chat label.",
+      "uncertainty": "No chat executed; architecture, model/checkpoint, temporal reasoning, and connection to the public VLM placeholder remain unknown.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "deferred_exploration",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Semantic embeddings/chat/VLM replacement",
+          "decision": "deferred",
+          "reason": "No validated local index/model contract or temporal reasoning evidence; existing frozen inference stays unchanged."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-022",
+      "classification": "CLAIMED",
+      "dimensions": [
+        "privacy",
+        "data flow"
+      ],
+      "statement": "The Android developer's data-safety declaration says photos/videos may be collected and transmission is encrypted; it declares no third-party sharing.",
+      "source_ids": [
+        "MK-S15"
+      ],
+      "limitations": "Self-declaration, not audited runtime traffic or a guarantee of local inference.",
+      "fortebank_relevance": "Do not transfer ForteBank data to this application.",
+      "uncertainty": "Self-declaration, not audited runtime traffic or a guarantee of local inference.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-023",
+      "classification": "OBSERVED",
+      "dimensions": [
+        "UX",
+        "participants",
+        "evidence"
+      ],
+      "statement": "Publisher screenshots depict site/date filters, aggregate charts, unknown/blacklisted lists, last-location/time context, and per-person in/out/violation history.",
+      "source_ids": [
+        "MK-S16"
+      ],
+      "limitations": "Static promotional assets only; displayed values and workflow functionality are not verified.",
+      "fortebank_relevance": "Expose consistent participants, unknown states, scoped timelines, and original source navigation.",
+      "uncertainty": "Static promotional assets only; displayed values and workflow functionality are not verified.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01",
+        "AD-03"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-01, AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-024",
+      "classification": "OBSERVED",
+      "dimensions": [
+        "evidence quality"
+      ],
+      "statement": "Support FAQ answers do not consistently match their questions, and the counter-coverage page contains unrelated abandoned-bag examples.",
+      "source_ids": [
+        "MK-S07",
+        "MK-S13"
+      ],
+      "limitations": "Content inconsistency does not establish runtime defects.",
+      "fortebank_relevance": "Treat vendor marketing as claims; require local acceptance evidence.",
+      "uncertainty": "Content inconsistency does not establish runtime defects.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery_scope_guard",
+      "adaptation_ids": [],
+      "implementation_status": "scope_constraint_preserved_no_new_feature_claim",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-025",
+      "classification": "UNKNOWN",
+      "dimensions": [
+        "scene analysis",
+        "architecture"
+      ],
+      "statement": "Exact detector/tracker models, checkpoints, VLM runtime, multi-frame action reasoning, training/adaptation procedure, and measured accuracy were not established.",
+      "source_ids": [
+        "MK-S02",
+        "MK-S03",
+        "MK-S04",
+        "MK-S15"
+      ],
+      "limitations": "Public HTML or screenshots cannot reveal hidden server implementation.",
+      "fortebank_relevance": "Keep frozen local model and approved tracker contracts; select UX mechanisms independently.",
+      "uncertainty": "Public HTML or screenshots cannot reveal hidden server implementation.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "deferred_exploration",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Semantic embeddings/chat/VLM replacement",
+          "decision": "deferred",
+          "reason": "No validated local index/model contract or temporal reasoning evidence; existing frozen inference stays unchanged."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-026",
+      "classification": "UNKNOWN",
+      "dimensions": [
+        "deployment",
+        "administration"
+      ],
+      "statement": "Published hardware sizing, licensing dependencies, installer/recovery runbooks, detailed API schemas, and supported local installation steps were not established.",
+      "source_ids": [
+        "MK-S02",
+        "MK-S03",
+        "MK-S13"
+      ],
+      "limitations": "No account, contact, or hidden-endpoint access attempted.",
+      "fortebank_relevance": "Coordinate actual installer/readiness work with DEPLOY; do not promise universal deployment.",
+      "uncertainty": "No account, contact, or hidden-endpoint access attempted.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "deferred_exploration",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Additional integration/identity/deployment breadth",
+          "decision": "deferred",
+          "reason": "Missing authorized interfaces, topology, reviewed identity/geometry, hardware or deployment prerequisites."
+        }
+      ]
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-027",
+      "classification": "INFERRED",
+      "dimensions": [
+        "adaptation",
+        "current delivery"
+      ],
+      "statement": "The strongest low-cost adaptation is one local investigation view that scopes existing results and preserves candidate uncertainty, source navigation, participant consistency, and review/report provenance.",
+      "source_ids": [
+        "MK-S05",
+        "MK-S08",
+        "MK-S16"
+      ],
+      "limitations": "This is our design recommendation, not a claim that Mikshi implements the full lineage model.",
+      "fortebank_relevance": "Use existing APIs/storage/components; no inference rerun is needed for view-only changes.",
+      "uncertainty": "This is our design recommendation, not a claim that Mikshi implements the full lineage model.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "current_delivery",
+      "adaptation_ids": [
+        "AD-01",
+        "AD-02",
+        "AD-03"
+      ],
+      "implementation_status": "Transferable mechanism informs delivered AD-01, AD-02, AD-03; source/local synthetic workflow verified. Vendor capability itself was not reproduced or independently validated.",
+      "decisions": []
+    },
+    {
+      "vendor": "Mikshi / Mantra Softech",
+      "product": "Mikshi AI",
+      "version": "Unversioned public web material; app listing updated 2026-08-24 (installed binary version unknown)",
+      "observed_date": "2026-10-18",
+      "id": "MK-028",
+      "classification": "INFERRED",
+      "dimensions": [
+        "adaptation",
+        "deferred exploration"
+      ],
+      "statement": "Operational zones, wait times, occupancy, face recognition, IoT actions, and cross-camera identity should wait for validated geometry, role/identity inputs, coverage, or hardware contracts.",
+      "source_ids": [
+        "MK-S06",
+        "MK-S07",
+        "MK-S10",
+        "MK-S11"
+      ],
+      "limitations": "An attractive vendor module list is insufficient evidence that our footage supports a valid implementation.",
+      "fortebank_relevance": "Avoid unsupported counters and legal assertions; preserve the main mechanic.",
+      "uncertainty": "An attractive vendor module list is insufficient evidence that our footage supports a valid implementation.",
+      "original_research_status": "researched; implementation mapping owned by parent PRODUCT_W1",
+      "disposition": "deferred_exploration",
+      "adaptation_ids": [],
+      "implementation_status": "not_implemented_in_current_delivery",
+      "decisions": [
+        {
+          "mechanism": "Additional integration/identity/deployment breadth",
+          "decision": "deferred",
+          "reason": "Missing authorized interfaces, topology, reviewed identity/geometry, hardware or deployment prerequisites."
+        }
+      ]
+    }
+  ],
+  "adaptations": [
+    {
+      "id": "AD-01",
+      "title": "Case-local lexical investigation",
+      "disposition": "current_delivery",
+      "status": "implemented, integrated and source/local synthetic workflow verified; real deployment unverified",
+      "problem": "Reviewers need to find relevant persisted events without losing source or assessment uncertainty.",
+      "mechanism": "Case-local lexical terms combined with exact participant, overlapping source-time interval, assessment and saved-correction presence filters. Search covers event/observation text, IDs, uncertainty, legal explanation and saved notes; all terms must match. Filtering changes only visibility and preserves adjacent event identities.",
+      "finding_ids": [
+        "AX-006",
+        "AX-007",
+        "AX-008",
+        "AX-010",
+        "MK-002",
+        "MK-003",
+        "MK-015",
+        "MK-023",
+        "MK-027"
+      ],
+      "files": [
+        "web/lib/investigation.ts",
+        "web/lib/investigation.test.mjs",
+        "web/components/investigation-tools.tsx",
+        "web/app/page.tsx"
+      ],
+      "acceptance": [
+        "Ordinary, unresolved and adjacent events remain separate by ID.",
+        "Case/participant/time/assessment/review filters work on persisted results; invalid intervals explain the error.",
+        "Search does not mutate conclusions, merge actors or claim semantic similarity.",
+        "Unavailable review history is not represented as a valid empty history."
+      ],
+      "checks": [
+        "AC-WEB",
+        "AC-WEB-BUILD",
+        "AC-SYNTHETIC-JOURNEY"
+      ],
+      "cost": "CPU/browser only; no model call, embeddings, new service, root dependency or migration.",
+      "rollback": "Integration owner reverts the three product commits together in reverse order, checking dependencies; result/correction formats remain compatible.",
+      "contributor_commits": [
+        "7d34fae3ac774c032e4410df54d4e674f95754b2",
+        "1098dc24c8a9b424f9260ba367b30077cc58a41e",
+        "22c991fc05149c7ced111a4a9e27e39c7374c17d"
+      ],
+      "integrated_application_revision": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3"
+    },
+    {
+      "id": "AD-02",
+      "title": "Complete investigation report and authorized reopen",
+      "disposition": "current_delivery",
+      "status": "implemented, integrated and source/local synthetic workflow verified; real deployment unverified",
+      "problem": "An exported or filtered summary must not silently lose uncertainty, original model output or correction lineage.",
+      "mechanism": "GET /api/v2/jobs/{id}/report returns forte.investigation-report/1 with complete unchanged original result, canonical result hash, validated locked human history, head/parent ancestry, old-base flag and authenticated case-relative links. The UI downloads the complete case irrespective of active filters and reopens the owned job by its report ID.",
+      "finding_ids": [
+        "AX-011",
+        "AX-013",
+        "AX-015",
+        "AX-016",
+        "AX-028",
+        "MK-006",
+        "MK-014",
+        "MK-015",
+        "MK-017",
+        "MK-027"
+      ],
+      "files": [
+        "src/forte/api.py",
+        "src/forte/investigation_report.py",
+        "tests/test_investigation_report.py",
+        "tests/test_investigation_api.py",
+        "web/app/page.tsx",
+        "web/lib/review-types.ts"
+      ],
+      "acceptance": [
+        "Report retains full original result, coverage, legal provenance and independent human revisions.",
+        "History snapshot uses existing append lock and rejects malformed, forked, mixed-source or unsafe history.",
+        "Old-result corrections remain exported but mismatch is explicit.",
+        "Ownership is enforced for report, reopened result and media; v1 contract remains unchanged.",
+        "Correction draft stays bound to selected case/event."
+      ],
+      "checks": [
+        "AC-BE-PARENT",
+        "AC-BE-CHILD",
+        "AC-WEB",
+        "AC-WEB-BUILD",
+        "AC-SYNTHETIC-JOURNEY"
+      ],
+      "cost": "Local bounded filesystem/JSON work; no media copying into report or external service.",
+      "rollback": "Integration owner reverts the three product commits together in reverse order, checking dependencies; result/correction formats remain compatible.",
+      "contributor_commits": [
+        "7d34fae3ac774c032e4410df54d4e674f95754b2",
+        "1098dc24c8a9b424f9260ba367b30077cc58a41e",
+        "22c991fc05149c7ced111a4a9e27e39c7374c17d"
+      ],
+      "integrated_application_revision": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3"
+    },
+    {
+      "id": "AD-03",
+      "title": "Coverage navigation and all-target ancestry view",
+      "disposition": "current_delivery",
+      "status": "implemented, integrated and source/local synthetic workflow verified; real deployment unverified",
+      "problem": "Reviewers need to navigate missed/unclear source intervals and see independent review origins without treating saved edits as approval.",
+      "mechanism": "Expose source coverage interval seek actions and recording-wide correction history with target, scope, origin, parent revision, source hash, base-result hash and structured changes. Retain event-specific view and existing official-law/evidence links.",
+      "finding_ids": [
+        "AX-002",
+        "AX-003",
+        "AX-004",
+        "AX-007",
+        "AX-009",
+        "AX-011",
+        "AX-016",
+        "AX-022",
+        "AX-030",
+        "MK-009",
+        "MK-010",
+        "MK-014",
+        "MK-023",
+        "MK-027"
+      ],
+      "files": [
+        "web/app/page.tsx",
+        "web/lib/review-types.ts"
+      ],
+      "acceptance": [
+        "Unexamined and unclear intervals remain explicitly unresolved and seek the original source time.",
+        "Recording-wide history includes targets outside selected event while event view remains scoped.",
+        "Human sidecar scope and ancestry remain visible without overwriting the model result."
+      ],
+      "checks": [
+        "AC-WEB",
+        "AC-WEB-BUILD",
+        "AC-SYNTHETIC-JOURNEY"
+      ],
+      "cost": "Existing-result UI only; no inference rerun or tracker/legal changes.",
+      "rollback": "Integration owner reverts the three product commits together in reverse order, checking dependencies; result/correction formats remain compatible.",
+      "contributor_commits": [
+        "7d34fae3ac774c032e4410df54d4e674f95754b2",
+        "1098dc24c8a9b424f9260ba367b30077cc58a41e",
+        "22c991fc05149c7ced111a4a9e27e39c7374c17d"
+      ],
+      "integrated_application_revision": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3"
+    },
+    {
+      "id": "AD-04",
+      "title": "Readable multi-participant role/action evidence projection",
+      "disposition": "follow_on_contract_dependent",
+      "status": "design recorded; TEST renderer/projection contract pending; not implemented in frozen application",
+      "problem": "Expose people, action, evidence and coverage before technical JSON without collapsing entrants into global roles.",
+      "finding_ids": [
+        "AX-004",
+        "AX-005",
+        "AX-015",
+        "MK-002",
+        "MK-003",
+        "MK-025"
+      ],
+      "evidence_strength": "Tracking/appearance documentation supports separation; vendor role reasoning internals remain UNKNOWN. This is our independent design.",
+      "mechanism": "Readable projection above unchanged raw result: anonymous participant hypotheses, role origins/time bounds/repeated activity support, linked source actions, conflicts, gaps and abstention; no clothing/side/coordinate roles or one cashier plus one client assumption.",
+      "owner": "TEST offline renderer/contract; A and consolidation 741ce35c-f3ab-47e4-939f-13f093d0f042 coordinate any later product slice.",
+      "depends_on": [
+        "Synthetic tested renderer/projection contract",
+        "New coordinated candidate after frozen application ebb3d82; preserve raw result/export and auth"
+      ],
+      "cost": "CPU source/renderer work; no training, new model/service or paid resource implied",
+      "acceptance": [
+        "Several entrants remain separate recording-local participant hypotheses",
+        "Role support has source IDs/temporal evidence; unsupported claims abstain",
+        "No global role exclusivity or permanent employment from appearance",
+        "Summary/people/actions/evidence/coverage stay distinct from legal conclusions and raw technical details"
+      ],
+      "rollback": "Remove additive projection; retain immutable result/export/corrections, no migration."
+    }
+  ],
+  "acceptance_evidence": [
+    {
+      "id": "AC-BE-PARENT",
+      "scope": "backend and HTTPS behavior",
+      "result": "passed",
+      "count": 39,
+      "provenance": "parent PRODUCT_W1 reported results; contributor build, not final integrated-runtime acceptance",
+      "uses_fresh_private_inference": false
+    },
+    {
+      "id": "AC-BE-CHILD",
+      "scope": "independent backend checks",
+      "result": "passed",
+      "count": 51,
+      "provenance": "independent child reported results; contributor build",
+      "uses_fresh_private_inference": false
+    },
+    {
+      "id": "AC-WEB",
+      "scope": "frontend behavior tests",
+      "result": "passed",
+      "count": 17,
+      "provenance": "Parent and A independently ran final frontend tests, including delayed-case/superseded-request guards",
+      "uses_fresh_private_inference": false
+    },
+    {
+      "id": "AC-WEB-BUILD",
+      "scope": "frontend lint, type checks, static production build",
+      "result": "passed",
+      "provenance": "parent PRODUCT_W1 reported results",
+      "uses_fresh_private_inference": false
+    },
+    {
+      "id": "AC-INTEGRATED-JOURNEY",
+      "scope": "final integrated served build, full upload-to-report journey with real authorized development inference",
+      "result": "blocked",
+      "provenance": "Fresh real-model candidate activation missed TEST 01:00 UTC cutoff; no late run or extension. Prior GPU baseline is a separate build."
+    },
+    {
+      "id": "AC-SYNTHETIC-JOURNEY",
+      "scope": "Final integrated actual core/session/frontend; generated MOV upload, partial result/playback, zero-time and actor filters/draft binding, delayed reload/save locks, two scoped corrections, complete report, source seek, logout/cross-owner denial and owner UUID reopen; desktop/mobile inspection",
+      "result": "passed",
+      "application_revision": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3",
+      "frontend_source_revision": "22c991fc05149c7ced111a4a9e27e39c7374c17d",
+      "manifest": "docs/product-research/final-verification.json",
+      "uses_fresh_private_inference": false,
+      "real_model_executed": false
+    },
+    {
+      "id": "AC-INTEGRATED-SOURCE",
+      "scope": "Python/contracts identical to verified 53ebe49; final application includes separately tested UI fix",
+      "result": "passed",
+      "python_tests": 749,
+      "optional_skip": 1,
+      "existing_warnings": 4,
+      "optional_native_check_separately_passed": true,
+      "frontend_tests": 17,
+      "real_model_executed": false
+    }
+  ],
+  "deferred_backlog": [
+    {
+      "id": "LATER-01",
+      "mechanisms": [
+        "zones and temporal operational rules",
+        "queue metrics",
+        "dwell/occupancy/counter coverage"
+      ],
+      "disposition": "later_hardening",
+      "prerequisites": [
+        "reviewed geometry and role inputs",
+        "known sampling/coverage",
+        "metric calibration and reliable timebase"
+      ],
+      "source_findings": [
+        "AX-019",
+        "AX-020",
+        "AX-021",
+        "MK-007",
+        "MK-008",
+        "MK-011",
+        "MK-012"
+      ]
+    },
+    {
+      "id": "DEFER-01",
+      "mechanisms": [
+        "live camera/NVR ingestion",
+        "enterprise SSO/permission administration",
+        "vendor SDK/PSIM and IoT connectors"
+      ],
+      "disposition": "deferred_exploration",
+      "prerequisites": [
+        "explicit ownership transfer to CORE/DEPLOY",
+        "actual authorized interfaces/hardware and deployment need"
+      ],
+      "source_findings": [
+        "AX-001",
+        "AX-025",
+        "AX-026",
+        "MK-004",
+        "MK-026"
+      ]
+    },
+    {
+      "id": "DEFER-02",
+      "mechanisms": [
+        "appearance embeddings",
+        "cross-camera identity",
+        "semantic retrieval/chat",
+        "synchronized camera archives"
+      ],
+      "disposition": "deferred_exploration",
+      "prerequisites": [
+        "local validated index/model contract",
+        "reviewed identity and camera topology/alignment",
+        "resource reservation and acceptance material"
+      ],
+      "source_findings": [
+        "AX-005",
+        "AX-008",
+        "AX-009",
+        "AX-014",
+        "MK-002",
+        "MK-003",
+        "MK-021",
+        "MK-025"
+      ]
+    },
+    {
+      "id": "REJECT-01",
+      "mechanism": "time-only event merging with separation <=5 seconds",
+      "disposition": "rejected",
+      "reason": "Can collapse different actors and operations; AD-01 preserves every event ID and adjacency.",
+      "source_findings": [
+        "AX-010"
+      ]
+    }
+  ],
+  "unknowns": {
+    "axxon": [
+      "Exact model/checkpoint and embedding implementation",
+      "Independent accuracy/latency/robustness under ForteBank recording conditions",
+      "Installed 3.1 file-upload/indexing UX and errors",
+      "Actor-aware incident dedupe beyond documented time grouping",
+      "Complete correction history/immutable assessment audit semantics",
+      "Current restricted API message schemas and deployment-specific retention",
+      "First-login/setup and actual admin/reviewer error/empty states"
+    ],
+    "mikshi": [
+      "Uploaded-video analytics, archive retention, stream recovery, ingest clock alignment, source PTS preservation, and evidence timebase guarantees were not established.",
+      "Severity, deduplication, triage assignment, correction, resolution, retention of original assessments, and incident audit-history mechanics were not verified.",
+      "Exact detector/tracker models, checkpoints, VLM runtime, multi-frame action reasoning, training/adaptation procedure, and measured accuracy were not established.",
+      "Published hardware sizing, licensing dependencies, installer/recovery runbooks, detailed API schemas, and supported local installation steps were not established."
+    ],
+    "delivery": [
+      "Integration-owner receipt and conflict resolution",
+      "Actually served final revision/build/image",
+      "Final authorized real-inference user journey and deployment acceptance"
+    ],
+    "final_real_runtime": "Blocked: candidate GPU/API activation cutoff missed; TEST VM deleted after baseline preservation. Source/synthetic checks cannot replace a fresh candidate mechanic run.",
+    "fixed_v1_dispatch": "Unresolved separate integration concern; legacy v1/v2 remain separate. Product does not turn insufficient evidence into a binary verdict."
+  },
+  "privacy": {
+    "private_inputs_used": false,
+    "accounts_created": false,
+    "forms_submitted": false,
+    "vendor_contact": false,
+    "authentication_bypassed": false,
+    "hidden_api_probes": false
+  },
+  "contributor_artifacts": {
+    "axxon": "/tmp/forte-product-w1/axxon",
+    "mikshi": "/tmp/forte-product-w1/mikshi",
+    "note": "Local public-source captures and observation steps; parent preserves selected evidence and REA manifests. Source bodies are not reproduced in this ledger.",
+    "preserved_public_export_directory": "/Users/itsaibarr/.local/share/forte26/product-research-20261018-v1/",
+    "evidence_manifest": "docs/product-research/evidence-manifest.json"
+  }
+}
