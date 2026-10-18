@@ -137,7 +137,7 @@ The previous VM was absent from live provider inventory. A replacement evaluatio
 VM uses the existing project authorization, a $3 session cap and a 90-minute
 deadline. Local and acknowledged VM-side deletion guards are active. Historical
 GPU reports remain evidence of their own versions; this run does not inherit their
-quality or timing claims. Actual CUDA execution and bounded runtime handoff are recorded below. Final VM deletion is a separate lifecycle receipt; it is not claimed here.
+quality or timing claims. Actual CUDA execution and bounded runtime handoff are recorded below. Final VM deletion is recorded in the separate lifecycle closure below.
 
 
 ## CUDA environment identity
@@ -361,4 +361,38 @@ stop both processes. No session/publication acceptance is claimed.
 Useful-work stop remains **01:08 UTC**; acknowledged deletion guards remain
 scheduled for **01:28:30 UTC**. A source-final candidate requires a separately
 reviewed process/run identity; its status does not change this frozen baseline.
-The VM is not claimed deleted in this report.
+This describes the pre-closure handoff; final lifecycle closure follows.
+
+
+## Final lifecycle closure and source-candidate boundary
+
+The baseline API/model container was deliberately stopped at **01:01:43 UTC**
+after all predictions and evidence were preserved; its SIGTERM exit code 143
+is lifecycle shutdown, not an inference failure. Final container logs and the
+complete 2,754-row GPU sampler were also archived, restored and hash-verified
+separately. The observed GPU-memory peak remained **73,531 MiB**.
+
+At **01:03:11 UTC**, live provider inventory confirmed **zero VMs and zero
+volumes** after identity-checked deletion of this evaluation VM. Original useful
+and deletion deadlines were not extended. Credit changed from **$24.92737** to
+**$23.54804**, an observed shared-session reduction of **$1.37933**, within the
+**$3** cap and subject to billing settlement. There is no active evaluation host.
+The closure receipt is
+`.context/verify/mechanic-validation-lifecycle-20261018.json`.
+
+B separately exercised the unchanged app's live/ready/static endpoints, missing-key
+401, authenticated public OpenAPI and an SSH loopback forward, then verified its
+owned bridge/tunnel were closed at 00:58:57 UTC. It made no upload or model call
+and read no private case. That establishes transport/health for this original
+runtime; it establishes no session, publication or private browser acceptance.
+B records its receipt at source commit `058d8e0`.
+
+A's proposed separate-process candidate was Python source
+`53ebe49d26a102e026e4e8ce9149c80995e64db0`, with independently reported source tests.
+Its proposal reached runtime-owner review at **01:00:34 UTC**, after its specified
+01:00 start cutoff, while final static-asset identity was still pending. The
+**source-final GPU/API test is blocked and unexecuted** this session. No candidate
+was staged, no new source process was launched, and no new model call or runtime
+acceptance was inferred. A future run needs a complete frozen source/static
+identity and a bounded runtime window ready before execution; this is separate
+from the missing independent recognition references for the existing baseline.
