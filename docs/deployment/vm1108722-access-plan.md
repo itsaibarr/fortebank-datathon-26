@@ -2,6 +2,9 @@
 
 Status: **prepared plan; no public application, certificate or external workflow is verified**.
 The proposed address is `https://69.19.136.174:18443`. It is not a live-service claim.
+The separately authorized loopback/SSH transport checks completed with verified
+cleanup at 00:58:57 UTC; see the [transport receipt](vm1108722-transport-verification.json).
+Both temporary listeners are closed. This does not activate the HTTPS proposal.
 
 ## Ownership and execution window
 

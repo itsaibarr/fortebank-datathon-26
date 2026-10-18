@@ -88,6 +88,17 @@ to unchanged container port 8000 and bounded health/client checks. Follow the
 [source-only procedure](unchanged-core-attach.md); it grants no execution window,
 core overlay, session transition or public ingress permission.
 
+The later explicit owner handoff permitted fixed-script bridge port 18000 and
+local SSH forward 8040 through 01:03 UTC, after all three backups and 436 restored
+file hashes were acknowledged. Agent B completed real-core health, static UI,
+unauthenticated 401 and authenticated v2-contract client checks at 00:58:57 UTC.
+The exact forward was canceled, bridge and relay children exited, both listeners
+closed and the unchanged core remained running. No private case/output reads,
+uploads, model generation or core changes occurred. See the
+[sanitized transport receipt](vm1108722-transport-verification.json). This
+completed window was released; it does not establish new-image, session,
+private-installer or public HTTPS/browser acceptance.
+
 The fixed public archive was transferred to Agent B's separate VM staging area;
 a small read-only inspection verified all 187 release hashes after SSH recovery.
 The public CPU build was skipped because too little time remained before its
