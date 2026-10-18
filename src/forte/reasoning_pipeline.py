@@ -342,7 +342,7 @@ def analyze_reasoning(
         service = legal or LegalEvidenceService(
             Path(law["release"]),
             Path(law["cards"]) if law.get("cards") else None,
-            applicability=law.get("applicability", []),
+            **({"applicability": law["applicability"]} if law["applicability"] else {}),
         )
         stage = time.monotonic()
         legal_deadline = max(time.monotonic(), deadline - 10)
@@ -355,7 +355,7 @@ def analyze_reasoning(
             legal_deadline,
             event_date=law.get("event_date"),
             operation_context=law.get("operation_context"),
-            metadata_evidence=law.get("metadata_evidence", []),
+            **({"metadata_evidence": law["metadata_evidence"]} if law["metadata_evidence"] else {}),
             max_calls=limits["legal_max_calls"],
             table=table,
         )
@@ -385,6 +385,8 @@ def analyze_reasoning(
         complete = (
             timeline["status"] == "complete_schedule"
             and not timeline["coverage"]["unexamined_intervals"]
+            and not timeline["coverage"].get("unclear_intervals")
+            and not timeline["coverage"].get("pending_reinspections", 0)
             and not evidence_limited
             and legal_report.get("status") == "complete_scoped_schedule"
         )
