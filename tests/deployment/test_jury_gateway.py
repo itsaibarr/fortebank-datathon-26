@@ -22,7 +22,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tests"))
 from test_api import negative  # noqa: E402
-from test_browser_session_integration import core_http  # noqa: E402
+from test_browser_session_integration import core_http, gateway_https  # noqa: E402
+from test_browser_session_integration import tls_files as tls_fixture  # noqa: E402
 from test_video import make_mov  # noqa: E402
 
 from forte.api import create_app  # noqa: E402
@@ -38,6 +39,8 @@ SPEC.loader.exec_module(jury)
 from session_gateway import SECURITY  # noqa: E402
 from session_gateway import create_server as browser_server  # noqa: E402
 from session_store import SessionStore  # noqa: E402
+
+tls_files = tls_fixture
 
 SERVICE, TOKEN = "synthetic-service-" + "s" * 48, "synthetic-gateway-" + "t" * 48
 A, B = "a" * 43, "b" * 43
@@ -105,7 +108,9 @@ def call(server, method="GET", path=JOB, *, key=A, body=None, headers=None):
     connection.request(method, path, body=body, headers=selected)
     response = connection.getresponse()
     result = SimpleNamespace(
-        status=response.status, headers=dict(response.headers), body=response.read()
+        status=response.status,
+        headers=httpx.Headers(response.headers.items()),
+        body=response.read(),
     )
     connection.close()
     return result
@@ -145,8 +150,11 @@ def boundary(config):
                     self.send_header("Location", location)
                 if state.mode == "duplicate_location":
                     self.send_header("Location", location)
-            if status in {429, 503}:
-                self.send_header("Retry-After", "300" if state.mode == "invalid_retry" else "5")
+            if status in {429, 503} and state.mode != "health_missing_retry":
+                self.send_header(
+                    "Retry-After",
+                    "300" if state.mode in {"invalid_retry", "early_invalid_retry"} else "5",
+                )
                 if state.mode == "duplicate_retry":
                     self.send_header("Retry-After", "5")
             if state.mode == "misplaced_retry" and self.path != "/api/internal/security":
@@ -193,9 +201,28 @@ def boundary(config):
                     value["ownerless_jobs_denied"] = False
                 return self.respond(200, value, close=state.mode == "closed")
             if self.path == "/health/ready":
+                if state.mode == "malformed_health":
+                    return self.respond(503, {"error": {"code": "untrusted", "message": "bad"}})
                 return self.respond(
-                    200 if state.ready else 503, {"status": "ready" if state.ready else "not_ready"}
+                    200 if state.ready else 503,
+                    {"status": "ready"}
+                    if state.ready
+                    else {
+                        "error": {
+                            "code": "model_not_ready",
+                            "message": "The local model is not ready.",
+                        }
+                    },
                 )
+            if state.mode == "response_header_trickle":
+                self.wfile.write(b"HTTP/1.1 200 OK\r\nX-Synthetic: ")
+                try:
+                    for _ in range(32):
+                        self.wfile.write(b"x")
+                        time.sleep(0.2)
+                finally:
+                    self.close_connection = True
+                return
             return self.respond(
                 307 if state.mode == "redirect" else 200,
                 {"status": "processing"},
@@ -203,6 +230,22 @@ def boundary(config):
             )
 
         def do_POST(self):
+            if state.mode.startswith("early_"):
+                self.record()
+                if state.mode == "early_bad_status":
+                    self.wfile.write(b"INVALID STATUS\r\n\r\n")
+                    self.close_connection = True
+                    return
+                return self.respond(
+                    429,
+                    {
+                        "error": {
+                            "code": "capacity_full",
+                            "message": "Two jobs are already admitted.",
+                        }
+                    },
+                    marker=state.mode != "early_missing_marker",
+                )
             self.record(self.rfile.read(int(self.headers.get("Content-Length", 0))))
             status = (
                 429 if state.mode in {"invalid_retry", "duplicate_retry", "valid_retry"} else 202
@@ -300,7 +343,8 @@ def test_capability_failure_never_posts_or_retries(boundary, mode):
 
 def test_loading_model_never_posts(boundary):
     boundary.state.ready = False
-    assert call(boundary.server, "POST", "/api/v1/analyze", body=b"x").status == 502
+    result = call(boundary.server, "POST", "/api/v1/analyze", body=b"x")
+    assert result.status == 503 and result.headers["Retry-After"] == "5"
     assert not any(item["method"] == "POST" for item in boundary.state.calls)
 
 
@@ -326,7 +370,6 @@ def test_sensitive_upstream_response_headers_never_reach_client(boundary):
     [
         "/api/v2/analyze",
         "/api/v1/analyze/",
-        "/api/v1/jobs/not-uuid",
         JOB + "/source",
         JOB + "/report",
         JOB + "/evidence/frame",
@@ -335,7 +378,6 @@ def test_sensitive_upstream_response_headers_never_reach_client(boundary):
         "/health/ready",
         "/auth/login",
         "http://untrusted.invalid/api/v1/analyze",
-        "/api/v1/jobs/00000000-0000-0000-0000-00000000000A",
     ],
 )
 def test_unknown_routes_never_reach_upstream(boundary, path):
@@ -534,6 +576,7 @@ def test_real_core_jury_keys_persist_owners_and_do_not_cross_browser(config, tmp
                 identifier = response.json()["job_id"]
                 path = "/api/v1/jobs/" + identifier
                 assert response.headers["location"] == path
+                assert (settings.private_root / identifier / "input.mov").read_bytes() == source
                 for _ in range(200):
                     result = client.get(path, headers={"X-API-Key": A})
                     assert result.status_code == 200, result.text
@@ -684,3 +727,310 @@ def test_response_body_trickle_cannot_extend_absolute_deadline(boundary):
     assert (
         len(body) < 32
     )  # A partial body is closed, never represented as a completed JSON response.
+
+
+def headers_only(server, *, key=A, path="/api/v1/analyze", length=1048576):
+    with socket.create_connection(("127.0.0.1", server.server_port), timeout=2) as client:
+        client.settimeout(2)
+        client.sendall(
+            (
+                f"POST {path} HTTP/1.1\r\nHost: {HOST}\r\nX-API-Key: {key}\r\n"
+                "Content-Type: multipart/form-data; boundary=synthetic\r\n"
+                f"Content-Length: {length}\r\n\r\n"
+            ).encode()
+        )
+        started = time.monotonic()
+        response = http.client.HTTPResponse(client)
+        response.begin()
+        result = SimpleNamespace(
+            status=response.status,
+            headers=httpx.Headers(response.headers.items()),
+            body=response.read(),
+        )
+        response.close()
+        return result, time.monotonic() - started
+
+
+def assert_helpers_finished():
+    deadline = time.monotonic() + 1
+    while time.monotonic() < deadline:
+        helpers = [item for item in threading.enumerate() if item.name.startswith("forte-jury-")]
+        if not helpers:
+            return
+        time.sleep(0.01)
+    assert not helpers
+
+
+@pytest.mark.parametrize(
+    "mode", ["early_valid", "early_missing_marker", "early_invalid_retry", "early_bad_status"]
+)
+def test_early_error_or_malformed_response_stops_idle_uploader(boundary, mode):
+    boundary.state.mode = mode
+    result, elapsed = headers_only(boundary.server)
+    assert elapsed < 2
+    assert result.status == (429 if mode == "early_valid" else 502)
+    if mode == "early_valid":
+        assert result.headers["Retry-After"] == "5"
+    assert [item["body"] for item in boundary.state.calls if item["method"] == "POST"] == [b""]
+    assert_helpers_finished()
+    boundary.state.mode = "normal"
+    assert call(boundary.server).status == 200
+    assert_helpers_finished()
+
+
+@pytest.mark.parametrize("mode", ["malformed_health", "health_missing_retry"])
+def test_malformed_not_ready_health_is_not_translated_to503(boundary, mode):
+    boundary.state.mode, boundary.state.ready = mode, False
+    result = call(boundary.server, "POST", "/api/v1/analyze", body=b"synthetic")
+    assert result.status == 502
+    assert not any(item["method"] == "POST" for item in boundary.state.calls)
+    assert_helpers_finished()
+
+
+def test_idle_upload_deadline_cancels_reader_and_preserves_next_request(boundary):
+    boundary.server.gateway.limits["upload_timeout_seconds"] = 1
+    result, elapsed = headers_only(boundary.server)
+    assert result.status == 502 and elapsed < 2
+    assert_helpers_finished()
+    assert call(boundary.server).status == 200
+    assert_helpers_finished()
+
+
+def test_disconnected_partial_upload_cleans_helpers(boundary):
+    with socket.create_connection(("127.0.0.1", boundary.server.server_port), timeout=2) as client:
+        client.sendall(
+            (
+                f"POST /api/v1/analyze HTTP/1.1\r\nHost: {HOST}\r\nX-API-Key: {A}\r\n"
+                "Content-Length: 1048576\r\n\r\npartial"
+            ).encode()
+        )
+    assert_helpers_finished()
+    assert call(boundary.server).status == 200
+    assert_helpers_finished()
+
+
+@pytest.mark.parametrize("failure", ["capacity", "readiness_race", "already_not_ready"])
+def test_actual_uvicorn_prebody_admission_responds_without_upload(config, tmp_path, failure):
+    observed = {"posts": 0, "body_bytes": 0, "inference": 0, "ready_calls": 0}
+
+    def ready():
+        observed["ready_calls"] += 1
+        return failure == "capacity" or (
+            failure == "readiness_race" and observed["ready_calls"] == 1
+        )
+
+    async def never(*args):
+        observed["inference"] += 1
+        raise AssertionError("No inference is authorized in this transport regression")
+
+    settings = Settings(
+        SERVICE,
+        tmp_path / "cases",
+        trusted_gateway_token=TOKEN,
+        max_admitted=0 if failure == "capacity" else 2,
+    )
+    app = create_app(settings, runner=never, ready=ready)
+
+    async def traced(scope, receive, send):
+        if scope["type"] == "http" and scope["method"] == "POST":
+            observed["posts"] += 1
+
+        async def traced_receive():
+            event = await receive()
+            if scope["type"] == "http" and scope["method"] == "POST":
+                observed["body_bytes"] += len(event.get("body", b""))
+            return event
+
+        await app(scope, traced_receive, send)
+
+    with core_http(traced) as upstream:
+        config["upstream"] = upstream
+        with running(jury.create_server(config)) as server:
+            result, elapsed = headers_only(server)
+            assert elapsed < 2
+            assert result.status == (429 if failure == "capacity" else 503)
+            assert result.headers["Retry-After"] == "5"
+            assert json.loads(result.body)["error"]["code"] == (
+                "capacity_full" if failure == "capacity" else "model_not_ready"
+            )
+            assert observed["posts"] == (0 if failure == "already_not_ready" else 1)
+            assert observed["body_bytes"] == observed["inference"] == 0
+            assert not list(settings.private_root.glob("*/request.json"))
+            assert_helpers_finished()
+            assert call(server).status == 404
+            assert_helpers_finished()
+
+
+def test_invalid_job_identifier_authenticates_then_matches_actual_core422(config, tmp_path):
+    app = create_app(
+        Settings(SERVICE, tmp_path / "cases", trusted_gateway_token=TOKEN), ready=lambda: True
+    )
+    path = "/api/v1/jobs/not-a-uuid"
+    with core_http(app) as upstream:
+        config["upstream"] = upstream
+        with httpx.Client(base_url=upstream, trust_env=False) as direct:
+            missing = direct.get(path)
+            expected = direct.get(
+                path,
+                headers={
+                    "X-API-Key": SERVICE,
+                    "X-Forte-Gateway-Token": TOKEN,
+                    "X-Forte-Principal": PA,
+                },
+            )
+        assert missing.status_code == 401 and expected.status_code == 422
+        with running(jury.create_server(config)) as server:
+            assert call(server, path=path, key=None).status == 401
+            actual = call(server, path=path)
+            assert actual.status == 422 and json.loads(actual.body) == expected.json()
+            assert "not-a-uuid" not in actual.body.decode()
+            assert_helpers_finished()
+
+
+def test_jury_operation_header_trickle_obeys_absolute_deadline(boundary):
+    boundary.state.mode = "response_header_trickle"
+    boundary.server.gateway.limits["job_timeout_seconds"] = 1
+    started = time.monotonic()
+    result = call(boundary.server)
+    assert result.status == 502 and time.monotonic() - started < 2
+    assert_helpers_finished()
+    boundary.state.mode = "normal"
+    assert call(boundary.server).status == 200
+    assert_helpers_finished()
+
+
+def test_actual_gateway_restart_rotates_key_and_preserves_case_principal(
+    config, tmp_path, monkeypatch
+):
+    monkeypatch.setenv("PYTHONPATH", str(ROOT / "src"))
+    settings = Settings(SERVICE, tmp_path / "cases", trusted_gateway_token=TOKEN)
+    app = create_app(settings, runner=negative, ready=lambda: True)
+    source = make_mov(tmp_path / "synthetic.mov").read_bytes()
+    with core_http(app) as upstream:
+        config["upstream"] = upstream
+        with running(jury.create_server(config)) as first:
+            with httpx.Client(
+                base_url=f"http://127.0.0.1:{first.server_port}",
+                trust_env=False,
+                headers={"Host": HOST, "X-API-Key": A},
+                timeout=10,
+            ) as client:
+                response = client.post("/api/v1/analyze", files={"file": ("synthetic.mov", source)})
+                assert response.status_code == 202
+                path, identifier = response.headers["location"], response.json()["job_id"]
+                assert client.get(path).status_code == 200
+        assert_helpers_finished()
+        replacement = "c" * 43
+        write_keys(config, [entry(replacement, PA), entry(B, PB)])
+        with running(jury.create_server(config)) as second:
+            assert call(second, path=path, key=A).status == 401
+            assert call(second, path=path, key=replacement).status == 200
+            denied = call(second, path=path, key=B)
+            assert denied.status == 404 and denied.body == call(second, key=B).body
+            assert (
+                json.loads((settings.private_root / identifier / "request.json").read_bytes())[
+                    "owner_principal"
+                ]
+                == PA
+            )
+            assert (settings.private_root / identifier / "input.mov").read_bytes() == source
+        assert_helpers_finished()
+
+
+def test_actual_https_browser_and_jury_principals_cannot_cross(
+    config, tmp_path, monkeypatch, tls_files
+):
+    monkeypatch.setenv("PYTHONPATH", str(ROOT / "src"))
+    settings = Settings(SERVICE, tmp_path / "cases", trusted_gateway_token=TOKEN)
+    app = create_app(settings, runner=negative, ready=lambda: True)
+    source = make_mov(tmp_path / "synthetic.mov").read_bytes()
+    store = SessionStore(tmp_path / "browser.sqlite3")
+    browser_principal = store.add_user("alice", "synthetic-browser-password")
+    with core_http(app) as upstream:
+        config["upstream"] = upstream
+        browser_config = {
+            key: config[key] for key in ("upstream", "service_key_file", "gateway_token_file")
+        }
+        browser_config["browser_uploads_enabled"] = True
+        with running(jury.create_server(config)) as jury_server:
+            with gateway_https(browser_config, store, tls_files) as (origin, trust):
+                with (
+                    httpx.Client(
+                        base_url=origin, verify=trust, trust_env=False, timeout=10
+                    ) as browser,
+                    httpx.Client(
+                        base_url=f"http://127.0.0.1:{jury_server.server_port}",
+                        trust_env=False,
+                        timeout=10,
+                        headers={"Host": HOST, "X-API-Key": A},
+                    ) as evaluator,
+                ):
+                    login = browser.post(
+                        "/auth/login",
+                        json={"username": "alice", "password": "synthetic-browser-password"},
+                        headers={"Origin": origin},
+                    )
+                    assert login.status_code == 200
+                    assert login.json()["principal"]["id"] == browser_principal != PA
+                    browser_job = browser.post(
+                        "/api/v1/analyze",
+                        files={"file": ("synthetic.mov", source)},
+                        headers={"Origin": origin, "X-CSRF-Token": login.json()["csrf_token"]},
+                    )
+                    jury_job = evaluator.post(
+                        "/api/v1/analyze", files={"file": ("synthetic.mov", source)}
+                    )
+                    assert browser_job.status_code == jury_job.status_code == 202
+                    browser_path, jury_path = (
+                        "/api/v1/jobs/" + browser_job.json()["job_id"],
+                        jury_job.headers["location"],
+                    )
+                    assert browser.get(browser_path).status_code == 200
+                    assert evaluator.get(jury_path).status_code == 200
+                    browser_denied, jury_denied = (
+                        browser.get(jury_path),
+                        evaluator.get(browser_path),
+                    )
+                    assert browser_denied.status_code == jury_denied.status_code == 404
+                    assert browser_denied.content == browser.get(JOB).content
+                    assert jury_denied.content == evaluator.get(JOB).content
+                    for response, principal in [(browser_job, browser_principal), (jury_job, PA)]:
+                        metadata = json.loads(
+                            (
+                                settings.private_root / response.json()["job_id"] / "request.json"
+                            ).read_bytes()
+                        )
+                        assert metadata["owner_principal"] == principal
+        assert_helpers_finished()
+
+
+@pytest.mark.parametrize(
+    "name", ["forte-jury-upload", "forte-jury-upload-deadline", "forte-jury-response-deadline"]
+)
+def test_helper_start_failure_joins_started_helpers_and_preserves_next_request(
+    boundary, monkeypatch, name
+):
+    original = threading.Thread.start
+
+    def start(worker):
+        if worker.name == name:
+            raise RuntimeError("synthetic bounded helper start failure")
+        return original(worker)
+
+    with monkeypatch.context() as selected:
+        selected.setattr(threading.Thread, "start", start)
+        result = call(boundary.server, "POST", "/api/v1/analyze", body=b"synthetic")
+        assert result.status == 502
+        assert_helpers_finished()
+    assert call(boundary.server).status == 200
+    assert_helpers_finished()
+
+
+def test_duplex_complete_multichunk_body_arrives_byte_for_byte(boundary):
+    source = b"synthetic-public-transport-block\x00\xff" * 100000
+    result = call(boundary.server, "POST", "/api/v1/analyze", body=source)
+    assert result.status == 202
+    posts = [item for item in boundary.state.calls if item["method"] == "POST"]
+    assert len(posts) == 1 and posts[0]["body"] == source
+    assert result.headers["Location"] == "/api/v1/jobs/" + json.loads(result.body)["job_id"]
+    assert_helpers_finished()
