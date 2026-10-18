@@ -451,6 +451,12 @@ class EvidenceTools:
                     )
         for item in metadata:
             item["jpeg_sha256"] = hashlib.sha256(self.payloads[item["view_id"]]).hexdigest()
+        # Keep each full scene beside its same-source crops in temporal order.
+        # Stable sorting retains scene-before-crop order at identical source PTS
+        # and moves view metadata with its payload reference.
+        order = sorted(range(len(refs)), key=lambda index: refs[index].timestamp_sec)
+        refs = [refs[index] for index in order]
+        metadata = [metadata[index] for index in order]
         self.views.extend(metadata)
         return refs, metadata
 
