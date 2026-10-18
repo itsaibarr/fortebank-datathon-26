@@ -344,6 +344,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
   const [note, setNote] = useState("")
   const [reviewStatus, setReviewStatus] = useState("")
   const [saving, setSaving] = useState(false)
+  const [reloading, setReloading] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [sourceError, setSourceError] = useState("")
   const [resumeId, setResumeId] = useState("")
@@ -358,9 +359,8 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
   const submitting = useRef(false)
   const busy = phase === "uploading" || phase === "processing"
   const visibleEvents = result ? filterEvents(result, revisions, filters) : []
-  const selected =
-    visibleEvents.find((event) => event.event_id === selectedId) ||
-    visibleEvents[0]
+  const selected = visibleEvents.find((event) => event.event_id === selectedId)
+  const caseOperation = saving || exporting || reloading
   const duration = result?.source.duration_sec || mediaDuration
   const selectedReviews = revisions.filter(
     (revision) => allHistory || revision.target_id === selected?.event_id
@@ -464,7 +464,9 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
         if (!controller.signal.aborted) {
           setVideoUrl(localUrl.current)
           setSourceError(
-            "Stored source could not be loaded; the selected original file remains available."
+            localUrl.current
+              ? "Stored source could not be loaded; the selected original file remains available."
+              : "Stored source could not be loaded. Reopen the recording to retry source playback."
           )
         }
       })
@@ -475,7 +477,8 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
   }, [request, jobId, result])
 
   function chooseFile(candidate: File | undefined) {
-    if (!candidate || busy || !uploadReady || !access.metadata) return
+    if (!candidate || busy || caseOperation || !uploadReady || !access.metadata)
+      return
     if (!candidate.name.toLowerCase().endsWith(".mov")) {
       setError("Choose a MOV recording.")
       return
@@ -503,10 +506,12 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     setFilters({ ...emptyFilters })
     setReportStatus("")
     setReviewStatus("")
+    setNote("")
     setCurrentTime(0)
   }
   async function analyze() {
-    if (!file || !uploadReady || busy || submitting.current) return
+    if (!file || !uploadReady || busy || caseOperation || submitting.current)
+      return
     submitting.current = true
     setPhase("uploading")
     const metadata = await access.refreshMetadata()
@@ -536,6 +541,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     setFilters({ ...emptyFilters })
     setReportStatus("")
     setReviewStatus("")
+    setNote("")
     const form = new FormData()
     form.append("file", file)
     try {
@@ -564,17 +570,23 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     }
   }
   function selectEvent(event: ReviewEvent) {
+    if (saving || reloading) return
     setSelectedId(event.event_id)
     seek(event.start_sec)
     setNote("")
     setReviewStatus("")
   }
   async function reloadReviews() {
-    const response = await request(`/api/v2/jobs/${jobId}/corrections`)
-    const data = await response.json()
-    setRevisions(data.revisions)
-    setHistoryReady(true)
-    return data.revisions as ReviewRevision[]
+    setReloading(true)
+    try {
+      const response = await request(`/api/v2/jobs/${jobId}/corrections`)
+      const data = await response.json()
+      setRevisions(data.revisions)
+      setHistoryReady(true)
+      return data.revisions as ReviewRevision[]
+    } finally {
+      setReloading(false)
+    }
   }
   async function saveCorrection() {
     if (!result || !selected || !access.session || !note.trim()) return
@@ -612,7 +624,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
   }
   function resumeCase() {
     const id = resumeId.trim()
-    if (busy || !validJobId(id)) return
+    if (busy || caseOperation || !validJobId(id)) return
     if (localUrl.current) URL.revokeObjectURL(localUrl.current)
     localUrl.current = ""
     setFile(null)
@@ -625,6 +637,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     setError("")
     setSourceError("")
     setReviewStatus("")
+    setNote("")
     setReportStatus("")
     setCurrentTime(0)
     setMediaDuration(0)
@@ -695,7 +708,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
             type="file"
             accept=".mov,video/quicktime"
             hidden
-            disabled={busy || !uploadReady}
+            disabled={busy || caseOperation || !uploadReady}
             onChange={(event) => chooseFile(event.target.files?.[0])}
             aria-label="Choose MOV recording"
           />
@@ -703,7 +716,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
             variant="link"
             size="xs"
             className="mt-2 px-0"
-            disabled={busy || !uploadReady}
+            disabled={busy || caseOperation || !uploadReady}
             onClick={() => fileInput.current?.click()}
           >
             {file ? "Choose another file" : "Browse files"}
@@ -718,6 +731,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
             !file ||
             !uploadReady ||
             busy ||
+            caseOperation ||
             !!(
               access.metadata &&
               mediaDuration > access.metadata.limits.max_video_seconds
@@ -787,7 +801,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
               id="resume-job"
               value={resumeId}
               maxLength={36}
-              disabled={busy}
+              disabled={busy || caseOperation}
               onChange={(event) => setResumeId(event.target.value)}
               placeholder="Job ID from your saved report"
               onKeyDown={(event) => {
@@ -797,7 +811,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
           </Field>
           <Button
             variant="outline"
-            disabled={busy || !validJobId(resumeId.trim())}
+            disabled={busy || caseOperation || !validJobId(resumeId.trim())}
             onClick={resumeCase}
           >
             Open recording
@@ -805,7 +819,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
           {result && (
             <Button
               variant="outline"
-              disabled={exporting}
+              disabled={caseOperation}
               onClick={downloadReport}
             >
               {exporting ? "Preparing report…" : "Download complete report"}
@@ -1010,6 +1024,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                     style={{
                       left: `${Math.max(1, Math.min(98, (event.decisive_sec / duration) * 100))}%`,
                     }}
+                    disabled={saving || reloading}
                     onClick={() => selectEvent(event)}
                     aria-label={`Event ${result.events.indexOf(event) + 1} at ${timecode(event.decisive_sec)}`}
                     aria-pressed={selected?.event_id === event.event_id}
@@ -1033,9 +1048,14 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
               <InvestigationTools
                 result={result}
                 filters={filters}
-                onChange={setFilters}
                 count={visibleEvents.length}
                 historyReady={historyReady}
+                disabled={saving || reloading}
+                onChange={(next) => {
+                  setFilters(next)
+                  setNote("")
+                  setReviewStatus("")
+                }}
               />
             )}
             {busy ? (
@@ -1067,6 +1087,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                   <li key={event.event_id}>
                     <button
                       type="button"
+                      disabled={saving || reloading}
                       onClick={() => selectEvent(event)}
                       className={cn(
                         "event-item",
@@ -1376,8 +1397,11 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                       Correction history
                     </h3>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      {selectedReviews.length} revisions for this event ·{" "}
-                      {revisions.length} in this recording
+                      {selectedReviews.length}{" "}
+                      {allHistory
+                        ? "recording revisions"
+                        : "revisions for this event"}{" "}
+                      · {revisions.length} in this recording
                     </p>
                     <Field orientation="horizontal" className="mt-3 w-auto">
                       <FieldLabel htmlFor="all-review-history">

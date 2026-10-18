@@ -16,12 +16,14 @@ export function InvestigationTools({
   onChange,
   count,
   historyReady,
+  disabled,
 }: {
   result: ReasoningResult
   filters: InvestigationFilters
   onChange: (filters: InvestigationFilters) => void
   count: number
   historyReady: boolean
+  disabled: boolean
 }) {
   const participants = Array.from(
     new Set(
@@ -33,11 +35,14 @@ export function InvestigationTools({
   ).sort()
   const error = filterError(filters)
   return (
-    <details className="border-b px-5 py-4" open>
+    <details className="border-b px-5 py-4">
       <summary className="cursor-pointer text-sm font-medium">
         Investigate this recording
       </summary>
-      <div className="mt-4 flex flex-col gap-4">
+      <fieldset
+        className="mt-4 flex min-w-0 flex-col gap-4"
+        disabled={disabled}
+      >
         <Field>
           <FieldLabel htmlFor="event-search">
             Search events and review notes
@@ -103,6 +108,7 @@ export function InvestigationTools({
               step="0.1"
               value={filters.from}
               aria-invalid={!!error}
+              aria-describedby={error ? "event-time-error" : undefined}
               onChange={(event) =>
                 onChange({ ...filters, from: event.target.value })
               }
@@ -117,6 +123,7 @@ export function InvestigationTools({
               step="0.1"
               value={filters.to}
               aria-invalid={!!error}
+              aria-describedby={error ? "event-time-error" : undefined}
               onChange={(event) =>
                 onChange({ ...filters, to: event.target.value })
               }
@@ -124,7 +131,7 @@ export function InvestigationTools({
           </Field>
         </div>
         <Field>
-          <FieldLabel htmlFor="review-filter">Review notes</FieldLabel>
+          <FieldLabel htmlFor="review-filter">Review records</FieldLabel>
           <select
             id="review-filter"
             className="native-select"
@@ -138,13 +145,23 @@ export function InvestigationTools({
             }
           >
             <option value="all">All events</option>
-            <option value="with_notes">With review notes</option>
-            <option value="without_notes">Without review notes</option>
+            <option value="with_notes">With saved corrections</option>
+            <option value="without_notes">Without saved corrections</option>
           </select>
         </Field>
         {error && (
-          <p role="alert" className="text-sm text-destructive">
+          <p
+            id="event-time-error"
+            role="alert"
+            className="text-sm text-destructive"
+          >
             {error}
+          </p>
+        )}
+        {!historyReady && (
+          <p role="status" className="text-xs text-muted-foreground">
+            Review history is loading or unavailable. Saved notes are not
+            included in search yet.
           </p>
         )}
         <div className="flex items-center justify-between gap-3">
@@ -164,7 +181,7 @@ export function InvestigationTools({
           candidate. Notes do not approve an event. The report retains every
           event and all coverage limits.
         </p>
-      </div>
+      </fieldset>
     </details>
   )
 }
