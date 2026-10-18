@@ -15,10 +15,10 @@ The proposed address is `https://69.19.136.174:18443`. It is not a live-service 
   deadline remains **2026-10-18 01:28:30 UTC**. The **$3 session cap is shared**, not
   a new allocation; the project cap remains $30. This plan authorizes no new VM,
   deadline extension or additional spending.
-- The separate public-only CPU build, bounded to two CPUs and 4 GiB, reports
-  source identifier prefix `e55` and archive identifier prefix `e066`. Preserve
-  their full identifiers/hashes in the receipt. A successful build does not
-  establish model startup, inference or browser readiness.
+- The separate public-only CPU build was **skipped** before its 00:45 UTC
+  deadline. Its verified staged archive remains publisher `e066310` and exact
+  exported core `e55c077`; no new image was built. That expired window grants no
+  further execution permission.
 
 The handoff must identify the exact running service/container, immutable image,
 source commit, effective configuration and model/corpus fingerprints, current
@@ -27,9 +27,19 @@ frames, descriptions, request bodies or model replies belong in this document.
 
 ## Application integration after handoff
 
-Use Agent A's existing application and its one resident model. Enable the
-trusted application-session mode only with the owner's approval and the exact
-accepted core checkpoint. Never substitute hosted inference after a failure.
+The only accepted post-backup plan for the current runtime is a separate
+fixed-port application bridge and bounded health/client checks against unchanged
+container port 8000. Follow [the unchanged-core procedure](unchanged-core-attach.md).
+The current entrypoint supervises the API and model with `wait -n` and an EXIT
+cleanup that kills both: an API restart is not an app-only change. No overlay,
+candidate API, source replacement or session-mode transition is authorized by
+this plan. Any different process needs its own concrete integrator/runtime-owner
+review within the unchanged bounds. Never substitute hosted inference after a
+failure.
+
+The session/TLS steps below remain a future proposal for an accepted core
+checkpoint and separate runtime handoff. They must not be executed merely
+because a bridge/health handoff is available.
 
 Reserve an installer-owned application bridge on loopback `18011`, session
 gateway on loopback `18012`, and HTTPS ingress on `18443`; verify availability

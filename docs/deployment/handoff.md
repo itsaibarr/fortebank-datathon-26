@@ -81,6 +81,13 @@ activation handoff. The useful-work cutoff remains 01:08 UTC and the deletion
 deadline remains 01:28:30 UTC, within the existing $3 session cap, $30 project cap
 and $1.50 reserve. These are coordinated bounds, not a fresh credit reading.
 
+The owner subsequently confirmed that the current entrypoint's `wait -n` and
+EXIT cleanup couple the API to the resident model: restarting the API also stops
+the model. The only accepted post-preservation access plan is a separate bridge
+to unchanged container port 8000 and bounded health/client checks. Follow the
+[source-only procedure](unchanged-core-attach.md); it grants no execution window,
+core overlay, session transition or public ingress permission.
+
 The fixed public archive was transferred to Agent B's separate VM staging area;
 a small read-only inspection verified all 187 release hashes after SSH recovery.
 The public CPU build was skipped because too little time remained before its
