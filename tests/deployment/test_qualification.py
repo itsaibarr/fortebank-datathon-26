@@ -205,6 +205,67 @@ def qualify(setup):
     )
 
 
+@pytest.fixture
+def qualification_cli(setup, monkeypatch):
+    monkeypatch.syspath_prepend(str(ROOT / "tools/forte-admin"))
+    from forte_admin import cli
+    from forte_admin import install as installer
+
+    config, target, runtime, driver, clock, host = setup
+    calls = []
+    monkeypatch.setattr(cli, "portable", lambda: runtime)
+    monkeypatch.setattr(cli, "plan", lambda root, changes: (dict(config), None))
+
+    def install(selected, root, **options):
+        calls.append(selected)
+        assert options["qualification"] is True
+        return qualification.qualify(
+            selected,
+            root,
+            runtime,
+            driver=driver,
+            clock=clock.now,
+            wait=clock.wait,
+            hardware_probe=host,
+        )
+
+    monkeypatch.setattr(installer, "install", install)
+    arguments = ["install", "--installation", str(target), "--qualification", "--apply"]
+    return cli, arguments, calls
+
+
+@pytest.mark.parametrize(
+    "timeout, expected", [(None, 360), ("1", 1), ("360", 360), ("360.0", 360), ("900", 900)]
+)
+def test_cli_qualification_accepts_explicit_whole_seconds(
+    qualification_cli, capsys, timeout, expected
+):
+    cli, arguments, calls = qualification_cli
+    if timeout is not None:
+        arguments.append(f"--readiness-timeout={timeout}")
+    assert cli.main(arguments) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["qualification_complete"] and report["services_stopped"]
+    assert len(calls) == 1
+    assert type(calls[0]["qualification_timeout"]) is int
+    assert calls[0]["qualification_timeout"] == expected
+
+
+@pytest.mark.parametrize("timeout", ["0", "-1", "901", "360.5", "nan", "inf", "-inf"])
+def test_cli_qualification_rejects_invalid_seconds_before_install(
+    qualification_cli, setup, capsys, timeout
+):
+    cli, arguments, calls = qualification_cli
+    arguments.append(f"--readiness-timeout={timeout}")
+    assert cli.main(arguments) == 2
+    report = json.loads(capsys.readouterr().out)
+    assert report["error"]["code"] == "configuration_error"
+    assert "--readiness-timeout" in report["error"]["message"]
+    assert "whole number" in report["error"]["message"]
+    assert "1–900" in report["error"]["message"]
+    assert not calls and not setup[1].exists() and not setup[3].calls
+
+
 def test_success_only_starts_offline_scratch_core_and_always_removes_it(setup):
     config, _, runtime, driver, _, _ = setup
     before = copy.deepcopy(config)
