@@ -1,0 +1,352 @@
+{
+  "schema_version": "forte.public-research-evidence/1",
+  "date": "2026-10-18",
+  "rea_package_version": "6.5.0",
+  "guidance_revision": "bbfe6edd60290f9bfbec68c8a0bcf605d8bbf5b3",
+  "guidance_skill_version": "42",
+  "execution_kind": "declared launch scenarios, not passive capture or vendor analytic execution",
+  "observations": [
+    {
+      "target": "https://mikshi.mantratec.com/CommingSoon",
+      "evidence_id": "ev_16a4a8c8a6de206322c16e1322fb4dc670eef9ec73bbe5902e8dc7fe954867d4",
+      "operation": "capture_browser_scenario",
+      "tool": "rea-agents 6.5.0 CLI",
+      "provider": {
+        "id": "rea-playwright-browser-scenario",
+        "name": "REA Playwright browser scenario capture provider",
+        "version": "1"
+      },
+      "browser": {
+        "mode": "launch",
+        "process_ownership": "provider-owned",
+        "cleanup": "terminated-owned-process",
+        "product": "Chromium",
+        "version": "155.0.8059.82"
+      },
+      "scenario_sha256": "d074a743423404dc0f5c22d086098e3a374dfc336679de40263f0fcf0ee523b3",
+      "evidence_sha256": "1347ced24621e1c2ba2b70e3fc812d364d923a8d789caafdac60b396344c5fd9",
+      "evidence_file": "/Users/itsaibarr/.local/share/forte26/product-research-20261018-v1/mikshi-vlm-REA.json",
+      "bytes": 95466,
+      "duration_ms": 15822,
+      "steps": [
+        {
+          "step_id": "scenario_start",
+          "action": "goto_start",
+          "status": "completed"
+        },
+        {
+          "step_id": "wait-visible-body",
+          "action": "wait_for",
+          "status": "completed"
+        },
+        {
+          "step_id": "settle",
+          "action": "wait_for_timeout",
+          "status": "completed"
+        }
+      ],
+      "capture": [
+        "dom",
+        "accessibility",
+        "url"
+      ],
+      "completeness": {
+        "status": "complete",
+        "equality_eligible": true,
+        "missing_sections": [],
+        "truncated_sections": []
+      },
+      "limitations": [
+        "Artifact identity is unavailable for this observation.",
+        "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+        "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+        "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+        "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+        "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+        "Storage values are hashed only after declared-secret redaction.",
+        "Browser host platform and architecture were not observed."
+      ],
+      "private_data_used": false
+    },
+    {
+      "target": "https://www.axxonsoft.com/ai-video-analytics/vision-language-model-vlm",
+      "evidence_id": "ev_d3386afde38a5765b8ce523b77b4a4b8165434d332b735e22f9201786a752a64",
+      "operation": "capture_browser_scenario",
+      "tool": "rea-agents 6.5.0 CLI",
+      "provider": {
+        "id": "rea-playwright-browser-scenario",
+        "name": "REA Playwright browser scenario capture provider",
+        "version": "1"
+      },
+      "browser": {
+        "mode": "launch",
+        "process_ownership": "provider-owned",
+        "cleanup": "terminated-owned-process",
+        "product": "Chromium",
+        "version": "155.0.8059.82"
+      },
+      "scenario_sha256": "94fe17a54be950f6b682fe62d4a8e6c7cc55383901912dd54474c081289435bf",
+      "evidence_sha256": "89efd85699d259f1958eda388506928ca9a66609d875c26646183e20f2bdf375",
+      "evidence_file": "/Users/itsaibarr/.local/share/forte26/product-research-20261018-v1/axxon-vlm-REA.json",
+      "bytes": 262236,
+      "duration_ms": 8826,
+      "steps": [
+        {
+          "step_id": "scenario_start",
+          "action": "goto_start",
+          "status": "completed"
+        },
+        {
+          "step_id": "wait-visible-body",
+          "action": "wait_for",
+          "status": "completed"
+        },
+        {
+          "step_id": "settle",
+          "action": "wait_for_timeout",
+          "status": "completed"
+        }
+      ],
+      "capture": [
+        "dom",
+        "accessibility",
+        "url"
+      ],
+      "completeness": {
+        "status": "complete",
+        "equality_eligible": true,
+        "missing_sections": [],
+        "truncated_sections": []
+      },
+      "limitations": [
+        "Artifact identity is unavailable for this observation.",
+        "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+        "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+        "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+        "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+        "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+        "Storage values are hashed only after declared-secret redaction.",
+        "Browser host platform and architecture were not observed."
+      ],
+      "private_data_used": false
+    }
+  ],
+  "retained_public_artifact_root": "/Users/itsaibarr/.local/share/forte26/product-research-20261018-v1",
+  "source_artifacts": {
+    "rea-scenario.md": {
+      "sha256": "f4a36cc58065952b0871676d3d5f4b075b1a24eb4b03ff86f830bf9e37b4f1a7",
+      "bytes": 23011
+    },
+    "mikshi-vlm-scenario.json": {
+      "sha256": "b7c773c76edc556f2eacc16886c62e5e594c72876d3391d6fb7529de970c5151",
+      "bytes": 626
+    },
+    "mikshi-vlm-REA.json": {
+      "sha256": "1347ced24621e1c2ba2b70e3fc812d364d923a8d789caafdac60b396344c5fd9",
+      "bytes": 95466
+    },
+    "rea-cli.md": {
+      "sha256": "d2689621fcb61bff1e419abe678eb0014d5eb1d6beed7149cc4dbd1a952e011c",
+      "bytes": 21441
+    },
+    "axxon-vlm-REA.json": {
+      "sha256": "89efd85699d259f1958eda388506928ca9a66609d875c26646183e20f2bdf375",
+      "bytes": 262236
+    },
+    "axxon-vlm-scenario.json": {
+      "sha256": "a290256be276f858dde0c776fd643c089c1ad482a3092807345ed249e5345ea6",
+      "bytes": 656
+    },
+    "rea-runtime.md": {
+      "sha256": "fea85e2005a8fd1c86a946eeede24c20e57592a1deb36576b45216e9854803c8",
+      "bytes": 4798
+    },
+    "rea-SKILL.md": {
+      "sha256": "976e400f028618926c0b658ee50df79996f5f32402d33b49a23bfdbc232b45e6",
+      "bytes": 23510
+    },
+    "mikshi/banking-browser-observations.json": {
+      "sha256": "17b9b7628b9fa1f7dd8b1dab284d237234650606d169bfaf15864c467ebdedbd",
+      "bytes": 24078
+    },
+    "mikshi/vlm-placeholder.png": {
+      "sha256": "0ebb2bf53f461c9f20beed7e6fa5cd4d299410f3d9ab873bbde86de1c66df254",
+      "bytes": 5514
+    },
+    "mikshi/restricted-area.reader.md": {
+      "sha256": "d4dca70f5c17cf6668615f87b0847925a2fa2698e1f47e689a0266da4d0ecb20",
+      "bytes": 6800
+    },
+    "mikshi/browser-observations.json": {
+      "sha256": "002790e995d7e3539d45f8666de8358fa526b2fe30b659acd6a207a3abc1b44e",
+      "bytes": 125901
+    },
+    "mikshi/mobile-assets-ledger.json": {
+      "sha256": "71ecccbf9b15e8be91f162f011359412fc0683b8c195c24009f2f513ce25f3c3",
+      "bytes": 1788
+    },
+    "mikshi/staff-presence.reader.md": {
+      "sha256": "df2bdb74bfc646f9bfd91c7fd738a51d3ac9fa276fd9b699d9128204c1202b85",
+      "bytes": 6548
+    },
+    "mikshi/person-search.reader.md": {
+      "sha256": "2ebd34b303461bddf9210858394e047d66ad3365b4c1bfffcd59248e5b20ead8",
+      "bytes": 6572
+    },
+    "mikshi/mobile-screen-1.webp": {
+      "sha256": "42fc2a5e46b439318abe8435c75ad9c3c22cbb60aee0a9076bce19cd65fc722d",
+      "bytes": 21050
+    },
+    "mikshi/counter-coverage.reader.md": {
+      "sha256": "0dc4596a1f10a1a40265c984e18766eb7d59ccb0488d170a2b2959cb54308568",
+      "bytes": 6752
+    },
+    "mikshi/mobile-screen-2.webp": {
+      "sha256": "e042aedfd864604c69ab9b9db869129105c6f57d2095b94fea0b9dbe2538bc4f",
+      "bytes": 24620
+    },
+    "mikshi/artifact-manifest.json": {
+      "sha256": "e2f1fa3f407b38a358be91eb76810aba7b07f793b4c38da2e1a4835c53a8688a",
+      "bytes": 4296
+    },
+    "mikshi/findings.json": {
+      "sha256": "9f3152eac39c4bce721cab37f4eb81a0476bf39d1525f50146b240f32b8d9a34",
+      "bytes": 34003
+    },
+    "mikshi/retrieval-ledger.json": {
+      "sha256": "2767a35f7cbca23cd3a6ca539bb1fb823f9a11187dbe3440fde0130363ae97fe",
+      "bytes": 5503
+    },
+    "mikshi/mobile-screen-3.webp": {
+      "sha256": "7a96accd8816385ec84df8721950ce057dfe87798c56fca904b1926ef143a19c",
+      "bytes": 22208
+    },
+    "mikshi/mobile-app.reader.md": {
+      "sha256": "e9becea97bd95fc889854dbce7c35be9f37636de45a366756503b015b7046559",
+      "bytes": 9363
+    },
+    "mikshi/dwell.reader.md": {
+      "sha256": "da4109b1f957847e83b8d94b0dffbce9735bfe0b04683017594862338a65d4cc",
+      "bytes": 6521
+    },
+    "mikshi/RESEARCH_NOTES.md": {
+      "sha256": "f5228fbf8435afc8c2085f618439069ef7fbdd9e85f70d7dff627eb84622c039",
+      "bytes": 6133
+    },
+    "mikshi/mobile-screen-4.webp": {
+      "sha256": "f7dd9d3bfb1a51408cbbdfec6c74457819d33a3ec41869b52c4e10c64870bf1e",
+      "bytes": 24318
+    },
+    "mikshi/analytics.reader.md": {
+      "sha256": "18a605060bd972952997c8cc82dbc8b513a3a7ce288056fd14d22e16bdc8e54e",
+      "bytes": 35371
+    },
+    "mikshi/support.reader.md": {
+      "sha256": "8934f3c59d584832d83f4360937c0d53083fdfb81ca6ac24349f86b859825a70",
+      "bytes": 26042
+    },
+    "mikshi/mobile-screen-5.webp": {
+      "sha256": "bd788df971a21b2b79e75b767a5803101556943952e2fa0fc12612f6743f0da0",
+      "bytes": 22990
+    },
+    "mikshi/workforce.reader.md": {
+      "sha256": "907a604fe5f49555c58c8f7f261398a5ce143e9a7f07256b8afb778a136a8f42",
+      "bytes": 6809
+    },
+    "mikshi/queue.reader.md": {
+      "sha256": "1f2bf41c65e8cbdb5b8a62ec2a4b117afdbba32bc086f07b282aa81e46b6a27d",
+      "bytes": 6325
+    },
+    "mikshi/banking.reader.md": {
+      "sha256": "a3209e99333d8fd859e8c5a986f69c70bf56fc8ac66b2ab53707b8b75bc6b4ea",
+      "bytes": 9561
+    },
+    "mikshi/operations.json": {
+      "sha256": "bf1926b79e89cc5faea9a7418f22cb5d401c2624636d0f80511fa56e85536175",
+      "bytes": 4804
+    },
+    "mikshi/banking-page.png": {
+      "sha256": "6958053387eedb6312f80e937125d9af9b8ffada20227f79e137e989688f8fab",
+      "bytes": 848903
+    },
+    "mikshi/after-hours.reader.md": {
+      "sha256": "35114e3d5991b62eefe0cfe62ae8e46ca82c1f162fca9686b565819d463fc7a3",
+      "bytes": 6985
+    },
+    "axxon/build_findings.py": {
+      "sha256": "56584e9981b450c9918a918f4e9fe2f8101347500d5a79d3aa165c329f48f37a",
+      "bytes": 33907
+    },
+    "axxon/docs-overview.png": {
+      "sha256": "673de153b1a23909ac4971282e9e73cf7a2beeae4f04879f8891568e6b10479b",
+      "bytes": 161270
+    },
+    "axxon/findings.json": {
+      "sha256": "e3cf520eeb16a5147399358d4a2055f8222ca2773b142a0be0a42b34f44a7414",
+      "bytes": 50698
+    },
+    "axxon/observation-steps.json": {
+      "sha256": "0e5d7b7779589a986371010ffcacdd31b6e7618e7f7fc9fc0e68b4d29546ccbd",
+      "bytes": 2212
+    },
+    "axxon/AXXON_RESEARCH.md": {
+      "sha256": "d37dbbfa569bfba25a9723bb471e6ec5f269881148002cc2bcd15692920944fd",
+      "bytes": 22391
+    },
+    "axxon/product-ui-finish-review.md": {
+      "sha256": "7a339f794c884a39de5e4bdbbdd57fbe68c3b71f76fe7e04870f090216c6c060",
+      "bytes": 5572
+    },
+    "axxon/sources/retrieval-manifest-python-ssl-failure.json": {
+      "sha256": "b4c8413f685fdc81f738bd241165b89b64f94320793c4921eebc6c1e112ca617",
+      "bytes": 2208
+    },
+    "axxon/sources/api.md": {
+      "sha256": "a5f6486d93a3c11c987935d6cda277b0671dec108b377000bf1cbb0d0fcc3760",
+      "bytes": 19081
+    },
+    "axxon/sources/vlm.md": {
+      "sha256": "c9a01fe6544c455301cc704811b3475136862b26440b808d9efdf94f8c0e7414",
+      "bytes": 7910
+    },
+    "axxon/sources/docs-overview.md": {
+      "sha256": "3fe2a1ece91469dd05bf84694d414dbc8de5971439f392477570ce8b2b8122de",
+      "bytes": 25703
+    },
+    "axxon/sources/events-search.md": {
+      "sha256": "f8274247e33a92a2963b0b6058bcc5ee9e9221b1323dc68db93530cb68b6aa2b",
+      "bytes": 39738
+    },
+    "axxon/sources/retrieval-manifest.json": {
+      "sha256": "eb5d250814df633cf138835dfc9ec56f56d5a649ca826edcd31a00486d0f4e5d",
+      "bytes": 2783
+    },
+    "axxon/sources/meta-configuration.md": {
+      "sha256": "c53555a8b8630cf60cadf5da6501ca470ba31315d67f793ed8feb91323df71c9",
+      "bytes": 44390
+    },
+    "axxon/sources/assessment.md": {
+      "sha256": "a1352d46ca1304c709a37abf88bb2ef97dd7b4f3a67000f67eebc9fe0c958ea2",
+      "bytes": 37714
+    },
+    "axxon/sources/export.md": {
+      "sha256": "9c4f4f93523be758b7d618747ed36d3483d5ce0368e34143e5f9bd5f95bbe151",
+      "bytes": 17962
+    },
+    "axxon/sources/banking.md": {
+      "sha256": "18657fed814598bb33bb14ccd6c1628fc92da9126b726baaf83564f18ca564bf",
+      "bytes": 5924
+    },
+    "axxon/sources/meta-search.md": {
+      "sha256": "8b9d38ccef2562d3004a7b311cf234e73b0a06f29e93ee8276c6b5eb5fadceb6",
+      "bytes": 38354
+    }
+  },
+  "observed_access_boundaries": [
+    "No vendor login/account/form/contact/upload",
+    "Mikshi app login timed out; public VLM placeholder is not proof about all linked products",
+    "Axxon integration detail gated; no protected API probed",
+    "No private recordings, frames, descriptions or external inference"
+  ],
+  "runtime_internals": "Unknown; no hidden checkpoint/server design inferred"
+}

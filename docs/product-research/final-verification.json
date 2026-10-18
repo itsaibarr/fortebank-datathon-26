@@ -1,0 +1,267 @@
+{
+  "schema_version": "forte.product-final-verification/1",
+  "scope": "Actual local core/session/frontend browser execution with generated synthetic MOV and an explicit synthetic inference runner",
+  "verification_class": "integrated_source_and_synthetic_browser_only",
+  "application_revision": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3",
+  "actual_git_head_at_boot": "ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3",
+  "dirty_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "frontend_source_revision": "22c991fc05149c7ced111a4a9e27e39c7374c17d",
+  "frontend_git_tree": "c978bfbb970df43b32ede6956aeb5fece6e485a3",
+  "frontend_manifest_sha256": "3f9950e5a1643bbb071b0cfe3d1978c551ab96ae51859fc33b23181a97a81f2d",
+  "frontend_manifest_algorithm": "sha256(json.dumps(file_path_to_sha256_map, sort_keys=True).encode()) with Python default separators",
+  "canonical_integrator_static_map_sha256": "6c6071796163d7a88880b17c64771b8da735cd9d68dc2f8d2223d70345fe17ab",
+  "canonical_integrator_static_map_algorithm": "Compact sorted JSON; differs from producer serialization, per-file hashes independently matched by A",
+  "frontend_file_count": 44,
+  "frontend_tracked_web_source_files_matched": 45,
+  "backend_model": {
+    "kind": "explicit synthetic fixture runner",
+    "model_loaded": false,
+    "checkpoint": null,
+    "processor": null,
+    "serving_settings": null
+  },
+  "real_candidate_gpu_api_verified": false,
+  "real_candidate_gpu_blocker": "TEST activation cutoff 2026-10-18 01:00 UTC missed; no late run, new rental, second model or timer extension",
+  "private_media_used": false,
+  "source_case_kind": "Generated H264 MOV, 320x180, 4 seconds, solid colors; synthetic participant/event IDs",
+  "browser": "BrowserOS neo; actual user-interface actions, file-input automation, local certificate exception, per-tab CDP network/viewport emulation",
+  "certificate_boundary": "T3 preview failed twice ERR_CERT_AUTHORITY_INVALID; local generated QA certificate accepted in own native test tab only; no production/external HTTPS approval",
+  "native_file_chooser_verified": false,
+  "file_input_note": "Actual hidden input temporarily exposed only for automation, populated through browser upload, then hidden again; actual product onChange/upload/poll handlers executed",
+  "steps": {
+    "upload_and_done": {
+      "events": 2,
+      "jobId": "f68c934e-3f41-4604-9539-b067c1cc47fe",
+      "partial": true,
+      "ready": 4,
+      "unexamined": true
+    },
+    "filtering_draft_binding": {
+      "hidden_selection": {
+        "noDraft": true,
+        "summary": "Insufficient evidence",
+        "visibleEvents": 1
+      },
+      "draft_empty_after_explicit_selection": true,
+      "zero_time_filter": {
+        "events": 1,
+        "first": true
+      }
+    },
+    "delayed_requests": {
+      "network_latency_ms": 1000,
+      "reload": {
+        "draftDisabled": true,
+        "finishedRequestsBefore": 1,
+        "reloadDisabled": true,
+        "resumeDisabled": true,
+        "saveDisabled": true,
+        "scopeDisabled": true
+      },
+      "save": {
+        "draftDisabled": true,
+        "reloadDisabled": true,
+        "resumeDisabled": true,
+        "scopeDisabled": true
+      },
+      "reload_completed": {
+        "matched": true
+      },
+      "saved": {
+        "matched": true
+      },
+      "final_state": {
+        "draft": "",
+        "historyRecords": 1,
+        "scopeEnabled": true
+      }
+    },
+    "report": {
+      "cache": "no-store",
+      "coverage": {
+        "continuous_visibility_validated": false,
+        "output_capacity_limited_intervals": [
+          [
+            1.1,
+            2
+          ]
+        ],
+        "pending_reinspections": 1,
+        "sampling_does_not_establish_absence": true,
+        "unclear_intervals": [
+          [
+            1.1,
+            2
+          ]
+        ],
+        "unexamined_intervals": [
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "eventCount": 2,
+      "execution": "partial",
+      "match": true,
+      "originalSourcePTS": 0,
+      "originalTimeBase": "1/15360",
+      "parentValid": true,
+      "reviewCount": 2,
+      "ruleStates": [
+        "skipped",
+        "unavailable"
+      ],
+      "scopes": [
+        "visual",
+        "role"
+      ],
+      "separateScopes": true,
+      "status": 200,
+      "targets": [
+        "event-00001",
+        "event-00000"
+      ],
+      "unchangedAssessment": "insufficient_evidence"
+    },
+    "all_target_history_rows": 2,
+    "source_seek_seconds": 2,
+    "downloaded_report": {
+      "bytes": 26400,
+      "sha256": "4d31f1a5e40a8c7576827a8db6067dc58d9aee2e3d33afd6fe2b64046de4ad3b",
+      "canonical_result_hash_validated": true,
+      "retained_path": "/Users/itsaibarr/.local/share/forte26/product-adaptation-20261018-v1/forte-review-f68c934e-3f41-4604-9539-b067c1cc47fe.json"
+    },
+    "mobile": {
+      "bodyWidth": 390,
+      "clientWidth": 390,
+      "hasFilters": true,
+      "scrollWidth": 390,
+      "sourceWidth": 348,
+      "width": 390
+    },
+    "desktop": {
+      "viewport_width": 1256,
+      "scroll_width": 1256,
+      "screenshot_visually_inspected": true
+    },
+    "authentication": {
+      "cross_owner": {
+        "crossOwner": 404,
+        "events": 0,
+        "missing": 404,
+        "sameBody": true,
+        "videos": 0
+      },
+      "logout_cleared_state": {
+        "oldJobVisible": false,
+        "videos": 0
+      },
+      "denied_notice": {
+        "matched": true
+      }
+    },
+    "reopen": {
+      "assessment": "insufficient_evidence",
+      "events": 2,
+      "freshRangeBytes": 32,
+      "freshRangeStatus": 206,
+      "hashesMatch": true,
+      "mobileOverflow": false,
+      "partial": "partial",
+      "resultUnchanged": true,
+      "reviews": 2,
+      "sourcePlayable": true
+    }
+  },
+  "cleanup": {
+    "ownedTestTabsClosed": true,
+    "syntheticSessionLoggedOut": true,
+    "server_pid": 62555,
+    "server_stopped": true,
+    "stopped_receipt": "/tmp/forte-product-w1/browser-qa/run-final-1792285464/stopped.json",
+    "previous_qa_pids_stopped": [
+      55530,
+      58087
+    ],
+    "no_vm_or_model_action": true
+  },
+  "local_evidence_root": "/tmp/forte-product-w1/browser-qa/run-final-1792285464",
+  "immutable_qa_frontend": "/tmp/forte-product-w1/browser-qa/run-final-1792285464/frontend",
+  "canonical_preserved_frontend": "/Users/itsaibarr/.local/share/forte26/source-candidates/ebb3d82e8728dec21289d34e9b9fb81b95f5d0f3/web-out",
+  "limitations": [
+    "No real model, legal-quality, performance, external deployment, clean CUDA install or jury v1/new-mechanic dispatch acceptance.",
+    "Earlier 1098/53 browser runs are baseline evidence, superseded for affected UI actions.",
+    "The evidence concerns actual synthetic UI/API behavior; it does not show vendor analytics execution or private-case semantic correctness."
+  ],
+  "boot_source_hashes": {
+    "src/forte/api.py": "fac22102d13c3bafa5a62159fdc190ed166cb79bae5cd4829eb9791d9508f7fd",
+    "src/forte/investigation_report.py": "200ecb3210a822a5e9ecad6be44ee7d6af0e344a849e9bc5538b4674dbf2a696",
+    "src/forte/contracts_v2.py": "d5892f70e38f41f3c4f33c0fa35e57bffc0f4260631adde00b4c56443f0d1369",
+    "src/forte/jobs.py": "241bb903ebfa177ba8e40e8dc9a0d46a3d375fcda2ea4dd3cf265e679752f307",
+    "src/forte/video.py": "1f4be94cd1680c28231542f8671cf89adb07274fa9dc8751e83c5a2b6c2f5110",
+    "tools/forte-session/session_gateway.py": "f55d093e2ccce99035044f261f9d6a3c099e474bff67b0a628af6d35fe5b4e5b",
+    "tools/forte-session/session_store.py": "ae87d82a9e93b8f3bc48dbaf28b6c98f959b2cbb5c4e5bd0157604d8f58a8bfb",
+    "web/app/page.tsx": "5c65d252d3c25c23432d0c94a08752b00ec46c309a8c64ae72a69b81b4681cd2",
+    "web/lib/investigation.ts": "edca4628e063722e7780950103316560ef452fd8dcd8904a4e4ad483d3467126",
+    "web/lib/review-types.ts": "6239355f05669bef57647ab2c16cbcfa7ec6d6533f2c6974497ea352bc68597b",
+    "tests/test_api_v2.py": "97d418b5dfced4bf631994ad27653bb239d876a97ad4633fce6841502d0557cc"
+  },
+  "application_source_fingerprints": {
+    "pipeline": "04d3b3c111e40bc2664f6ea392e5531d92962b6828737f3dee8af1fbd664b782",
+    "timeline": "550d2c3ce3dea971e1b5d45a36d7d10975ddd32dc4a3ae276eb423d38ab053d1",
+    "video": "1f4be94cd1680c28231542f8671cf89adb07274fa9dc8751e83c5a2b6c2f5110",
+    "inference": "706e2004a0c1cc12b498a47f96f758a937fe0b73eac9a60e29fa11b120d111f0",
+    "model_profile": "0ff5c39d3440c51800f40af3772b582f1f3de98bb316932dbb1d8e517f3df4bc",
+    "frozen_tracking": "01a11cde5c9f02ea333e67b7706bddbd8e9effe1d0bd40885bbf486a8543c894",
+    "person_proposals": "723fb08808c812ff07b50b94ece2d919e460e2807da6669e0b15af9c163306f1",
+    "tracking": "ca15fc4edf392b7fcc275add72086d8be9f3baa7020a6421709c5ac66528a9b8",
+    "legal_reasoning": "c6866efde9d06216a83745ce6e270d4f65712a34f4a0415046f72e4e1f7eedfc",
+    "legal": "cf15fa0f99bc89e5dbabcbbbcf3ae20c1da6a65f4902dcddc0354cfcf833b633",
+    "retrieval": "adc7557d7304d063528480636368eeeebcde1d84ec8f35c0e3a16d6605ed77fe",
+    "annotations": "2f3d69fc7ccb572a296c1c7524f559d7c3e1f21fe4c5cb85ff4ad2d4c27e8677",
+    "contracts": "604a6ec847bd6559dd725550b6af671c7a590e16d213f35d864a07e9af77ec70",
+    "contracts_v2": "d5892f70e38f41f3c4f33c0fa35e57bffc0f4260631adde00b4c56443f0d1369",
+    "investigation_report": "200ecb3210a822a5e9ecad6be44ee7d6af0e344a849e9bc5538b4674dbf2a696",
+    "settings": "4c100d1d6ef16d22607c294e6bbd8eb21fdc87098a90b92a5e408c38ac6ea335",
+    "jobs": "241bb903ebfa177ba8e40e8dc9a0d46a3d375fcda2ea4dd3cf265e679752f307",
+    "worker": "4fc6badd97e05b74b315b09280ff5ff53835205c001ff8e033b200865247a505",
+    "api": "fac22102d13c3bafa5a62159fdc190ed166cb79bae5cd4829eb9791d9508f7fd",
+    "manifest": "ccc644d54bdc157755716502ae31454dbbf896894cb404d4a99407decef9093c"
+  },
+  "launcher_sha256": "be441b73790afa8f5f22aea327dede52890634aa0300c2f1824058e63610e822",
+  "synthetic_input_sha256": "5da6946f825b8b296ae090a7323c358fae5b0a85ce2da4885e08cd78cb7c851f",
+  "public_source_configuration_hashes": {
+    "configs/frozen-inference.json": "c516e8c32a1fa05036f729cb6849cc86d2a570f9cf89632243887e03654d03e4",
+    "contracts/frozen-assets-v1.json": "2f858a24955c95f9655d91cc9e70badfc2ba9cc51e05af4058f16dfe19b84cf0",
+    "contracts/reasoning-api-contract.json": "85cd54cf12bf2923a64666524ed3a1879c07f2fa12a0ff5b6979b03a4b84fa83",
+    "contracts/api-contract.json": "2f07ca38a89320a97edc1f18cf1401462ce89f6912698245bac4f67bd3cacc05"
+  },
+  "public_source_configuration_scope": "Source identities only; intended real-model/corpus settings not executed by synthetic runner",
+  "actual_image_id": null,
+  "local_legal_corpus_executed": false,
+  "durable_qa_evidence_root": "/Users/itsaibarr/.local/share/forte26/product-adaptation-20261018-v1/browser-qa-final",
+  "durable_qa_boot_receipt": "/Users/itsaibarr/.local/share/forte26/product-adaptation-20261018-v1/browser-qa-final/boot-receipt.json",
+  "qa_evidence_files": {
+    "boot-receipt.json": {
+      "sha256": "cc0b9d64916a055889138a7d1b1e17f4c87f5cabafc3cd345d93af57ba951d37",
+      "bytes": 13091
+    },
+    "stopped.json": {
+      "sha256": "8a5a94a8258805a4273d44f8d17019e8dd2637328737057be03dc50f7abb38d1",
+      "bytes": 53
+    },
+    "synthetic-browser.mov": {
+      "sha256": "5da6946f825b8b296ae090a7323c358fae5b0a85ce2da4885e08cd78cb7c851f",
+      "bytes": 5434
+    },
+    "synthetic.crt": {
+      "sha256": "b2974e42ba52fdccaa222bfb24ec4e62a4a5d1a9048f87395be68b4aaad99449",
+      "bytes": 1151
+    },
+    "reproduce-stack.py": {
+      "sha256": "be441b73790afa8f5f22aea327dede52890634aa0300c2f1824058e63610e822",
+      "bytes": 14836
+    }
+  }
+}
