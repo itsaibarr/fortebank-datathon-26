@@ -96,12 +96,17 @@ export type ReasoningResult = {
 }
 
 export type ReviewRevision = {
+  schema_version?: string
+  source_sha256?: string
+  base_result_sha256?: string
+  origin?: string
+  other_scopes_approved?: boolean
   revision_id: string
   parent_revision: string | null
   target_id: string
   scope: string
   reviewer: string
-  change: { note?: string }
+  change: { note?: string; [key: string]: unknown }
   created_unix_sec: number
 }
 

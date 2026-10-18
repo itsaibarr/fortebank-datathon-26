@@ -46,6 +46,14 @@ import {
   type BrowserAccess,
 } from "@/hooks/use-browser-access"
 import { uploadsAvailable } from "@/lib/browser-session"
+import { Input } from "@/components/ui/input"
+import { InvestigationTools } from "@/components/investigation-tools"
+import {
+  emptyFilters,
+  filterEvents,
+  revisionHead,
+  validJobId,
+} from "@/lib/investigation"
 import {
   assessmentLabels,
   timecode,
@@ -338,17 +346,24 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
   const [saving, setSaving] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [sourceError, setSourceError] = useState("")
+  const [resumeId, setResumeId] = useState("")
+  const [filters, setFilters] = useState({ ...emptyFilters })
+  const [historyReady, setHistoryReady] = useState(false)
+  const [allHistory, setAllHistory] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const [reportStatus, setReportStatus] = useState("")
   const video = useRef<HTMLVideoElement>(null)
   const fileInput = useRef<HTMLInputElement>(null)
   const localUrl = useRef("")
   const submitting = useRef(false)
   const busy = phase === "uploading" || phase === "processing"
+  const visibleEvents = result ? filterEvents(result, revisions, filters) : []
   const selected =
-    result?.events.find((event) => event.event_id === selectedId) ||
-    result?.events[0]
+    visibleEvents.find((event) => event.event_id === selectedId) ||
+    visibleEvents[0]
   const duration = result?.source.duration_sec || mediaDuration
   const selectedReviews = revisions.filter(
-    (revision) => revision.target_id === selected?.event_id
+    (revision) => allHistory || revision.target_id === selected?.event_id
   )
   const nearestFrame = result?.participants.sampled_source_frames?.reduce(
     (best, frame) =>
@@ -419,7 +434,10 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (!controller.signal.aborted) setRevisions(data.revisions)
+        if (!controller.signal.aborted) {
+          setRevisions(data.revisions)
+          setHistoryReady(true)
+        }
       })
       .catch(() => {
         if (!controller.signal.aborted)
@@ -481,6 +499,9 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     setError("")
     setSourceError("")
     setRevisions([])
+    setHistoryReady(false)
+    setFilters({ ...emptyFilters })
+    setReportStatus("")
     setReviewStatus("")
     setCurrentTime(0)
   }
@@ -511,6 +532,9 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     setError("")
     setResult(null)
     setRevisions([])
+    setHistoryReady(false)
+    setFilters({ ...emptyFilters })
+    setReportStatus("")
     setReviewStatus("")
     const form = new FormData()
     form.append("file", file)
@@ -549,6 +573,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     const response = await request(`/api/v2/jobs/${jobId}/corrections`)
     const data = await response.json()
     setRevisions(data.revisions)
+    setHistoryReady(true)
     return data.revisions as ReviewRevision[]
   }
   async function saveCorrection() {
@@ -556,18 +581,13 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
     setSaving(true)
     setReviewStatus("")
     try {
-      const parents = new Set(
-        revisions.map((revision) => revision.parent_revision)
-      )
-      const head = revisions.find(
-        (revision) => !parents.has(revision.revision_id + ".json")
-      )
+      const latest = await reloadReviews()
       const response = await request(`/api/v2/jobs/${jobId}/corrections`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           source_sha256: result.source_sha256,
-          parent_revision: head ? head.revision_id + ".json" : null,
+          parent_revision: revisionHead(latest),
           scope,
           target_id: selected.event_id,
           reviewer: access.session.principal.id,
@@ -588,6 +608,53 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
       )
     } finally {
       setSaving(false)
+    }
+  }
+  function resumeCase() {
+    const id = resumeId.trim()
+    if (busy || !validJobId(id)) return
+    if (localUrl.current) URL.revokeObjectURL(localUrl.current)
+    localUrl.current = ""
+    setFile(null)
+    setVideoUrl("")
+    setResult(null)
+    setRevisions([])
+    setHistoryReady(false)
+    setFilters({ ...emptyFilters })
+    setSelectedId("")
+    setError("")
+    setSourceError("")
+    setReviewStatus("")
+    setReportStatus("")
+    setCurrentTime(0)
+    setMediaDuration(0)
+    setJobId(id)
+    setPhase("processing")
+  }
+  async function downloadReport() {
+    if (!result || !jobId || exporting) return
+    setExporting(true)
+    setReportStatus("")
+    try {
+      const response = await request(`/api/v2/jobs/${jobId}/report`)
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement("a")
+      anchor.href = url
+      anchor.download = `forte-review-${jobId}.json`
+      anchor.click()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      setReportStatus(
+        "Complete recording report downloaded, including original analysis, coverage limits and review history."
+      )
+    } catch (failure) {
+      setReportStatus(
+        failure instanceof Error
+          ? failure.message
+          : "Report unavailable. Retry after reloading the case."
+      )
+    } finally {
+      setExporting(false)
     }
   }
   const evaluatedRules =
@@ -708,6 +775,53 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
           )}
         </div>
         <DeploymentNotice access={access} />
+        <section
+          className="flex flex-wrap items-end gap-3"
+          aria-label="Reopen an existing recording"
+        >
+          <Field className="max-w-md flex-1">
+            <FieldLabel htmlFor="resume-job">
+              Reopen your recording by job ID
+            </FieldLabel>
+            <Input
+              id="resume-job"
+              value={resumeId}
+              maxLength={36}
+              disabled={busy}
+              onChange={(event) => setResumeId(event.target.value)}
+              placeholder="Job ID from your saved report"
+              onKeyDown={(event) => {
+                if (event.key === "Enter") resumeCase()
+              }}
+            />
+          </Field>
+          <Button
+            variant="outline"
+            disabled={busy || !validJobId(resumeId.trim())}
+            onClick={resumeCase}
+          >
+            Open recording
+          </Button>
+          {result && (
+            <Button
+              variant="outline"
+              disabled={exporting}
+              onClick={downloadReport}
+            >
+              {exporting ? "Preparing report…" : "Download complete report"}
+            </Button>
+          )}
+        </section>
+        {jobId && (
+          <p className="text-xs break-all text-muted-foreground">
+            Job ID: {jobId} · access is limited to the recording owner.
+          </p>
+        )}
+        {reportStatus && (
+          <p role="status" className="text-sm">
+            {reportStatus}
+          </p>
+        )}
         {error && (
           <Alert variant="destructive">
             <CircleHelp />
@@ -749,7 +863,9 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
               <span className="flex min-w-0 items-center gap-2 text-sm font-medium">
                 <FileVideo className="size-4 shrink-0" />
                 <span className="truncate">
-                  {file?.name || "Original recording"}
+                  {file?.name ||
+                    result?.source.original_name ||
+                    "Original recording"}
                 </span>
               </span>
               <Badge variant="secondary">
@@ -883,7 +999,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                 aria-label="Event positions on the source timeline"
               >
                 <div className="timeline-axis" />
-                {result.events.map((event, index) => (
+                {visibleEvents.map((event) => (
                   <button
                     key={event.event_id}
                     type="button"
@@ -895,10 +1011,10 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                       left: `${Math.max(1, Math.min(98, (event.decisive_sec / duration) * 100))}%`,
                     }}
                     onClick={() => selectEvent(event)}
-                    aria-label={`Event ${index + 1} at ${timecode(event.decisive_sec)}`}
+                    aria-label={`Event ${result.events.indexOf(event) + 1} at ${timecode(event.decisive_sec)}`}
                     aria-pressed={selected?.event_id === event.event_id}
                   >
-                    {index + 1}
+                    {result.events.indexOf(event) + 1}
                   </button>
                 ))}
                 <span className="timeline-start tabular-nums">00:00</span>
@@ -913,6 +1029,15 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
               <h2 className="text-base font-semibold">Events</h2>
               <Badge variant="secondary">{result?.events.length || 0}</Badge>
             </div>
+            {result && (
+              <InvestigationTools
+                result={result}
+                filters={filters}
+                onChange={setFilters}
+                count={visibleEvents.length}
+                historyReady={historyReady}
+              />
+            )}
             {busy ? (
               <div
                 className="flex flex-col gap-5 px-5 py-10"
@@ -936,9 +1061,9 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                   Results will appear here when the job finishes.
                 </p>
               </div>
-            ) : result?.events.length ? (
+            ) : visibleEvents.length && result ? (
               <ol className="event-list">
-                {result.events.map((event, index) => (
+                {visibleEvents.map((event) => (
                   <li key={event.event_id}>
                     <button
                       type="button"
@@ -955,7 +1080,10 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                     >
                       <span className="flex items-center justify-between gap-2">
                         <span className="event-number">
-                          {String(index + 1).padStart(2, "0")}
+                          {String(result.events.indexOf(event) + 1).padStart(
+                            2,
+                            "0"
+                          )}
                         </span>
                         <span className="text-xs text-muted-foreground tabular-nums">
                           {timecode(event.start_sec)}–{timecode(event.end_sec)}
@@ -984,14 +1112,18 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                     <Clock3 />
                   </EmptyMedia>
                   <EmptyTitle>
-                    {result
-                      ? "No grounded event markers"
-                      : "A timeline will appear here"}
+                    {result?.events.length
+                      ? "No events match these filters"
+                      : result
+                        ? "No grounded event markers"
+                        : "A timeline will appear here"}
                   </EmptyTitle>
                   <EmptyDescription>
-                    {result
-                      ? "No event was established from the available evidence. This does not clear the recording."
-                      : "Select an event to seek the video and inspect its evidence."}
+                    {result?.events.length
+                      ? "Clear or adjust the filters to see other events. The complete recording assessment is unchanged."
+                      : result
+                        ? "No event was established from the available evidence. This does not clear the recording."
+                        : "Select an event to seek the video and inspect its evidence."}
                   </EmptyDescription>
                 </EmptyHeader>
               </Empty>
@@ -1190,7 +1322,12 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                         </Field>
                         <div className="flex flex-wrap gap-3">
                           <Button
-                            disabled={saving || !access.session || !note.trim()}
+                            disabled={
+                              saving ||
+                              !historyReady ||
+                              !access.session ||
+                              !note.trim()
+                            }
                             onClick={saveCorrection}
                           >
                             {saving ? (
@@ -1242,6 +1379,22 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                       {selectedReviews.length} revisions for this event ·{" "}
                       {revisions.length} in this recording
                     </p>
+                    <Field orientation="horizontal" className="mt-3 w-auto">
+                      <FieldLabel htmlFor="all-review-history">
+                        All recording targets
+                      </FieldLabel>
+                      <Switch
+                        id="all-review-history"
+                        checked={allHistory}
+                        onCheckedChange={setAllHistory}
+                      />
+                    </Field>
+                    {!historyReady && (
+                      <p role="status" className="mt-3 text-sm">
+                        Review history is unavailable or loading. Reload history
+                        before saving.
+                      </p>
+                    )}
                     {selectedReviews.length ? (
                       <ol className="mt-5 flex flex-col gap-5">
                         {[...selectedReviews]
@@ -1268,6 +1421,38 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                               <p className="mt-2 text-xs break-all text-muted-foreground">
                                 {revision.revision_id}.json
                               </p>
+                              <details className="mt-3 text-xs">
+                                <summary className="cursor-pointer font-medium">
+                                  Target and immutable ancestry
+                                </summary>
+                                <div className="mt-2 flex flex-col gap-2 break-all text-muted-foreground">
+                                  <p>
+                                    Target: {revision.target_id} · origin:{" "}
+                                    {revision.origin || "human sidecar"}
+                                  </p>
+                                  <p>
+                                    Parent:{" "}
+                                    {revision.parent_revision ||
+                                      "First revision"}
+                                  </p>
+                                  <p>
+                                    Source SHA256:{" "}
+                                    {revision.source_sha256 || "Unavailable"}
+                                  </p>
+                                  <p>
+                                    Original result SHA256:{" "}
+                                    {revision.base_result_sha256 ||
+                                      "Unavailable"}
+                                  </p>
+                                  <pre className="max-w-full overflow-auto whitespace-pre-wrap">
+                                    {JSON.stringify(revision.change, null, 2)}
+                                  </pre>
+                                  <p>
+                                    Other review scopes remain separate. The
+                                    original analysis is retained.
+                                  </p>
+                                </div>
+                              </details>
                             </li>
                           ))}
                       </ol>
@@ -1287,7 +1472,7 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
               </TabsContent>
             </Tabs>
             <Separator className="my-6" />
-            <details>
+            <details open>
               <summary className="cursor-pointer text-sm font-medium">
                 Coverage and limitations
               </summary>
@@ -1299,6 +1484,34 @@ function PrivateReviewWorkspace({ access }: { access: BrowserAccess }) {
                   intervals · {result.timeline.coverage.pending_reinspections}{" "}
                   pending reinspections.
                 </p>
+                {(["unexamined_intervals", "unclear_intervals"] as const).map(
+                  (kind) =>
+                    result.timeline.coverage[kind].length > 0 && (
+                      <div
+                        key={kind}
+                        className="flex flex-wrap items-center gap-2"
+                      >
+                        <span>
+                          {kind === "unexamined_intervals"
+                            ? "Unexamined"
+                            : "Unclear"}{" "}
+                          source intervals:
+                        </span>
+                        {result.timeline.coverage[kind].map(
+                          ([start, end], index) => (
+                            <Button
+                              key={index}
+                              size="xs"
+                              variant="outline"
+                              onClick={() => seek(start)}
+                            >
+                              {timecode(start)}–{timecode(end)}
+                            </Button>
+                          )
+                        )}
+                      </div>
+                    )
+                )}
                 <ul className="flex list-disc flex-col gap-2 pl-5">
                   {[
                     ...result.timeline.unresolved_questions,

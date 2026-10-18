@@ -306,13 +306,40 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                 return Response(raw, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
         raise Problem(404, "evidence_not_found", "Unknown source evidence.")
 
+    async def reviewed_snapshot(job_id, result):
+        from forte.investigation_report import InvalidCorrectionHistory, correction_snapshot
+
+        try:
+            return await asyncio.to_thread(
+                correction_snapshot, store.directory(job_id) / "corrections", result
+            )
+        except InvalidCorrectionHistory as exc:
+            raise Problem(
+                409, "correction_history_unavailable", "Correction history could not be verified."
+            ) from exc
+
     @app.get("/api/v2/jobs/{job_id}/corrections")
     async def get_corrections(job_id: UUID, request: Request):
-        completed_reasoning(job_id, request)
-        corrections = store.directory(job_id) / "corrections"
-        return {
-            "revisions": [json.loads(p.read_text()) for p in sorted(corrections.glob("*.json"))]
-        }
+        result = completed_reasoning(job_id, request)
+        return JSONResponse(
+            {"revisions": await reviewed_snapshot(job_id, result)},
+            headers={"Cache-Control": "no-store"},
+        )
+
+    @app.get("/api/v2/jobs/{job_id}/report")
+    async def investigation_report(job_id: UUID, request: Request):
+        from forte.investigation_report import build_investigation_report
+
+        result = completed_reasoning(job_id, request)
+        revisions = await reviewed_snapshot(job_id, result)
+        report = build_investigation_report(job_id, result, revisions)
+        return JSONResponse(
+            report,
+            headers={
+                "Cache-Control": "no-store",
+                "Content-Disposition": f'attachment; filename="forte-case-{job_id}.json"',
+            },
+        )
 
     @app.post("/api/v2/jobs/{job_id}/corrections", status_code=201)
     async def correct(job_id: UUID, correction: CorrectionRequest, request: Request):
