@@ -11,7 +11,7 @@ CSRF, never service keys. Source-level synthetic verification does not update th
 historical image digest or approve publication. The deployment lane owns
 `deploy/portable/`, `tools/forte-admin/`, `docs/deployment/` and `tests/deployment/`.
 Current source verification at `e55c077`: 378 Python tests pass, one optional Docker
-check is skipped, four existing warnings remain, and all 135 Python files pass Ruff.
+check is skipped, four existing warnings remain, and all 93 tracked Python files pass Ruff.
 Frontend lint/types, eight contract/body tests and static export pass. Six local HTTPS
 transport checks exercise the real modified core/gateway with generated media and
 a fake inference runner. Native browser sign-in and notices pass after human

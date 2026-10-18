@@ -9,13 +9,15 @@
       "passed": 378,
       "skipped": 1,
       "warnings": 4,
-      "duration_seconds": 48.56,
-      "skip": "Optional Docker deployment transport check"
+      "duration_seconds": 57.92,
+      "skip": "Optional Docker deployment transport check",
+      "selection": "All 37 test modules tracked by Git; unrelated untracked mechanic-validation work excluded"
     },
     "ruff_check": "passed",
     "ruff_format": {
       "passed": true,
-      "files": 135
+      "files": 93,
+      "selection": "All Python files tracked by Git"
     },
     "diff_whitespace": "passed",
     "actual_https_integration_tests": 6,
@@ -101,5 +103,9 @@
     "This source is newer than the historical verified GPU image.",
     "Interactive browser and external deployment checks remain incomplete.",
     "Synthetic runners do not establish recognition, legal accuracy or workload SLA."
+  ],
+  "unrelated_untracked_files_preserved": [
+    "src/forte/mechanic_validation.py",
+    "tests/test_mechanic_validation.py"
   ]
 }
