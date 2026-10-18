@@ -60,7 +60,7 @@ Repeat GET while `status` is `processing`. The test suite verifies asynchronous 
 
 This is a synthetic schema example, not a quality result. A positive uses `verdict: violation` and one or more violations, each with `type`, `timecode_sec`, `description` and `evidence_frames`. Each event has one to three actual JPEGs represented by `timestamp_sec` and `image_base64`. Exact public provision references go in `description`. There are no extra binary verdict values.
 
-An execution failure uses `status: failed` and `error` with `code` and `message`. In opt-in reasoning projection, insufficient evidence is a failure rather than a fabricated binary negative. A supported event can survive unrelated incomplete work; that does not establish complete coverage.
+An execution failure uses `status: failed` and `error` with `code` and `message`. Both API versions use the single frozen 8B/Laya pipeline. Insufficient evidence is a failure rather than a fabricated binary negative. A supported event can survive unrelated incomplete work; that does not establish complete coverage.
 
 ## Limits
 

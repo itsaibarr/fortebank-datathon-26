@@ -19,11 +19,11 @@ For real processing, follow [installation](/guides/installation) on your own pre
 
 ## 4. Configure the environment
 
-Use [configuration](/guides/configuration). Generate a private service key, choose private storage, and select the pinned model/profile explicitly. Public resources are acquired before private inference; weights are never trained by this workflow.
+Use [configuration](/guides/configuration). Generate a private service key, choose private storage, and configure the pinned 8B and mandatory CPU Laya services explicitly. Public resources are acquired before private inference; weights are never trained by this workflow.
 
 ## 5. Start and verify the service
 
-Follow [operations](/guides/operations). Liveness must return 200. Readiness must also return 200 before a real upload. A running CPU API with a 503 readiness response is operational software, not a ready inference system.
+Follow [operations](/guides/operations). Liveness must return 200. Readiness must also return 200 before a real upload. An API process with a 503 readiness response is operational software, not a ready inference system.
 
 ## 6. Configure authentication
 

@@ -12,10 +12,13 @@ Install the source, then create the private key and request header file as shown
 ```bash
 export FORTE_API_KEY_FILE="$FORTE_EXAMPLE_ROOT/service-api.key"
 export FORTE_PRIVATE_ROOT="$FORTE_EXAMPLE_ROOT/jobs"
+export FORTE_REASONING_CONFIG="/absolute/private/inference-config.json"
+export FORTE_MODEL_URL="http://127.0.0.1:8001"
+export FORTE_LAYA_URL="http://127.0.0.1:8002"
 uv run forte serve --host 127.0.0.1 --port 8000
 ```
 
-This starts the real API. It does not start or download a model. Run one process per private job root. In a second terminal, probe:
+This starts the real API. It requires the private config with actual mounted paths and both separately started local model services; it does not start or download them. Run one process per private job root. In a second terminal, probe:
 
 ```bash
 curl --fail --silent --show-error http://127.0.0.1:8000/health/live
@@ -23,7 +26,7 @@ curl --silent --show-error --output /dev/null --write-out '%{http_code}\n' \
   http://127.0.0.1:8000/health/ready
 ```
 
-Liveness returns `{"status":"ok"}`. Readiness is 200/`ready` only when the actual backend identity and health checks pass. Without a prepared resident model, expect **503**. Do not submit a private sample until readiness is 200.
+Liveness returns `{"status":"ok"}`. Readiness is 200/`ready` only when the exact local 8B and CPU Laya identity and health checks pass. Without both prepared resident models, expect **503**. Do not submit a private sample until readiness is 200.
 
 ## Browser access
 
@@ -37,4 +40,4 @@ Stop only the process/installation you own. API restart turns interrupted jobs i
 
 ## Troubleshooting
 
-If port 8000 is already occupied, select another `--port` and update the client URL. If readiness is 503, check pinned model identity, model process, configuration and resources before retrying admission. Avoid retrying a POST with an ambiguous response: first reconcile the admitted job. See [errors](/api/errors).
+If port 8000 is already occupied, select another `--port` and update the client URL. If readiness is 503, check both pinned model identities, model processes, configuration and resources before retrying admission. Avoid retrying a POST with an ambiguous response: first reconcile the admitted job. See [errors](/api/errors).

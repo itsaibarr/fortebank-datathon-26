@@ -1,36 +1,36 @@
 ---
 title: "Environment configuration"
-description: "The variables read by the API and the separate container entrypoint."
+description: "One selected inference configuration and mandatory local model services."
 ---
 
-The application reads process environment variables. It does not automatically load a `.env` file. Export values in your shell or pass a controlled environment to your service manager. Use `.env.example` as a reference, not as a credential store.
+The application reads process environment variables and does not load `.env` automatically. `.env.example` is a reference. Keep private values outside Git.
 
 ## API process
 
 | Variable | Actual behavior |
 | --- | --- |
-| `FORTE_API_KEY_FILE` | Read the private service key from this file if `FORTE_API_KEY` is unset. Preferred. |
-| `FORTE_API_KEY` | Direct ASCII key, minimum 16 characters; takes precedence over the key file. Do not put it in docs or browser assets. |
-| `FORTE_PRIVATE_ROOT` | Persistent private jobs; default `~/.local/share/forte26/jobs`. Use an absolute path outside Git. |
-| `FORTE_MODEL_URL` | Resident model origin; default `http://127.0.0.1:8001`. |
-| `FORTE_MODEL_NAME` | Served model name; default `forte-vlm`. |
-| `FORTE_MODEL_REVISION` | Readiness identity; default pinned baseline8b revision. Must match the actual selected model. |
-| `FORTE_MAX_CONTEXT_TOKENS` | API context setting; default 8192. Container entrypoint chooses 16384 for frozen27b. |
-| `FORTE_REASONING_CONFIG` | Path to explicit frozen reasoning JSON. The example uses container mount paths; adapt them in a private copy. |
-| `FORTE_V1_PIPELINE` | `legacy` by default; explicit `reasoning` additionally requires a reasoning configuration. |
-| `FORTE_TRUSTED_GATEWAY_TOKEN_FILE` | Optional separate 32–256 character token. Enables trusted-principal enforcement. A service key alone then cannot call the core. |
-| `FORTE_FRONTEND_ROOT` | Optional path to the built static export. Does not create browser sessions. |
+| `FORTE_API_KEY_FILE` | Private service-key file; preferred over a literal environment key. |
+| `FORTE_API_KEY` | Direct ASCII key, minimum 16 characters; takes precedence over the key file. |
+| `FORTE_PRIVATE_ROOT` | Persistent private jobs; default `~/.local/share/forte26/jobs`. |
+| `FORTE_MODEL_URL` | Local visual service; default `http://127.0.0.1:8001`. |
+| `FORTE_MODEL_NAME` | Served name; default `forte-vlm`. |
+| `FORTE_MODEL_REVISION` | Must match the pinned 8B revision. |
+| `FORTE_MAX_CONTEXT_TOKENS` | 8,192-token visual context. |
+| `FORTE_LAYA_URL` | Mandatory local CPU decision service; default `http://127.0.0.1:8002`. |
+| `FORTE_REASONING_CONFIG` | Required selected inference JSON; start from `configs/frozen-inference.json` and adapt mounted paths in a private copy. |
+| `FORTE_TRUSTED_GATEWAY_TOKEN_FILE` | Optional separate gateway token; enables trusted-principal enforcement. |
+| `FORTE_FRONTEND_ROOT` | Optional static export path; does not create sessions. |
 
 ## Container entrypoint
 
-`FORTE_MODEL_PATH`, `FORTE_API_KEY_FILE` and `FORTE_PRIVATE_ROOT` are required by `scripts/container-entrypoint.sh`. `FORTE_MODEL_PROFILE` chooses `baseline8b` or `frozen27b`. Frozen27b also requires `FORTE_REASONING_CONFIG`. The script verifies hashes, starts vLLM, checks visual warmup, then starts the API. These variables do not download assets or grant network isolation by themselves.
+`scripts/container-entrypoint.sh` requires `FORTE_MODEL_PATH`, `FORTE_LAYA_PATH`, `FORTE_REASONING_CONFIG`, `FORTE_API_KEY_FILE` and `FORTE_PRIVATE_ROOT`. Model paths end with their pinned revisions. Both snapshots require a local `model-hashes.json` with identity and a complete SHA256 file map. Startup verifies assets, starts and warms the 8B visual service, starts CPU FP32 Laya and then starts the API. Both exact identities must be healthy before admission. No startup code downloads weights.
 
-## Frozen reasoning configuration
+## Execution configuration
 
-`configs/frozen-inference.json` declares detector/ReID resources, legal release/cards, model identity and execution budgets. Defaults include 24 visual calls, 80,000 cumulative tokens, three reinspections and two legal calls. The serving context is 16,384 tokens with sixteen images per call and one active model sequence. An execution budget is a cap, not a guarantee of complete coverage.
+`configs/frozen-inference.json` declares the sole 8B identity, tracking assets, legal release/cards and budgets: 24 visual calls, 80,000 cumulative tokens, three targeted reinspections and 96 condition questions. Visual context is 8,192 tokens, with at most sixteen images, an initial 768 output-token limit and one active model sequence. Caps do not guarantee complete coverage.
 
-Keep `event_date` null unless authorized metadata establishes a reliable recording date. Unknown institution scope or edition applicability must remain unknown. All twelve current operational interpretations are drafts; changing a JSON flag is not human approval.
+Keep `event_date` null unless reliable authorized metadata establishes it. Unknown institution scope or edition applicability remains unknown. Current operational interpretations remain drafts until independently reviewed.
 
-## Storage and secrets
+## Storage and isolation
 
-Keep originals, evidence, corrections, logs, keys and backups outside the repository. Retention is manual. Never mount a cloud-provider credential into the application. Public model/corpus acquisition and private inference are distinct stages. See [authentication](/api/authentication).
+Originals, evidence, corrections, logs, keys and backups stay outside Git. Public asset staging precedes private work. Private inference requires explicit authorization and OS-enforced denied egress; environment settings alone do not provide isolation. Ports 8001 and 8002 remain internal. See [authentication](/api/authentication).
