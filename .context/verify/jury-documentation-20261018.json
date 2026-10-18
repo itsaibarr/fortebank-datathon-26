@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-18",
+  "application_source_commit": "ae9f819c3d7063e8bcf0e51855e5b4773c1961df",
+  "scope": "Mintlify jury documentation, README, historical setup-note archival and app documentation link",
+  "private_data_used": false,
+  "model_inference": false,
+  "gpu_runtime_modified": false,
+  "checks": {
+    "python_suite": {
+      "passed": 505,
+      "skipped": 1,
+      "warnings": 4,
+      "seconds": 129.68
+    },
+    "frontend_suite": {
+      "passed": 17,
+      "typecheck": "passed",
+      "lint": "passed",
+      "static_export": "passed"
+    },
+    "python_lint": "passed",
+    "python_package_build": "passed",
+    "documentation_verifier": {
+      "passed": true,
+      "mintlify_pages": 17,
+      "examples": "real API with generated MOV and explicitly injected synthetic inference fixtures",
+      "v1": "actual documented curl submit/poll and exact schema",
+      "v2": "complete generated response, actual documented original download and immutable correction curl, source/JPEG hash bindings and stale-parent conflict",
+      "evaluator": "actual forte evaluate CLI, synthetic TN and empty-positive denominator"
+    },
+    "mintlify_validate": "passed",
+    "mintlify_broken_links": "none found",
+    "diff_whitespace": "passed",
+    "credential_scan": {
+      "high_findings": 0,
+      "supplied_key_absent": true,
+      "medium_findings_reviewed": "Documentation loopback examples, generated fixture revision, npm integrity/funding metadata; no credentials."
+    }
+  },
+  "cleanup": {
+    "moved": {
+      "from": "web/README.setup-history.md",
+      "to": "docs/archive/frontend-setup-20261017.md"
+    },
+    "reason": "Superseded setup-only note; referring documentation link updated; no runtime/build/test dependency found.",
+    "research_and_evaluation_evidence": "preserved",
+    "other_files_deleted": []
+  },
+  "limits": [
+    "Software checks do not establish recognition or legal accuracy.",
+    "Historical GPU results belong to their earlier source/runtime identity.",
+    "Public Vercel interface remains a generated-data simulation; private GPU evaluation is separate."
+  ],
+  "hosted_deployment": {
+    "mintlify": {
+      "url": "https://datathon-f289adc4.mintlify.site/introduction",
+      "repository": "itsaibarr/fortebank-datathon-26",
+      "branch": "main",
+      "directory": "docs-site",
+      "pages_verified": 17,
+      "json_downloads_match_source": 3,
+      "browser_search": "authentication returns API authentication and opens the correct page",
+      "mobile_390px": "API authentication renders with no horizontal overflow",
+      "github_app_scope": "Only select repositories: one repository, itsaibarr/fortebank-datathon-26; saved state verified on GitHub"
+    },
+    "vercel": {
+      "url": "https://fortebank-review-demo.vercel.app",
+      "deployment_id": "dpl_Hm2shwVyzCBrqvZ1c7dTDfiNd1qd",
+      "documentation_link": "verified in browser",
+      "generated_sample_review": "loaded with original blob video and two synthetic events",
+      "private_backend_connected": false,
+      "mobile_390px": "Documentation link remains available; no horizontal overflow",
+      "documentation_navigation": "Actual click opens the Mintlify introduction in a new tab"
+    },
+    "fresh_main_clone": {
+      "install": "uv sync --frozen passed",
+      "cli_help": "passed",
+      "documentation_verifier": "passed"
+    }
+  }
+}

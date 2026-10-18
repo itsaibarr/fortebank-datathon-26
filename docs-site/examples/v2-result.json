@@ -1,0 +1,180 @@
+{
+  "job_id": "00000000-0000-4000-8000-000000000000",
+  "status": "done",
+  "api_version": 2,
+  "result": {
+    "schema_version": "forte.reasoning/1",
+    "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+    "source": {
+      "duration_sec": 3.1,
+      "frame_count": 5,
+      "original_name": "input.mov",
+      "frame_table": "source-frames.json"
+    },
+    "execution": {
+      "status": "partial",
+      "weights_frozen": true,
+      "budget_exhausted": false
+    },
+    "assessment": "insufficient_evidence",
+    "review_status": "unreviewed",
+    "timeline": {
+      "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+      "observations": [
+        {
+          "observation_id": "obs-00000",
+          "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+          "start_frame_id": "f000000",
+          "end_frame_id": "f000000",
+          "decisive_frame_id": "f000000",
+          "start_sec": 0.0,
+          "end_sec": 0.0,
+          "decisive_sec": 0.0,
+          "kind": "context",
+          "value": "Synthetic colored source-frame fixture.",
+          "actor_ids": [],
+          "recipient_ids": [],
+          "evidence_frame_ids": [
+            "f000000"
+          ],
+          "visibility": "visible_samples",
+          "uncertainty": [
+            "No real participant or transaction in this synthetic source."
+          ],
+          "continues_before_window": false,
+          "continues_after_window": false,
+          "origin": "model",
+          "review_status": "unreviewed"
+        }
+      ],
+      "events": [
+        {
+          "observation_id": "obs-00000",
+          "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+          "start_frame_id": "f000000",
+          "end_frame_id": "f000000",
+          "decisive_frame_id": "f000000",
+          "start_sec": 0.0,
+          "end_sec": 0.0,
+          "decisive_sec": 0.0,
+          "kind": "context",
+          "value": "Synthetic colored source-frame fixture.",
+          "actor_ids": [],
+          "recipient_ids": [],
+          "evidence_frame_ids": [
+            "f000000"
+          ],
+          "visibility": "visible_samples",
+          "uncertainty": [
+            "No real participant or transaction in this synthetic source."
+          ],
+          "continues_before_window": false,
+          "continues_after_window": false,
+          "origin": "model",
+          "review_status": "unreviewed",
+          "event_id": "event-00000",
+          "observation_ids": [
+            "obs-00000"
+          ],
+          "evidence": [
+            {
+              "frame_id": "f000000",
+              "file": "evidence/f000000.jpg",
+              "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+              "image_sha256": "6cfa6348a01160b5266b34937f21cab372b50dfdb1c01fa3e57cfd3902f93fc2",
+              "jpeg_sha256": "6cfa6348a01160b5266b34937f21cab372b50dfdb1c01fa3e57cfd3902f93fc2",
+              "source_pts": 102400,
+              "time_base": "1/10240",
+              "timestamp_sec": 0.0,
+              "oriented_size": [
+                96,
+                64
+              ],
+              "rotation_degrees": 0,
+              "kind": "decoded_source_jpeg_no_overlay_no_resize"
+            }
+          ],
+          "evidence_export_complete": true,
+          "assessment": "insufficient_evidence",
+          "legal_assessment_ids": []
+        }
+      ],
+      "participants": [],
+      "coverage": {
+        "continuous_visibility_validated": false
+      }
+    },
+    "participants": {
+      "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+      "participants": []
+    },
+    "legal": {
+      "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+      "assessments": [],
+      "rule_coverage": [],
+      "status": "incomplete"
+    },
+    "events": [
+      {
+        "observation_id": "obs-00000",
+        "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+        "start_frame_id": "f000000",
+        "end_frame_id": "f000000",
+        "decisive_frame_id": "f000000",
+        "start_sec": 0.0,
+        "end_sec": 0.0,
+        "decisive_sec": 0.0,
+        "kind": "context",
+        "value": "Synthetic colored source-frame fixture.",
+        "actor_ids": [],
+        "recipient_ids": [],
+        "evidence_frame_ids": [
+          "f000000"
+        ],
+        "visibility": "visible_samples",
+        "uncertainty": [
+          "No real participant or transaction in this synthetic source."
+        ],
+        "continues_before_window": false,
+        "continues_after_window": false,
+        "origin": "model",
+        "review_status": "unreviewed",
+        "event_id": "event-00000",
+        "observation_ids": [
+          "obs-00000"
+        ],
+        "evidence": [
+          {
+            "frame_id": "f000000",
+            "file": "evidence/f000000.jpg",
+            "source_sha256": "d134da02cee780d7e673b600241ca1bdfdf4dcc60b8f14c0da16b5482ef69ad1",
+            "image_sha256": "6cfa6348a01160b5266b34937f21cab372b50dfdb1c01fa3e57cfd3902f93fc2",
+            "jpeg_sha256": "6cfa6348a01160b5266b34937f21cab372b50dfdb1c01fa3e57cfd3902f93fc2",
+            "source_pts": 102400,
+            "time_base": "1/10240",
+            "timestamp_sec": 0.0,
+            "oriented_size": [
+              96,
+              64
+            ],
+            "rotation_degrees": 0,
+            "kind": "decoded_source_jpeg_no_overlay_no_resize"
+          }
+        ],
+        "evidence_export_complete": true,
+        "assessment": "insufficient_evidence",
+        "legal_assessment_ids": []
+      }
+    ],
+    "metrics": {},
+    "provenance": {
+      "model_name": "synthetic-only"
+    },
+    "artifacts": {
+      "revision": "reasoning-11111111111111111111111111111111",
+      "result": "result.json",
+      "review": "review.html",
+      "source_frames": "source-frames.json"
+    }
+  }
+}

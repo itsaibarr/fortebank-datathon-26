@@ -1,0 +1,31 @@
+---
+title: "Verified results"
+description: "Local software verification is separate from real-model acceptance."
+---
+
+## Current software checks
+
+The 18 October 2026 source consolidation recorded **364 passing Python tests**, with four existing warnings, and **17 frontend tests**. Ruff lint/format, Python package builds and resource/import/lock checks passed. Frontend lint, TypeScript and static build passed. These are local software checks using synthetic fixtures and injected model boundaries; they establish no real checkpoint load, accuracy, latency or deployment result. `report.md` records their scope.
+
+Documentation publishing checks are separate from application-runtime acceptance. Updating this Mintlify site does not release an inference service.
+
+## Historical measurements
+
+Earlier GPU sessions recorded two admitted jobs at 257.43 s and 258.04 s, both partial/insufficient, and a third admission rejected with HTTP 429. An earlier selected role regression reported one false-positive video and four insufficient-evidence failures; a sixth case was unrun. These are historical exploratory results for their original source/runtime, not measurements of the selected 8B/Laya implementation. Original `.context/verify/` receipts remain unchanged; superseded narratives and runtime manifests are available in Git history.
+
+No speedup, minimum VRAM, CPU Laya latency, improved recall or successful application deployment is established for the selected architecture.
+
+## Accuracy is not accepted
+
+No accepted precision, recall, event/category accuracy, legal accuracy or competition score is published. Reviewed actor/action/category references, reliable dates, independent recording-group splits and legal applicability remain incomplete. Twelve interpretations are drafts; three official acts are scoped coverage rather than all Kazakhstan law. Automatic reviewed-correction replay remains unimplemented.
+
+## Read metrics correctly
+
+`forte evaluate` aggregates **v1** completed client result directories. It reports TP/TN/FP/FN, failed positives/negatives, completed fraction, accuracy including failures, effective recall, false-positive rate, supplied-point proximity and client median/p95/max. Missing or source-mismatched results are rejected. Failure never becomes a negative.
+
+- Accuracy including failures: `(TP + TN) / all planned known-label records`.
+- Effective recall: `TP / all known positives`; failed positives reduce it.
+- FPR: `FP / all known negatives`.
+- Point proximity is a closest-timestamp diagnostic, not verified event matching or interval accuracy.
+
+V2 abstentions need a separate protocol. Passing rich v2 JSON to the v1 evaluator is unsupported. Keep failures, abstentions and unrun cases visible.

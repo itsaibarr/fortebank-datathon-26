@@ -1,0 +1,56 @@
+---
+title: "API authentication"
+description: "Keep service keys on the server or in private client files; browser sessions are separate."
+---
+
+## Choose the correct boundary
+
+| Access mode | Required mechanism |
+| --- | --- |
+| Direct private/operator API | `X-API-Key` on every `/api/v1` and `/api/v2` request. Shared-key mode is a single trust domain. |
+| Real browser deployment | HTTPS gateway session, Secure/HttpOnly/SameSite cookie, exact Origin and CSRF for mutations. No service key in browser code. |
+| Trusted core | Service key plus separate gateway token and opaque principal, injected by the trusted gateway. Ownerless and cross-owner jobs deny. |
+| Public Vercel demo | Generated assets and simulated tab-local sessions only. This is not real authentication. |
+
+No public jury key is embedded in this repository or documentation. Obtain the key from your own deployment administrator, or generate one for your own private installation.
+
+## Generate a private local key
+
+Run from your installed checkout. The key is never printed:
+
+```bash
+export FORTE_EXAMPLE_ROOT="$HOME/.local/share/forte26/api-example"
+uv run python - <<'PYKEY'
+import os
+import secrets
+from pathlib import Path
+root = Path(os.environ["FORTE_EXAMPLE_ROOT"])
+root.mkdir(parents=True, exist_ok=True, mode=0o700)
+root.chmod(0o700)
+key_path = root / "service-api.key"
+if not key_path.exists():
+    fd = os.open(key_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w") as handle:
+        handle.write(secrets.token_urlsafe(32) + "\n")
+key_path.chmod(0o600)
+header_path = root / "request.headers"
+fd = os.open(header_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+with os.fdopen(fd, "w") as handle:
+    handle.write("X-API-Key: " + key_path.read_text().strip() + "\n")
+header_path.chmod(0o600)
+PYKEY
+```
+
+Set `FORTE_API_KEY_FILE` to `service-api.key` when starting the API. For an existing authorized installation, put its separately provided service key in an equivalent owner-private file. Never use a provider or Mintlify key as an application key.
+
+## Use the header file
+
+```bash
+curl --silent --show-error \
+  --header @"$FORTE_EXAMPLE_ROOT/request.headers" \
+  http://127.0.0.1:8000/api/v1/jobs/00000000-0000-4000-8000-000000000000
+```
+
+With valid auth and no such job, expect 404. Without auth, expect 401. This reads a deliberately nonexistent identifier; it does not submit media.
+
+Use TLS for non-loopback access. Keep shell tracing disabled around credentials. Service key rotation changes access credentials, not the principal ownership of persisted browser cases.

@@ -1,0 +1,36 @@
+---
+title: "Environment configuration"
+description: "One selected inference configuration and mandatory local model services."
+---
+
+The application reads process environment variables and does not load `.env` automatically. `.env.example` is a reference. Keep private values outside Git.
+
+## API process
+
+| Variable | Actual behavior |
+| --- | --- |
+| `FORTE_API_KEY_FILE` | Private service-key file; preferred over a literal environment key. |
+| `FORTE_API_KEY` | Direct ASCII key, minimum 16 characters; takes precedence over the key file. |
+| `FORTE_PRIVATE_ROOT` | Persistent private jobs; default `~/.local/share/forte26/jobs`. |
+| `FORTE_MODEL_URL` | Local visual service; default `http://127.0.0.1:8001`. |
+| `FORTE_MODEL_NAME` | Served name; default `forte-vlm`. |
+| `FORTE_MODEL_REVISION` | Must match the pinned 8B revision. |
+| `FORTE_MAX_CONTEXT_TOKENS` | 8,192-token visual context. |
+| `FORTE_LAYA_URL` | Mandatory local CPU decision service; default `http://127.0.0.1:8002`. |
+| `FORTE_REASONING_CONFIG` | Required selected inference JSON; start from `configs/frozen-inference.json` and adapt mounted paths in a private copy. |
+| `FORTE_TRUSTED_GATEWAY_TOKEN_FILE` | Optional separate gateway token; enables trusted-principal enforcement. |
+| `FORTE_FRONTEND_ROOT` | Optional static export path; does not create sessions. |
+
+## Container entrypoint
+
+`scripts/container-entrypoint.sh` requires `FORTE_MODEL_PATH`, `FORTE_LAYA_PATH`, `FORTE_REASONING_CONFIG`, `FORTE_API_KEY_FILE` and `FORTE_PRIVATE_ROOT`. Model paths end with their pinned revisions. Both snapshots require a local `model-hashes.json` with identity and a complete SHA256 file map. Startup verifies assets, starts and warms the 8B visual service, starts CPU FP32 Laya and then starts the API. Both exact identities must be healthy before admission. No startup code downloads weights.
+
+## Execution configuration
+
+`configs/frozen-inference.json` declares the sole 8B identity, tracking assets, legal release/cards and budgets: 24 visual calls, 80,000 cumulative tokens, three targeted reinspections and 96 condition questions. Visual context is 8,192 tokens, with at most sixteen images, an initial 768 output-token limit and one active model sequence. Caps do not guarantee complete coverage.
+
+Keep `event_date` null unless reliable authorized metadata establishes it. Unknown institution scope or edition applicability remains unknown. Current operational interpretations remain drafts until independently reviewed.
+
+## Storage and isolation
+
+Originals, evidence, corrections, logs, keys and backups stay outside Git. Public asset staging precedes private work. Private inference requires explicit authorization and OS-enforced denied egress; environment settings alone do not provide isolation. Ports 8001 and 8002 remain internal. See [authentication](/api/authentication).

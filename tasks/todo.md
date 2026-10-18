@@ -26,3 +26,11 @@ acceptance and grant no live-resource authorization.
       deadlines; synthetic checks do not satisfy semantic acceptance.
 - [ ] Deployment, HTTPS/public access, jury submission and publication require
       separate authorization and exact-artifact verification. No deployment run.
+
+## Source review follow-ups
+
+- [ ] Scope Laya fact packets/evidence to events and conditions. Current actor-wide
+      packets can let unrelated ambiguity suppress an independently supported event
+      or collect more evidence than the three-JPEG reporting budget.
+- [ ] Reconcile v1 clearance replay with every (rule, actor) assessment. Its current
+      one-assessment-per-rule check conservatively abstains on multi-actor clearance.

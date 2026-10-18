@@ -1,0 +1,43 @@
+---
+title: "How to start and verify the API"
+description: "A reproducible process/readiness check before attempting actual inference."
+---
+
+## Prerequisites
+
+Install the source, then create the private key and request header file as shown in [authentication](/api/authentication). The following assumes `FORTE_EXAMPLE_ROOT` names that private directory.
+
+## Start one API process
+
+```bash
+export FORTE_API_KEY_FILE="$FORTE_EXAMPLE_ROOT/service-api.key"
+export FORTE_PRIVATE_ROOT="$FORTE_EXAMPLE_ROOT/jobs"
+export FORTE_REASONING_CONFIG="/absolute/private/inference-config.json"
+export FORTE_MODEL_URL="http://127.0.0.1:8001"
+export FORTE_LAYA_URL="http://127.0.0.1:8002"
+uv run forte serve --host 127.0.0.1 --port 8000
+```
+
+This starts the real API. It requires the private config with actual mounted paths and both separately started local model services; it does not start or download them. Run one process per private job root. In a second terminal, probe:
+
+```bash
+curl --fail --silent --show-error http://127.0.0.1:8000/health/live
+curl --silent --show-error --output /dev/null --write-out '%{http_code}\n' \
+  http://127.0.0.1:8000/health/ready
+```
+
+Liveness returns `{"status":"ok"}`. Readiness is 200/`ready` only when the exact local 8B and CPU Laya identity and health checks pass. Without both prepared resident models, expect **503**. Do not submit a private sample until readiness is 200.
+
+## Browser access
+
+The real UI needs the same HTTPS origin for static assets, `/auth/`, `/deployment.json` and `/api/v2`. The separate gateway uses protected cookies, an exact Origin, CSRF and server-side secrets. A frontend development server alone cannot provide this boundary. Account administration is performed with the existing local `session_store.py` CLI and privately prompted passwords.
+
+The Vercel demo implements no real session boundary and connects to no GPU API. Its simulator must never be promoted to a production auth mechanism.
+
+## Shutdown and persistence
+
+Stop only the process/installation you own. API restart turns interrupted jobs into explicit failures. Preserve the job root, immutable corrections and session principal database across intended upgrades. No automatic retention cleanup is promised.
+
+## Troubleshooting
+
+If port 8000 is already occupied, select another `--port` and update the client URL. If readiness is 503, check both pinned model identities, model processes, configuration and resources before retrying admission. Avoid retrying a POST with an ambiguous response: first reconcile the admitted job. See [errors](/api/errors).

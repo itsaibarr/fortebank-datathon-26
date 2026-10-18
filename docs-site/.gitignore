@@ -1,0 +1,4 @@
+node_modules/
+.mint/
+.mintlify/
+.env*

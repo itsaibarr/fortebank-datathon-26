@@ -1,0 +1,50 @@
+---
+title: "Jury journey"
+description: "Ten steps from repository discovery to a reproducible evaluation."
+---
+
+## 1. Discover the project
+
+Open [the GitHub repository](https://github.com/itsaibarr/fortebank-datathon-26). Repository access is currently required because it is private. Its README identifies the source, docs and live demo. Do not mistake the demo URL for an inference API.
+
+## 2. Understand the approach
+
+Read the [overview](/introduction) and [architecture](/architecture). The central design is to retain source evidence and uncertainty rather than convert incomplete inspection into a clean negative.
+
+## 3. Get a first visible result
+
+Open [the public UI demo](https://fortebank-review-demo.vercel.app), then click **Load sample review**. Select an event, inspect its source evidence and try a scoped correction. This verifies the interface journey with generated data only.
+
+For real processing, follow [installation](/guides/installation) on your own prepared host. The demo is not a substitute for that host.
+
+## 4. Configure the environment
+
+Use [configuration](/guides/configuration). Generate a private service key, choose private storage, and configure the pinned 8B and mandatory CPU Laya services explicitly. Public resources are acquired before private inference; weights are never trained by this workflow.
+
+## 5. Start and verify the service
+
+Follow [operations](/guides/operations). Liveness must return 200. Readiness must also return 200 before a real upload. An API process with a 503 readiness response is operational software, not a ready inference system.
+
+## 6. Configure authentication
+
+Use your own installation's key with the [key-file procedure](/api/authentication). Browser sessions are a separate gateway mechanism; a service key never belongs in the browser bundle.
+
+## 7. Submit your own sample
+
+Use [v1](/api/v1) for the fixed jury contract or [v2](/api/v2) for detailed review. The file is a MOV, submitted as multipart field `file`. A 202 response acknowledges admission; it is not a finished result. Use only inputs authorized for that installation.
+
+## 8. Retrieve and interpret the result
+
+Poll the same API version until `done` or `failed`. Read [the result states](/api/v2) and [review workflow](/guides/review). Check source evidence, incomplete intervals, legal conditions and limitations together.
+
+## 9. Assess quality and speed
+
+Use the [measurement table](/evaluation/results). Schema validity and original JPEG provenance are mechanical checks, not evidence that a reported event is correct. Failures and abstentions remain in the denominator.
+
+## 10. Reproduce the checks
+
+Follow [reproduction](/evaluation/reproduce). Pin source, model, configuration, legal corpus and input hashes. Run software checks independently from the private semantic benchmark. Reserved/jury inputs never enter model selection or training.
+
+## What you can evaluate now
+
+The public demo is self-service. Real inference requires a qualified host, model assets and an authorized service origin. These docs do not invent a public inference service, an accepted accuracy score or a complete distributable GPU release.

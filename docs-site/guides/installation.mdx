@@ -1,0 +1,62 @@
+---
+title: "How to install the source"
+description: "Install the actual Python package and build the frontend without downloading model weights."
+---
+
+## Prerequisites
+
+- Repository access, Git and `uv`.
+- Python 3.12 (the package accepts 3.12 only).
+- Node.js and npm for the frontend; validation used Node.js 24 and the committed npm lockfile.
+- For actual frozen inference: a separately prepared Linux x86_64 NVIDIA CUDA host, compatible driver, vLLM runtime and verified 8B/tracking/legal assets, plus the pinned local CPU Laya checkpoint/runtime. The visual model still needs compatible GPU resources.
+
+## Install the foundation
+
+```bash
+ git clone --branch main https://github.com/itsaibarr/fortebank-datathon-26.git
+ cd fortebank-datathon-26
+ uv sync --frozen --extra inference-tracking
+ uv run forte --help
+ uv run pytest -q
+```
+
+Use the current authorized checkout and record its actual commit and working-tree identity. The repository report records source checks; historical experiments retain their own identities. The lockfile installs software dependencies; it does not download model weights, install CUDA or make inference ready.
+
+## Build the interface
+
+From the repository root:
+
+```bash
+npm --prefix web ci
+npm --prefix web test
+npm --prefix web run typecheck
+npm --prefix web run lint
+npm --prefix web run build
+```
+
+The build produces `web/out`. Runtime user data, API keys and recordings are not build inputs. Fonts are acquired at public build time and served as build assets afterward.
+
+`npm --prefix web run dev -- --port 3102` starts frontend development only. It does not provide the session gateway, deployment metadata or inference API.
+
+## Prepare a real inference host
+
+The Dockerfile retains its pinned vLLM base and the existing entrypoint. Stage
+immutable hash-verified 8B and Laya snapshots, detector/ReID assets and official
+rules separately from private media. Adapt `configs/frozen-inference.json` to
+actual private mount paths. Model ports 8001/8002 stay internal; expose only the
+application/session boundary and enforce OS-denied outbound networking.
+
+The obsolete asset/release manifests and installer frameworks were removed.
+Current source runtime instructions are in `docs/backend.md`, browser security in
+`docs/browser-session-plan.md`, and offline transport in `docs/offline-api-bridge.md`.
+The modified image and both model runtimes still require separately authorized
+real compatibility, warmup, performance and semantic checks. No new GPU release
+or deployment acceptance is established by installation.
+
+## Verify
+
+Package installation and the test suite should complete. Then use [configuration](/guides/configuration) and [operations](/guides/operations). Actual uploads require model readiness; successful installation alone does not prove that readiness.
+
+## Troubleshooting
+
+A GitHub 404 can mean the private repository is inaccessible. A Python version error requires 3.12. Missing tracking/runtime dependencies are separate from the base package. See [common errors](/guides/troubleshooting).

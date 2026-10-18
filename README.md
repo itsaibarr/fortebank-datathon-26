@@ -1,7 +1,12 @@
-# ForteBank Datathon 26
+# Forte Review · ForteBank Datathon 2026
 
 Local source-timed cash-operation video review. The sole architecture and current
 verification status are in [report.md](report.md).
+
+[**Jury documentation**](https://datathon-f289adc4.mintlify.site/introduction) ·
+[**Generated-data UI demo**](https://fortebank-review-demo.vercel.app)
+
+The demo uses generated samples and does not analyze uploaded private videos.
 
 Frozen Qwen3-VL-8B produces actor-bound visual facts; mandatory local CPU Laya
 multilingual proposes three-state conditions. Code evaluates official local rules,
@@ -30,6 +35,9 @@ its local checkpoint and CPU warmup are mandatory for readiness.
 
 ## Guides
 
+- [Jury documentation source](docs-site/introduction.mdx), [engineering index](docs/README.md)
+
+- [Published documentation source](docs-site/docs.json), [documentation guide](docs-site/guides/documentation.mdx)
 - [Runtime/API](docs/backend.md), [specification](SPEC.md), [tasks](tasks/todo.md)
 - [Legal conditions](docs/legal-reasoning.md), [tracking/review](docs/person-tracking.md)
 - [Source timeline](docs/timeline-inference.md), [appearance proposals](docs/frozen-tracking.md)

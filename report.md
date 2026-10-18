@@ -318,3 +318,18 @@ acceptance. Per-request GPU queue time remains explicitly null when absent from 
 responses; round-trip time, source coverage and process/whole-device memory samples
 are separate measurements. Automatic reviewed-correction replay is still unimplemented.
 These remain open in `tasks/todo.md`; no speed, memory or accuracy improvement is asserted.
+
+
+### Documentation release review
+
+The user separately authorized updating the existing Mintlify documentation site.
+Remote `main` introduced independently maintained `docs-site/` pages and demo links;
+these are preserved and reconciled with this architecture. The reduction counts
+above describe consolidation checkpoint `af25644`, before that documentation merge.
+This documentation publication does not establish application runtime deployment.
+
+Source review identified two open conservative assessment limitations: actor-wide
+condition packets may let unrelated ambiguity suppress an independently supported
+event or exceed its evidence budget; v1 clearance replay still assumes one
+assessment per rule and abstains on otherwise complete multi-actor results. They
+remain explicit follow-ups in `tasks/todo.md`, not accepted semantic behavior.

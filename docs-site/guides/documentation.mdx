@@ -1,0 +1,39 @@
+---
+title: "How to maintain the documentation"
+description: "Validate Mintlify pages and source-bound examples before publishing."
+---
+
+The Mintlify source is `docs-site/`. Its navigation follows the jury journey, and the committed OpenAPI files are byte-identical copies of `contracts/api-contract.json` and `contracts/reasoning-api-contract.json`.
+
+## Validate locally
+
+From the repository root:
+
+```bash
+uv run python scripts/verify_documentation.py
+cd docs-site
+npm ci
+npm run validate
+npm run links
+npm run dev
+```
+
+The documentation CLI is pinned in this directory's lockfile. `mint dev` is a local preview, not proof of a successful hosted deployment. Keep Mintlify keys only in authorized private configuration; never put them in `docs.json`, MDX, examples, logs or commits.
+
+## Publish
+
+The live documentation is [Forte Review](https://datathon-f289adc4.mintlify.site/introduction). Its Mintlify project is connected to `itsaibarr/fortebank-datathon-26`, branch `main`, directory `docs-site/`. Source pushes to that branch create documentation deployments. The Vercel UI is deployed separately.
+
+Keep GitHub integration scoped to this repository. A Mintlify admin API key is server-side and can trigger an existing configured project; it does not sign in to the dashboard. Account sign-in and the GitHub app connection are separate authorization steps.
+
+## Keep claims source-bound
+
+The repository `report.md` is the sole architecture reference. Keep every active
+page aligned with its single frozen 8B/CPU Laya/deterministic path. Local edits do
+not update the hosted site until separately authorized publication.
+
+When behavior changes, update source identity, command checks, contract copies and measurement limitations together. Run examples with generated data. Never publish private case descriptions to make the docs look realistic.
+
+## Troubleshooting
+
+Fix build and link failures before publishing. If the live site shows an older version, check the connected branch, `docs-site/` path and latest Mintlify deployment. Preserve the last working deployment while correcting the source.

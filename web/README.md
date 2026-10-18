@@ -54,3 +54,5 @@ API replies in the test browser. Those fixtures are outside the build and are
 not a production fallback. Upload/poll/authentication propagation, seek, overlays,
 evidence, condition navigation and correction/history mechanics were exercised;
 this does not establish recognition or legal accuracy on competition recordings.
+
+The app header links the [jury documentation](https://datathon-f289adc4.mintlify.site/introduction). The Mintlify source is `../docs-site/`; it deploys separately from the application.

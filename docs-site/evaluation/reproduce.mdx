@@ -1,0 +1,60 @@
+---
+title: "How to reproduce the checks"
+description: "Separate software reproducibility, generated examples and private semantic evaluation."
+---
+
+## 1. Reproduce software behavior
+
+From the installed checkout:
+
+```bash
+uv sync --frozen --extra inference-tracking
+uv run pytest -q
+uv run ruff check .
+uv run python -m build
+uv run python scripts/verify_documentation.py
+```
+
+The documentation verifier exercises actual FastAPI routes using generated media and explicit synthetic inference fixtures. It checks example schemas, authentication, admission/polling, original source/JPEG resources, correction history and evaluation arithmetic. It does not download weights or evaluate private recordings.
+
+Build and check the frontend with the [installation commands](/guides/installation). Mintlify docs checks are listed in [documentation maintenance](/guides/documentation).
+
+## 2. Pin a real experiment
+
+Record source commit and module hashes; Docker image digest; both selected model identities/revisions and full asset hashes; effective configuration; legal release/card hashes; input/source hashes and grouping; runtime hardware/driver; resource sampling cadence; request budget; planned cohort and every unrun/failed/abstained case. Do not infer the recording date from a filename or PTS.
+
+Prepare public assets before mounting private footage. Inference runs in an OS-network-denied environment with loopback 8B and CPU Laya services. Never send private footage, frames or descriptions to external AI services.
+
+## 3. Reproduce v1 client results
+
+With a ready authorized loopback service and a private development sample:
+
+```bash
+uv run python scripts/check_api.py \
+  --url http://127.0.0.1:8000 \
+  --key-file "$FORTE_EXAMPLE_ROOT/service-api.key" \
+  --file "$SAMPLE_FILE" \
+  --output "$FORTE_EXAMPLE_ROOT/rehearsal"
+```
+
+The existing client intentionally permits loopback or a controlled local tunnel. It checks unauthenticated rejection, submit/poll, result schema, client time and returned JPEG provenance, saving private artifacts locally. It cannot prove a model's interpretation is right.
+
+## 4. Aggregate a frozen development run
+
+Create the private manifest using the actual `forte.evaluation` schema: each group has a unique source hash as `recording_id`, neutral `clipNNN.mov`, `split: development`, explicit boolean `positive`, supplied points and an explicit point-eligibility flag. Result folders use the corresponding neutral stem and contain the client's `result.json` and `summary.json`.
+
+```bash
+uv run forte evaluate \
+  --manifest /absolute/private/frozen-development-manifest.json \
+  --results /absolute/private/completed-client-results
+```
+
+The evaluator refuses reserved groups, duplicates, missing results and source mismatches. It only accepts the original v1 result schema. See the [actual metric definitions](/evaluation/results).
+
+## 5. Interpret the reproduction boundary
+
+Matching hashes and valid JSON prove the selected bytes and mechanics. Human review is still required for semantic relevance, participant continuity, roles, event types and legal applicability. Current grouping is not an accepted independent held-out split. Jury/reserved media must not be used for training, prompt selection, model selection or this development rehearsal.
+
+## Troubleshooting
+
+Do not change expected hashes to accept a different source. Do not exclude failed/unrun records to improve a score. If an old backup is incomplete, report the missing artifacts and source identity instead of claiming exact result reproduction.
