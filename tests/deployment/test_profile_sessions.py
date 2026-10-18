@@ -4,7 +4,9 @@ import importlib.util
 import json
 import os
 import sys
+from email.message import Message
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -13,7 +15,7 @@ sys.path.insert(0, str(ROOT / "tools/forte-admin"))
 sys.path.insert(0, str(ROOT / "tools/forte-session"))
 from forte_admin import config as configuration  # noqa: E402
 from forte_admin.preparation import bootstrap_administrator  # noqa: E402
-from session_gateway import Gateway  # noqa: E402
+from session_gateway import Gateway, GatewayHandler  # noqa: E402
 from session_store import SessionStore  # noqa: E402
 
 
@@ -41,9 +43,16 @@ def test_account_bootstrap_real_store_is_repeatable_and_never_prints_password(tm
     assert secret.read_text().strip() not in capsys.readouterr().out
 
 
-def test_rendered_config_is_accepted_by_real_session_gateway(tmp_path):
+@pytest.mark.parametrize("deployment_mode", ["private", "hosted"])
+@pytest.mark.parametrize("origin", ["https://localhost:8443", "https://localhost:8443/"])
+def test_rendered_config_is_accepted_by_real_session_gateway(
+    tmp_path, monkeypatch, deployment_mode, origin
+):
     root = tmp_path / "install"
-    selected, _ = configuration.plan(root, {"mode": "attach"})
+    selected, _ = configuration.plan(
+        root, {"mode": "attach", "deployment_mode": deployment_mode, "origin": origin}
+    )
+    assert selected["origin"] == "https://localhost:8443"
     selected["core_image"] = "sha256:" + "1" * 64
     manifest = tmp_path / "manifest.json"
     # The render path intentionally uses an unapproved but structurally valid manifest.
@@ -63,6 +72,22 @@ def test_rendered_config_is_accepted_by_real_session_gateway(tmp_path):
     assert settings["browser_uploads_enabled"] is False
     instance = Gateway(settings, SessionStore(selected["session_db"]))
     assert instance.uploads is False
+    assert instance.origin == selected["origin"]
+    assert instance.deployment_mode == deployment_mode
+    # Exercise the real gateway metadata dispatch without starting a listener.
+    handler = GatewayHandler.__new__(GatewayHandler)
+    handler.server = SimpleNamespace(gateway=instance)
+    handler.command, handler.path = "GET", "/deployment.json"
+    handler.headers = Message()
+    handler.headers["Host"] = "localhost:8443"
+    replies = []
+    handler.json_response = lambda status, payload: replies.append((status, payload))
+    monkeypatch.setattr(instance, "ready", lambda: True)
+    handler.dispatch()
+    assert replies[0][0] == 200
+    assert replies[0][1]["mode"] == deployment_mode
+    assert replies[0][1]["destination"] == selected["origin"]
+    assert replies[0][1]["browser_uploads_enabled"] is False
     assert service.read_text() not in (root / "runtime/nginx.conf").read_text()
 
 

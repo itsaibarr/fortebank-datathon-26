@@ -19,6 +19,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from contextlib import contextmanager
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -41,6 +42,10 @@ GITHUB_ORIGINS = frozenset({"https://github.com", "https://release-assets.github
 
 class ResourceError(ValueError):
     """A fixed, safe diagnostic; never include response bodies or signed URLs."""
+
+
+class ResourceBusy(ResourceError):
+    """Another preparation owns the resource; existing bytes are not corrupt."""
 
 
 def _relative(value):
@@ -283,8 +288,64 @@ def _strong_etag(value):
     return isinstance(value, str) and bool(re.fullmatch(r'"[\x21\x23-\x7e]{0,200}"', value))
 
 
+@contextmanager
+def _resource_lock(destination):
+    """Retain one private lock inode across resume, verification and publication."""
+    import fcntl
+
+    parent = destination.parent
+    if parent.resolve() != parent.absolute():
+        raise ResourceError("Resource lock paths must not contain symbolic links.")
+    directory = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        info = os.fstat(directory)
+        if info.st_uid != os.getuid() or info.st_mode & 0o022:
+            raise ResourceError("Resource preparation directories must be owner-controlled.")
+        descriptor = os.open(
+            destination.name + ".prepare.lock",
+            os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK,
+            0o600,
+            dir_fd=directory,
+        )
+        try:
+            info = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(info.st_mode)
+                or info.st_uid != os.getuid()
+                or info.st_mode & 0o077
+                or info.st_nlink != 1
+            ):
+                raise ResourceError(
+                    "Resource preparation locks must be private regular owned files."
+                )
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise ResourceBusy(
+                    "Another preparation owns this public resource; retry after it finishes."
+                ) from None
+            yield
+        finally:
+            os.close(descriptor)
+    except OSError:
+        raise ResourceError(
+            "The public resource preparation lock could not be safely acquired."
+        ) from None
+    finally:
+        os.close(directory)
+
+
 def _download(spec, destination, *, _transport=None):
     """Tests alone inject synthetic HTTP transport; installer exposes no such option."""
+    if spec["size"] is None:
+        raise ResourceError("Online preparation requires an exact pinned byte size.")
+    destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with _resource_lock(destination):
+        return _download_locked(spec, destination, _transport=_transport)
+
+
+def _download_locked(spec, destination, *, _transport=None):
+    """The caller owns the persistent per-resource lock until final publication."""
     size = spec["size"]
     if size is None:
         raise ResourceError("Online preparation requires an exact pinned byte size.")
@@ -552,6 +613,8 @@ def prepare_resources(
                             if not spec["url"]
                             else "Supply a local bundle or explicitly enable public downloads.",
                         )
+            except ResourceBusy as exc:
+                item.update(status="missing", reason=str(exc))
             except ResourceError as exc:
                 item.update(status="corrupt", reason=str(exc))
             except (OSError, ValueError):

@@ -17,6 +17,7 @@ import re
 import shutil
 import subprocess
 from collections import Counter
+from fractions import Fraction
 from pathlib import Path
 
 GIB = 1024**3
@@ -254,17 +255,19 @@ def inspect_host(config, manifest, *, probe=None):
     elif not isinstance(manifest.get("assets", []), list):
         invalid = "Integration manifest assets must be a JSON array."
     else:
-        architectures = (
-            manifest.get("runtime", {})
-            .get("requirements", {})
-            .get("architectures", ["x86_64", "amd64"])
-        )
+        requirements = manifest.get("runtime", {}).get("requirements", {})
+        architectures = requirements.get("architectures", ["x86_64", "amd64"])
         if (
             not isinstance(architectures, list)
             or not architectures
             or not all(isinstance(value, str) and value for value in architectures)
         ):
             invalid = "Pinned runtime architectures must be a nonempty JSON array of strings."
+        elif any(
+            requirements.get(key) is not None and not _number(requirements[key])
+            for key in ("min_gpu_vram_gib", "min_host_ram_gib", "min_free_disk_gib")
+        ):
+            invalid = "Pinned size minima must be positive finite JSON numbers or null."
     if invalid:
         # Reject malformed public metadata before probing the host. Do not pass
         # arbitrary values or parser exceptions into diagnostics/support output.
@@ -362,7 +365,9 @@ def inspect_host(config, manifest, *, probe=None):
                 "the selected GPU runtime."
             )
         minimum_gpu = requirements.get("min_gpu_vram_gib")
-        minimum_bytes = max(int(minimum_gpu * GIB), weights) if _number(minimum_gpu) else weights
+        minimum_bytes = (
+            max(int(Fraction(minimum_gpu) * GIB), weights) if _number(minimum_gpu) else weights
+        )
         if not _number(minimum_gpu):
             warnings.append(
                 "GPU workload headroom is unvalidated. Weight bytes are only a lower bound; "

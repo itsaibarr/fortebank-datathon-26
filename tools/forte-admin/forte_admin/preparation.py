@@ -129,8 +129,28 @@ def prepare_application(
 
 def select_local_build(manifest, config, installation, bundle, built):
     """Derive a separate unapproved candidate; never alter publisher attestations."""
-    source = read_json(Path(bundle) / "core-source/SOURCE.json")
-    contract = source.get("files", {}).get("contracts/reasoning-api-contract.json", {})
+    from forte_admin.source_image import _open_source
+
+    try:
+        with _open_source(Path(bundle) / "core-source", "SOURCE.json") as stream:
+            raw = stream.read()
+        if hashlib.sha256(raw).hexdigest() != built.get("source_manifest_sha256"):
+            raise ConfigError(
+                "Source inventory changed after the image build; no candidate was selected."
+            )
+        source = json.loads(raw)
+    except (OSError, ValueError) as exc:
+        if isinstance(exc, ConfigError):
+            raise
+        raise ConfigError("The source build inventory could not be safely verified.") from exc
+    if not isinstance(source, dict) or source.get("core_commit") != built.get("core_commit"):
+        raise ConfigError("The source inventory does not match the built core commit.")
+    files = source.get("files")
+    contract = (
+        files.get("contracts/reasoning-api-contract.json", {}) if isinstance(files, dict) else {}
+    )
+    if not isinstance(contract, dict):
+        contract = {}
     digest = contract.get("sha256", "")
     if not re.fullmatch(r"[0-9a-f]{64}", digest):
         raise ConfigError("Bundled canonical contract is missing from the source build inventory.")
