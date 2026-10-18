@@ -36,7 +36,7 @@ def parser():
         prog="forte-admin",
         description="Install and operate Forte; reviewers use its browser application.",
     )
-    p.add_argument("--version", action="version", version="forte-admin 0.1.0")
+    p.add_argument("--version", action="version", version="forte-admin 0.2.0")
     sub = p.add_subparsers(dest="command", required=True)
     setup = sub.add_parser(
         "setup", help="Preview configuration; --apply writes state without starting services."
@@ -60,11 +60,84 @@ def parser():
     setup.add_argument("--tls-key")
     setup.add_argument("--access-mode", choices=["browser-session", "gateway-single-admin"])
     setup.add_argument("--htpasswd-file")
+    setup.add_argument("--gpu-index", type=int)
+    setup.add_argument("--gpu-uuid")
+    setup.add_argument("--session-port", type=int)
+    setup.add_argument("--deployment-mode", choices=["private", "hosted"])
     setup.add_argument(
         "--preview", action="store_true", help="Explicit nonmutating preview (also the default)"
     )
     setup.add_argument("--apply", action="store_true")
-    for name in ("doctor", "up", "status", "logs", "stop", "prepare"):
+    installer = sub.add_parser(
+        "install", help="Guided, resumable preparation and startup in one invocation"
+    )
+    installer.add_argument("--installation", default=DEFAULT_ROOT)
+    installer.add_argument(
+        "--config", help="Nonsecret installation configuration JSON, never a connection profile"
+    )
+    installer.add_argument("--mode", choices=["private", "attach"])
+    installer.add_argument("--manifest", dest="integration_manifest")
+    installer.add_argument("--resources-root")
+    installer.add_argument("--data-root")
+    installer.add_argument("--secrets-root")
+    installer.add_argument("--origin")
+    installer.add_argument("--bind-address")
+    installer.add_argument("--https-port", type=int)
+    installer.add_argument("--bridge-port", type=int)
+    installer.add_argument("--proxy-image")
+    installer.add_argument("--attach-upstream")
+    installer.add_argument("--tls-cert")
+    installer.add_argument("--tls-key")
+    installer.add_argument("--access-mode", choices=["browser-session", "gateway-single-admin"])
+    installer.add_argument("--htpasswd-file")
+    installer.add_argument(
+        "--preview", action="store_true", help="Explicit nonmutating preview (also the default)"
+    )
+    installer.add_argument("--apply", action="store_true")
+    installer.add_argument("--gpu-index", type=int)
+    installer.add_argument("--gpu-uuid")
+    installer.add_argument("--session-port", type=int)
+    installer.add_argument("--deployment-mode", choices=["private", "hosted"])
+    installer.add_argument(
+        "--online",
+        action="store_true",
+        help="Allow only pinned public resource and image preparation",
+    )
+    installer.add_argument(
+        "--resource-source",
+        action="append",
+        help="Prepared public resources directory; repeat for additional sources",
+    )
+    installer.add_argument("--image-artifact", help="Approved docker-save core image artifact")
+    installer.add_argument(
+        "--build-core",
+        action="store_true",
+        help="Explicitly build bundled pinned public source; does not approve runtime acceptance",
+    )
+    installer.add_argument(
+        "--core-source", help="Released archive directory containing core-source and RELEASE.json"
+    )
+    installer.add_argument(
+        "--node-image",
+        default="node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392",
+        help="Immutable public Node builder image",
+    )
+    installer.add_argument(
+        "--tls-mode", choices=["supplied", "local-self-signed"], default="supplied"
+    )
+    installer.add_argument(
+        "--administrator", help="First browser account username; password prompted locally"
+    )
+    installer.add_argument(
+        "--admin-password-file", help="Private password file for unattended first account bootstrap"
+    )
+    installer.add_argument("--readiness-timeout", type=float, default=360)
+    installer.add_argument(
+        "--qualification",
+        action="store_true",
+        help="Bounded local-only first model load; no browser/public activation",
+    )
+    for name in ("doctor", "up", "status", "logs", "stop", "prepare", "qualify"):
         cmd = sub.add_parser(name)
         cmd.add_argument("--installation", default=DEFAULT_ROOT)
         cmd.add_argument(
@@ -159,6 +232,103 @@ def client_command(args):
     return 5 if result.get("status") == "failed" else 0
 
 
+def resolve_gpu(config, runtime=None, target=None):
+    from forte_admin.hardware import inspect_host
+
+    if runtime is not None and target is not None and runtime.owned_running(config, target):
+        return {
+            "can_attempt": True,
+            "status": "owned_runtime_resume",
+            "warnings": [
+                "Resuming this installation's verified container identity; "
+                "no second model is loaded."
+            ],
+        }
+
+    manifest = (
+        read_json(config["integration_manifest"]) if config.get("integration_manifest") else {}
+    )
+    report = inspect_host(config, manifest)
+    if config["mode"] == "private" and report.get("can_attempt") and report.get("selected_gpu"):
+        config["gpu_index"] = report["selected_gpu"]["index"]
+        config["gpu_uuid"] = report["selected_gpu"]["uuid"]
+    return report
+
+
+def install_command(args, runtime, root):
+    from forte_admin.install import install
+    from forte_admin.preparation import bootstrap_administrator, prepare_application
+
+    if args.preview and args.apply:
+        raise ConfigError("Choose --preview or --apply.")
+    changes = read_json(args.config) if args.config else {}
+    for key in (
+        "mode",
+        "integration_manifest",
+        "resources_root",
+        "data_root",
+        "secrets_root",
+        "origin",
+        "bind_address",
+        "https_port",
+        "bridge_port",
+        "proxy_image",
+        "attach_upstream",
+        "tls_cert",
+        "tls_key",
+        "access_mode",
+        "htpasswd_file",
+        "gpu_index",
+        "gpu_uuid",
+        "session_port",
+        "deployment_mode",
+    ):
+        value = getattr(args, key, None)
+        if value is not None:
+            changes[key] = value
+    # Public release defaults are pinned; no fabricated remote image or inference endpoint.
+    if not (root / "installation.json").exists() and not changes.get("integration_manifest"):
+        candidate = (
+            Path(__file__).resolve().parents[3] / "deploy/portable/core-current.candidate.json"
+        )
+        if candidate.is_file():
+            changes["integration_manifest"] = str(candidate)
+    config, _ = plan(root, changes)
+    config["qualification_timeout"] = args.readiness_timeout
+    report = install(
+        config,
+        root,
+        apply=args.apply,
+        runtime=runtime,
+        prepare_resources=prepare_application,
+        resource_options={
+            "online": args.online,
+            "source_dir": args.resource_source,
+            "image_artifact": args.image_artifact,
+            "config": config,
+            "qualification": args.qualification,
+            "build_core": args.build_core,
+            "core_source": args.core_source,
+            "node_image": args.node_image,
+            "installation": root,
+        },
+        host_check=lambda selected: resolve_gpu(selected, runtime, root / "runtime"),
+        bootstrap=lambda selected, installation, preview=False: bootstrap_administrator(
+            selected,
+            installation,
+            username=args.administrator,
+            password_file=args.admin_password_file,
+            preview=preview,
+        ),
+        tls_mode=args.tls_mode,
+        readiness_timeout=args.readiness_timeout,
+        qualification=args.qualification,
+        reporter=lambda event: print(event["phase"] + ": " + event["status"], file=sys.stderr),
+    )
+    output(report)
+    return report.get("exit_code", 0 if report.get("ok") else 2)
+
+
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
@@ -166,6 +336,8 @@ def main(argv=None):
             return client_command(args)
         runtime = portable()
         root = Path(args.installation).expanduser().resolve()
+        if args.command == "install":
+            return install_command(args, runtime, root)
         if args.command == "setup":
             if args.preview and args.apply:
                 raise ConfigError("Choose --preview or --apply.")
@@ -186,6 +358,10 @@ def main(argv=None):
                 "tls_key",
                 "access_mode",
                 "htpasswd_file",
+                "gpu_index",
+                "gpu_uuid",
+                "session_port",
+                "deployment_mode",
             ):
                 if getattr(args, key, None) is not None:
                     changes[key] = getattr(args, key)
@@ -283,11 +459,11 @@ def main(argv=None):
                 }
             )
             return 0
-        if args.command == "up":
-            report = diagnose(config, runtime.prerequisites)
-            if not report["ready_to_install"]:
-                output(report)
-                return 2
+        if args.command in {"up", "qualify"}:
+            resolve_gpu(config, runtime, target)
+            from forte_admin.config import private_write
+
+            private_write(root / "installation.json", json.dumps(config, indent=2) + "\n")
         result = runtime.lifecycle(config, target, args.command)
         output(result)
         if args.command == "up":

@@ -40,6 +40,9 @@ def installation(tmp_path):
     asset.write_text("Synthetic resource, never production model weights")
     (resources / "receipt.json").write_text('{"synthetic":true}')
     (secrets / "core-api.key").write_text("a" * 48)
+    token = secrets / "gateway-token"
+    token.write_text("b" * 48)
+    token.chmod(0o600)
     (secrets / "admin.htpasswd").write_text("admin:synthetic-test-only")
     cert, key = secrets / "cert.pem", secrets / "tls.key"
     # A local synthetic matching cert/key, not a trusted production certificate.
@@ -142,7 +145,11 @@ def test_attach_contains_only_ingress_and_preserves_running_core(installation):
     runtime.render(config, target)
     compose = json.loads((target / "compose.json").read_text())
     assert set(compose["services"]) == {"ingress"}
-    assert "18000" in (target / "nginx.conf").read_text()
+    assert "18002" in (target / "nginx.conf").read_text()
+    assert (
+        json.loads((target / "session-config.json").read_text())["upstream"]
+        == "http://127.0.0.1:18000"
+    )
     command = runtime.compose_command(config, target, "stop")
     assert command[-1] == "stop"
     assert "down" not in command and "-v" not in command
