@@ -94,6 +94,38 @@ export function validJobId(value: string): boolean {
   )
 }
 
+// Session guards bind a principal; this gate additionally binds asynchronous history to a case/request.
+export function createHistoryRequestGate() {
+  let generation = 0
+  let activeCase = ""
+  let controller: AbortController | null = null
+  return {
+    invalidate() {
+      generation++
+      activeCase = ""
+      controller?.abort()
+      controller = null
+    },
+    begin(caseId: string) {
+      controller?.abort()
+      controller = new AbortController()
+      activeCase = caseId
+      const signal = controller.signal
+      const requestGeneration = ++generation
+      return {
+        signal,
+        current: () =>
+          generation === requestGeneration &&
+          activeCase === caseId &&
+          !signal.aborted,
+        abort: () => {
+          if (generation === requestGeneration) controller?.abort()
+        },
+      }
+    },
+  }
+}
+
 export function revisionHead(revisions: ReviewRevision[]): string | null {
   if (!revisions.length) return null
   const parents = new Set(revisions.map((item) => item.parent_revision))
