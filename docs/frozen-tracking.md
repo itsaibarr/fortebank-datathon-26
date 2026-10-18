@@ -1,10 +1,11 @@
 # Frozen participant tracking
 
 `forte.frozen_tracking.analyze_participants(source, work_dir, config, deadline=...)`
-adds recording-local participant proposals to the frozen reasoning runtime. It
+adds recording-local participant proposals to the single production pipeline in
+[report.md](../report.md), before frozen 8B observations and CPU Laya decisions. It
 accepts an original MOV path, the existing `VideoRegistry`, or an iterable of
 `DecodedFrame` objects carrying original PTS, time base, orientation and pixels.
-It does not change the public API, legacy detector, annotation schema or immutable
+It preserves the public API, annotation schema and immutable
 human review sidecars. It never grants an identity, geometry, role or training
 approval.
 
@@ -39,8 +40,10 @@ The manifest retains checkpoint/code/export hashes, source revisions, preprocess
 output semantics, dependency versions and numerical export agreement. The local
 runtime checks the ONNX hash, local path containment, tensor dimensions and
 declared feature output before use. A manifest is provenance, not human approval
-or evidence of tracking quality. Missing actual ReID weights fail explicitly;
-`mode="byte_track"` is the explicit comparison mode, never a silent fallback.
+or evidence of tracking quality. Missing actual ReID weights fail explicitly.
+The callable's `mode="byte_track"` is a local continuity-comparison facility;
+the selected production configuration uses `mode="reid"` with frozen OSNet.
+It is never a silent fallback or a second production pipeline.
 
 The authorized public-only VM export on 18 October 2026 loaded all pretrained
 feature parameters and produced ONNX SHA256

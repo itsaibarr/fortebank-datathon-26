@@ -8,7 +8,7 @@ from pathlib import Path
 from forte import inference
 
 
-def test_warmup_uses_custom_route_and_records_actual_16k_context(tmp_path, monkeypatch):
+def test_warmup_uses_custom_route_and_records_actual_8k_context(tmp_path, monkeypatch):
     calls = []
 
     class SyntheticLocalModel:
@@ -40,14 +40,14 @@ def test_warmup_uses_custom_route_and_records_actual_16k_context(tmp_path, monke
             "--model-name",
             "custom-frozen-model",
             "--max-context-tokens",
-            "16384",
+            "8192",
             "--output",
             str(output),
         ],
     )
     runpy.run_path(str(script), run_name="__main__")
     report = json.loads(output.read_text())
-    assert calls == [("http://127.0.0.1:8001", "custom-frozen-model", 16384, False)]
-    assert report["max_context_tokens"] == 16384
+    assert calls == [("http://127.0.0.1:8001", "custom-frozen-model", 8192, False)]
+    assert report["max_context_tokens"] == 8192
     assert report["model"]["route"] == "custom-frozen-model"
     assert all(call["correct"] for call in report["calls"])

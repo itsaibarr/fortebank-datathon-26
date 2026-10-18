@@ -6,12 +6,12 @@ import httpx
 import pytest
 
 from forte.inference import LocalVLM
-from forte.model_profile import PROFILES, hash_file, verify_snapshot
+from forte.model_profile import SELECTED_MODEL, hash_file, verify_snapshot
 
 
 @pytest.fixture
 def snapshot(tmp_path):
-    spec = PROFILES["frozen27b"]
+    spec = SELECTED_MODEL
     root = tmp_path / spec["revision"]
     root.mkdir()
     payloads = {
@@ -40,24 +40,24 @@ def snapshot(tmp_path):
 
 
 def test_frozen_manifest_requires_all_indexed_shards(snapshot):
-    assert verify_snapshot(snapshot, "frozen27b")["all_weight_hashes_verified"]
+    assert verify_snapshot(snapshot)["all_weight_hashes_verified"]
     path = snapshot / "model-hashes.json"
     manifest = json.loads(path.read_text())
     del manifest["files"]["b.safetensors"]
     path.write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match="shard inventory"):
-        verify_snapshot(snapshot, "frozen27b")
+        verify_snapshot(snapshot)
 
 
 def test_changed_weights_and_text_only_configs_fail(snapshot):
     (snapshot / "a.safetensors").write_bytes(b"changed")
     with pytest.raises(ValueError, match="fingerprint"):
-        verify_snapshot(snapshot, "frozen27b")
+        verify_snapshot(snapshot)
     config = json.loads((snapshot / "config.json").read_text())
     config["language_model_only"] = True
     (snapshot / "config.json").write_text(json.dumps(config))
     with pytest.raises(ValueError, match="multimodal"):
-        verify_snapshot(snapshot, "frozen27b")
+        verify_snapshot(snapshot)
 
 
 def test_config_must_declare_bf16(snapshot):
@@ -65,12 +65,12 @@ def test_config_must_declare_bf16(snapshot):
     config["text_config"]["dtype"] = "float16"
     (snapshot / "config.json").write_text(json.dumps(config))
     with pytest.raises(ValueError, match="BF16"):
-        verify_snapshot(snapshot, "frozen27b")
+        verify_snapshot(snapshot)
 
 
 @pytest.mark.parametrize("suffix,parent", [("/adapter", None), ("", "base-route")])
 def test_readiness_rejects_adapter_routes_even_with_revision_in_path(suffix, parent):
-    revision = PROFILES["baseline8b"]["revision"]
+    revision = SELECTED_MODEL["revision"]
 
     def reply(request):
         return httpx.Response(

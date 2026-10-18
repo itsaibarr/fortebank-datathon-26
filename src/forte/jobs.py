@@ -122,7 +122,7 @@ async def probe(path: Path):
 
 def reasoning_configuration(settings):
     """Validate a private copy before admission or crossing the worker boundary."""
-    from forte.reasoning_pipeline import load_reasoning_config
+    from forte.pipeline import load_reasoning_config
 
     supplied = settings.reasoning_config
     if isinstance(supplied, Path):
@@ -161,21 +161,18 @@ def freeze_reasoning_configuration(directory, settings):
     return configuration
 
 
-async def run_worker(
-    directory, id, deadline, settings, *, reasoning=False, frozen_configuration=None
-):
+async def run_worker(directory, id, deadline, settings, *, frozen_configuration=None):
     extra = [
         "--model-revision",
         settings.model_revision,
         "--max-context-tokens",
         str(settings.max_context_tokens),
     ]
-    if reasoning:
-        configuration = frozen_configuration or freeze_reasoning_configuration(directory, settings)
-        expected = directory / "immutable/request-config.json"
-        if configuration != expected or not stat.S_ISREG(configuration.lstat().st_mode):
-            raise ValueError("The worker requires this job's frozen reasoning configuration")
-        extra += ["--reasoning-config", str(configuration)]
+    configuration = frozen_configuration or freeze_reasoning_configuration(directory, settings)
+    expected = directory / "immutable/request-config.json"
+    if configuration != expected or not stat.S_ISREG(configuration.lstat().st_mode):
+        raise ValueError("The worker requires this job's frozen configuration")
+    extra += ["--reasoning-config", str(configuration), "--laya-url", settings.laya_url]
     await child(
         [
             "--job",

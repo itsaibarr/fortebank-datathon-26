@@ -4,14 +4,23 @@ import httpx
 import pytest
 from pydantic import ValidationError
 
-from forte.contracts import WindowObservation
+from forte.timeline import ScanAnswer
 from forte.worker import failure_diagnostics
 
 
 def test_diagnostics_never_copy_model_text_validation_inputs_or_request_urls():
     secret = "private-scene-canary"
     with pytest.raises(ValidationError) as caught:
-        WindowObservation.model_validate({"complete": True, "events": [], secret: secret})
+        ScanAnswer.model_validate(
+            {
+                "observations": [],
+                "visibility": "visible_samples",
+                "unresolved_questions": [],
+                "reinspection_requests": [],
+                "capacity_limited": False,
+                secret: secret,
+            }
+        )
     details = failure_diagnostics(caught.value)
     assert details["validation_types"] == {"extra_forbidden": 1}
     assert secret not in json.dumps(details)

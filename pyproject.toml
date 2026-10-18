@@ -9,6 +9,8 @@ description = "Local video evidence review for ForteBank Datathon 26"
 requires-python = ">=3.12,<3.13"
 dependencies = [
   "av>=16,<18",
+  "torch>=2.0",
+  "laya @ git+https://github.com/NandhaKishorM/laya.git@d74e8be46ef5241e4ba2b16cd25e896f24f71373",
   "fastapi>=0.115,<1",
   "httpx>=0.28,<1",
   "pillow>=12,<13",
@@ -38,13 +40,6 @@ dev = [
     "pyyaml==6.0.3",
 ]
 
-tracking = [
-    "numpy==2.5.4",
-    "onnxruntime==1.31.0",
-    "pyyaml==6.0.3",
-    "trackers==2.6.1",
-    "supervision==0.31.0",
-]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/forte"]
@@ -62,3 +57,15 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+# Laya is CPU-only; do not pull a second CUDA runtime into the application env.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }]
+
+[tool.hatch.metadata]
+allow-direct-references = true

@@ -5,9 +5,10 @@ import time
 from pathlib import Path
 
 import pytest
+from synthetic_decisions import UnknownDecisions
 from test_video import make_mov
 
-from forte.reasoning_pipeline import analyze_reasoning, export_event_evidence, load_reasoning_config
+from forte.pipeline import analyze_reasoning, export_event_evidence, load_reasoning_config
 from forte.settings import Settings
 
 
@@ -30,7 +31,7 @@ def test_frozen_orchestration_persists_source_evidence_conditions_and_revision(
             "max_calls": 8,
             "max_tokens": 80000,
             "max_reinspections": 1,
-            "legal_max_calls": 1,
+            "condition_max_questions": 12,
         },
     }
     settings = Settings("synthetic-key-long-enough", tmp_path, reasoning_config=config)
@@ -48,20 +49,6 @@ def test_frozen_orchestration_persists_source_evidence_conditions_and_revision(
 
         def request(self, registry, frames, instruction, schema, pixels, tokens):
             assert frames and registry.image_bytes(frames[0], pixels).startswith(b"\xff\xd8")
-            if "plan_id" in schema["properties"]:
-                properties = schema["$defs"]["ConditionResult"]["properties"]
-                return {
-                    "plan_id": schema["properties"]["plan_id"]["const"],
-                    "source_provision_ids": schema["properties"]["source_provision_ids"]["items"][
-                        "enum"
-                    ],
-                    "participant_ids": [],
-                    "conditions": [
-                        {"condition_id": cid, "result": "unknown"}
-                        for cid in properties["condition_id"]["enum"]
-                    ],
-                    "explanation": "Synthetic missing context.",
-                }
             ids = schema["$defs"]["Observation"]["properties"]["start_frame_id"]["enum"]
             return {
                 "observations": [
@@ -91,6 +78,7 @@ def test_frozen_orchestration_persists_source_evidence_conditions_and_revision(
         path,
         tmp_path / "runs",
         settings,
+        decision_backend=UnknownDecisions(),
         backend=SyntheticVisualResponses(),
         tracking=synthetic_tracks,
     )
@@ -129,7 +117,6 @@ def test_frozen_orchestration_persists_source_evidence_conditions_and_revision(
         "tracking",
         "legal_reasoning",
         "legal",
-        "retrieval",
         "annotations",
         "contracts",
         "contracts_v2",
@@ -146,7 +133,7 @@ def test_frozen_orchestration_persists_source_evidence_conditions_and_revision(
         hashes["inference"]
         == __import__("hashlib").sha256(Path(inference.__file__).read_bytes()).hexdigest()
     )
-    assert result["provenance"]["source_code_scope"].endswith("including_optional_paths")
+    assert result["provenance"]["source_code_scope"] == "shipped_application_sources"
     assert json.loads((revision / "result.json").read_text())["provenance"]["source_code"] == hashes
 
 

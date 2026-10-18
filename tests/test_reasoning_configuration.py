@@ -6,9 +6,10 @@ import json
 from pathlib import Path
 
 import pytest
+from synthetic_decisions import UnknownDecisions
 from test_video import make_mov
 
-from forte.reasoning_pipeline import analyze_reasoning, load_reasoning_config
+from forte.pipeline import analyze_reasoning, load_reasoning_config
 from forte.settings import Settings
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -82,13 +83,14 @@ def test_foreign_metadata_fails_before_tracking_or_private_model_call(tmp_path, 
             make_mov(tmp_path / "synthetic.mov"),
             tmp_path / "run",
             settings,
+            decision_backend=UnknownDecisions(),
             backend=ReadyBackend(),
             tracking=forbidden,
         )
 
 
 def test_pipeline_forwards_explicit_bindings_and_preserves_unknown_result(tmp_path, monkeypatch):
-    from forte import frozen_tracking, legal_reasoning, reasoning_pipeline
+    from forte import frozen_tracking, legal_reasoning, pipeline
 
     monkeypatch.setattr(frozen_tracking, "require_outbound_blocked", lambda: {"synthetic": True})
     source = make_mov(tmp_path / "synthetic.mov")
@@ -139,11 +141,12 @@ def test_pipeline_forwards_explicit_bindings_and_preserves_unknown_result(tmp_pa
             return {"status": "incomplete_scoped_schedule", "assessments": [], "metrics": {}}
 
     monkeypatch.setattr(legal_reasoning, "LegalEvidenceService", CaptureService)
-    monkeypatch.setattr(reasoning_pipeline, "scan_recording", timeline)
+    monkeypatch.setattr(pipeline, "scan_recording", timeline)
     result = analyze_reasoning(
         source,
         tmp_path / "run",
         Settings("synthetic-key-long-enough", tmp_path, reasoning_config=cfg),
+        decision_backend=UnknownDecisions(),
         backend=ReadyBackend(),
         tracking=tracks,
     )

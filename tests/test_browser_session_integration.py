@@ -165,8 +165,7 @@ def stack(tmp_path, tls_files, monkeypatch, request):
     )
     app = create_app(
         settings,
-        runner=negative,
-        reasoning_runner=uncertain,
+        runner=uncertain,
         ready=lambda: ready["value"],
     )
     source = make_mov(tmp_path / "synthetic.mov").read_bytes()
@@ -209,7 +208,7 @@ def upload(client, session, source, version=2):
         result = client.get(path)
         assert result.status_code == 200, result.text
         if result.json()["status"] != "processing":
-            assert result.json()["status"] == "done", result.text
+            assert result.json()["status"] == ("done" if version == 2 else "failed"), result.text
             return path, result.json()
         time.sleep(0.01)
     pytest.fail("Synthetic job did not complete")

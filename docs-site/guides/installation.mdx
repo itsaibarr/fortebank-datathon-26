@@ -13,7 +13,7 @@ description: "Install the actual Python package and build the frontend without d
 ## Install the foundation
 
 ```bash
- git clone --branch codex/frozen-inference-completion https://github.com/itsaibarr/fortebank-datathon-26.git
+ git clone --branch main https://github.com/itsaibarr/fortebank-datathon-26.git
  cd fortebank-datathon-26
  git checkout --detach 491ba6127f663de9cf96281124bbdd5fd2596427
  uv sync --frozen --extra inference-tracking
@@ -21,10 +21,8 @@ description: "Install the actual Python package and build the frontend without d
  uv run pytest -q
 ```
 
-These instructions target source `491ba6127f663de9cf96281124bbdd5fd2596427` on
-`codex/frozen-inference-completion`. The documentation publishes from `main`;
-that does not migrate the application runtime on `main` or deploy an inference
-service. Use the pinned source above and record any later working-tree changes. The repository report records source checks; historical experiments retain their own identities. The lockfile installs software dependencies; it does not download model weights, install CUDA or make inference ready.
+These instructions target source `491ba6127f663de9cf96281124bbdd5fd2596427` which is included in `main` after this release merges. The documentation
+publishes from `main`; publication does not deploy an inference service. Use the pinned source above and record any later working-tree changes. The repository report records source checks; historical experiments retain their own identities. The lockfile installs software dependencies; it does not download model weights, install CUDA or make inference ready.
 
 ## Build the interface
 

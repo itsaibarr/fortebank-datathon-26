@@ -14,7 +14,7 @@ tracking_repo="$(cd -- "$(dirname -- "$0")/.." && pwd)"
 cd "$tracking_repo"
 if [[ "$tracking_action" == setup ]]; then
   mkdir -p "$tracking_runtime/public"
-  UV_PROJECT_ENVIRONMENT="$tracking_runtime/.venv" uv sync --frozen --group tracking
+  UV_PROJECT_ENVIRONMENT="$tracking_runtime/.venv" uv sync --frozen --extra inference-tracking
   "$tracking_runtime/.venv/bin/python" - "$tracking_runtime/public" <<'PY'
 import hashlib,json,sys,urllib.request
 from pathlib import Path

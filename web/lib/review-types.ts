@@ -64,6 +64,12 @@ export type ReasoningResult = {
     observations: {
       observation_id: string
       value: string
+      actor_ids?: string[]
+      recipient_ids?: string[]
+      evidence_frame_ids?: string[]
+      contradictory_frame_ids?: string[]
+      visibility?: "visible_samples" | "partly_occluded" | "unclear"
+      uncertainty?: string[]
       decisive_sec?: number
     }[]
     coverage: {

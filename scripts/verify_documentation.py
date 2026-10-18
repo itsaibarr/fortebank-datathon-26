@@ -68,7 +68,7 @@ def main():
                 assert (source.parent / link.split("#")[0]).exists(), link
     checks.append("README and engineering index file links")
 
-    from test_api_v2 import negative, uncertain
+    from test_api_v2 import uncertain
     from test_browser_session_integration import core_http
     from test_video import make_mov
 
@@ -111,7 +111,7 @@ def main():
 
         sample = make_mov(private / "generated.mov")
         settings = Settings(key, private / "cases")
-        app = create_app(settings, runner=negative, reasoning_runner=uncertain, ready=lambda: True)
+        app = create_app(settings, runner=uncertain, ready=lambda: True)
         with core_http(app) as origin:
             env.update(BASE_URL=origin, SAMPLE_FILE=str(sample))
             v1_doc = (site / "api/v1.mdx").read_text()
@@ -134,7 +134,9 @@ def main():
                 if result["status"] != "processing":
                     break
                 time.sleep(0.02)
-            assert result["status"] == "done" and result["verdict"] == "no_violation"
+            assert (
+                result["status"] == "failed" and result["error"]["code"] == "insufficient_evidence"
+            )
             schema = json.loads((ROOT / "contracts/api-contract.json").read_text())
             validator = Draft202012Validator(
                 {"$ref": "#/components/schemas/JobResponse", "components": schema["components"]}
@@ -238,7 +240,16 @@ def main():
         }
         results = private / "evaluation"
         (results / "clip000").mkdir(parents=True)
-        (results / "clip000/result.json").write_text(json.dumps(result))
+        (results / "clip000/result.json").write_text(
+            json.dumps(
+                {
+                    "job_id": result["job_id"],
+                    "status": "done",
+                    "verdict": "no_violation",
+                    "violations": [],
+                }
+            )
+        )
         (results / "clip000/summary.json").write_text(
             json.dumps({"source_sha256": group["recording_id"], "seconds": 1.0})
         )
@@ -248,7 +259,7 @@ def main():
             [
                 "uv",
                 "run",
-                "--frozen",
+                "--no-sync",
                 "forte",
                 "evaluate",
                 "--manifest",

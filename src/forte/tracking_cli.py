@@ -45,7 +45,7 @@ def add_commands(commands):
     prepare.add_argument("--pilot-only", action="store_true")
     prepare.add_argument("--resume", action="store_true")
     prepare.add_argument("--cadence-sec", type=float, default=0.2)
-    for command in ("tracks-check", "tracks-review", "tracks-import-cvat", "tracks-export-targets"):
+    for command in ("tracks-check", "tracks-review", "tracks-import-cvat"):
         parser = commands.add_parser(command, help="Private source-bound review operation")
         parser.add_argument("--directory", type=Path, required=True)
         parser.add_argument("--source", type=Path, required=True)
@@ -57,8 +57,6 @@ def add_commands(commands):
             parser.add_argument("--operations", type=Path, required=True)
         if command == "tracks-import-cvat":
             parser.add_argument("--xml", type=Path, required=True)
-        if command == "tracks-export-targets":
-            parser.add_argument("--output", type=Path, required=True)
 
 
 def private_output(path):
@@ -458,27 +456,6 @@ def run_command(args):
             )
             return 0
         private_output(args.output)
-        if args.command == "tracks-export-targets":
-            targets = training_targets(m, a)
-            if not targets:
-                raise ValueError("No independently reviewed eligible training targets")
-            if args.output.exists():
-                raise FileExistsError("Export exists")
-            write_json(
-                args.output,
-                dict(
-                    schema_version=1,
-                    source_sha256=m.source_sha256,
-                    manifest_sha256=sha256(args.directory / "tracks.json"),
-                    annotation_sha256=m.annotation_sha256,
-                    facts=[f.model_dump(mode="json") for f in targets],
-                    frames=[f.model_dump() for f in m.frames],
-                    segments=[s.model_dump(mode="json") for s in m.segments],
-                    work_areas=[area.model_dump(mode="json") for area in m.work_areas],
-                ),
-            )
-            print(json.dumps(dict(exported_targets=len(targets))))
-            return 0
         if args.output.exists():
             raise FileExistsError("Use a new immutable review revision directory")
         if args.command == "tracks-review":

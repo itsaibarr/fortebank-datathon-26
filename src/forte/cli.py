@@ -36,16 +36,11 @@ def main(argv: list[str] | None = None) -> int:
     scan.add_argument("--deadline-seconds", type=float, default=270)
     snapshot = commands.add_parser("model-check", help="Verify frozen local model asset hashes")
     snapshot.add_argument("--root", type=Path, required=True)
-    snapshot.add_argument("--profile", choices=["baseline8b", "frozen27b"], required=True)
     legal = commands.add_parser("legal-search", help="Verify and search an offline law release")
     legal.add_argument("--release", type=Path, required=True)
     legal.add_argument("--query", required=True)
     legal.add_argument("--act")
     legal.add_argument("--limit", type=int, default=5)
-    legal.add_argument("--dense-index", type=Path)
-    legal.add_argument("--embedding-model", type=Path)
-    legal.add_argument("--embedding-device", default="cpu", choices=["cpu", "cuda"])
-    legal.add_argument("--reranker-model", type=Path)
     annotation = commands.add_parser(
         "annotations-check", help="Validate private visual/legal annotation structure"
     )
@@ -60,14 +55,14 @@ def main(argv: list[str] | None = None) -> int:
         from forte.model_profile import verify_snapshot
 
         try:
-            report = verify_snapshot(args.root, args.profile)
+            report = verify_snapshot(args.root)
         except (OSError, ValueError, KeyError, TypeError) as exc:
             print(f"model-check: verification failed ({type(exc).__name__})", file=sys.stderr)
             return 1
         print(json.dumps(report, ensure_ascii=False, allow_nan=False))
         return 0
     if args.command == "scan":
-        from forte.reasoning_pipeline import analyze_reasoning
+        from forte.pipeline import analyze_reasoning
         from forte.settings import Settings
 
         try:
@@ -131,31 +126,8 @@ def main(argv: list[str] | None = None) -> int:
         from forte.legal import load_release
 
         try:
-            if bool(args.dense_index) != bool(args.embedding_model):
-                raise ValueError("Dense retrieval requires both local index and model")
-            if args.reranker_model and not args.dense_index:
-                raise ValueError("Reranking requires dense retrieval candidates")
             corpus = load_release(args.release)
-            if args.dense_index:
-                from forte.retrieval import DenseIndex, LocalBGE, hybrid_search
-
-                index = DenseIndex.model_validate_json(args.dense_index.read_bytes())
-                encoder = LocalBGE(args.embedding_model, args.embedding_device)
-                hits = hybrid_search(
-                    corpus,
-                    index,
-                    args.query,
-                    encoder.encode([args.query])[0],
-                    act_id=args.act,
-                    limit=20 if args.reranker_model else args.limit,
-                )
-                if args.reranker_model:
-                    from forte.retrieval import LocalReranker, rerank_hits
-
-                    reranker = LocalReranker(args.reranker_model, args.embedding_device)
-                    hits = rerank_hits(args.query, hits, reranker.score, limit=args.limit)
-            else:
-                hits = corpus.search(args.query, act_id=args.act, limit=args.limit)
+            hits = corpus.search(args.query, act_id=args.act, limit=args.limit)
         except (OSError, ValueError, KeyError, TypeError, ImportError) as exc:
             print(f"legal-search: invalid release or query ({type(exc).__name__})", file=sys.stderr)
             return 1

@@ -124,19 +124,25 @@ async def upload_stream(request, settings):
         yield data
 
 
-def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=None):
-    if settings.v1_pipeline not in {"legacy", "reasoning"}:
-        raise ValueError("Select an explicit v1 pipeline: legacy or reasoning")
-    v1_reasoning = settings.v1_pipeline == "reasoning"
-    if v1_reasoning and settings.reasoning_config is None:
-        raise ValueError("The reasoning v1 pipeline requires an explicit reasoning configuration")
+def create_app(settings: Settings, runner=None, ready=None):
     backend = LocalVLM(
         settings.model_url,
         settings.model_name,
         expected_revision=settings.model_revision,
         max_context_tokens=settings.max_context_tokens,
     )
-    ready = ready or backend.ready
+    from forte.laya import LocalLaya
+
+    decision_backend = LocalLaya(settings.laya_url)
+
+    def selected_ready():
+        try:
+            reasoning_configuration(settings)
+            return backend.ready() and decision_backend.ready()
+        except (ValueError, OSError, TypeError, KeyError):
+            return False
+
+    ready = ready or selected_ready
     tasks = set()
     admitted = 0
     lock = asyncio.Lock()
@@ -155,6 +161,7 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                 await asyncio.gather(*tasks, return_exceptions=True)
             store.close()
             backend.client.close()
+            decision_backend.client.close()
 
     app = FastAPI(title="ForteBank video review", lifespan=lifespan)
     app.add_middleware(
@@ -190,29 +197,32 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                 "ownerless_jobs_denied": True,
             }
 
-    async def process(id, deadline, version=1, *, reasoning=False, frozen_configuration=None):
+    async def process(id, deadline, version=1, *, frozen_configuration=None):
         nonlocal admitted
         try:
             remaining = max(0.001, deadline - time.monotonic())
-            selected_runner = reasoning_runner if reasoning else runner
             operation = (
-                selected_runner(store.directory(id), id, deadline)
-                if selected_runner
+                runner(store.directory(id), id, deadline)
+                if runner
                 else run_worker(
                     store.directory(id),
                     id,
                     deadline,
                     settings,
-                    reasoning=reasoning,
                     frozen_configuration=frozen_configuration,
                 )
             )
             result = await asyncio.wait_for(operation, remaining)
             if result.job_id != id:
                 raise ValueError("Job ID mismatch")
-            if version == 1 and reasoning and result.status == "done":
+            if version == 1 and result.status == "done":
                 if not isinstance(result, ReasoningDoneJob):
                     raise ValueError("The reasoning runner returned another result type")
+                if result.result["assessment"] == "insufficient_evidence" and not any(
+                    event.get("assessment") == "supported_violation"
+                    for event in result.result["events"]
+                ):
+                    raise ValueError("insufficient_evidence")
                 from forte.jury_projection import project_reasoning_to_v1
 
                 snapshot = copy.copy(settings)
@@ -288,7 +298,7 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
 
     @app.post("/api/v2/analyze", status_code=202)
     async def analyze_reasoning(request: Request):
-        if settings.reasoning_config is None and reasoning_runner is None:
+        if settings.reasoning_config is None and runner is None:
             raise Problem(
                 503, "reasoning_not_configured", "The local reasoning pipeline is not configured."
             )
@@ -421,9 +431,8 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
         id = uuid4()
         directory = store.directory(id)
         try:
-            reasoning = version == 2 or v1_reasoning
             snapshot = None
-            if reasoning and settings.reasoning_config is not None:
+            if settings.reasoning_config is not None:
                 try:
                     snapshot = copy.copy(settings)
                     snapshot.reasoning_config = await asyncio.to_thread(
@@ -491,7 +500,7 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                 metadata["reasoning_config_sha256"] = hashlib.sha256(
                     frozen.read_bytes()
                 ).hexdigest()
-            if version == 1 and reasoning:
+            if version == 1:
                 metadata["pipeline"] = "reasoning"
                 metadata["projection"] = "forte.jury-v1/1"
             if settings.trusted_gateway_token is not None:
@@ -502,7 +511,6 @@ def create_app(settings: Settings, runner=None, ready=None, reasoning_runner=Non
                     id,
                     started + settings.job_timeout,
                     version,
-                    reasoning=reasoning,
                     frozen_configuration=frozen,
                 )
             )

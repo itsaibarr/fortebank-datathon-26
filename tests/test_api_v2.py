@@ -28,7 +28,9 @@ def settings(tmp_path):
 
 
 async def negative(directory, job_id, deadline):
-    return DoneJob(job_id=job_id, verdict="no_violation", violations=[])
+    from test_api_v2 import uncertain
+
+    return await uncertain(directory, job_id, deadline)
 
 
 async def uncertain(directory, job_id, deadline):
@@ -156,7 +158,7 @@ def test_v2_uncertainty_is_success_and_v1_contract_and_job_namespaces_remain_sep
     settings, tmp_path
 ):
     source = make_mov(tmp_path / "source.mov").read_bytes()
-    app = create_app(settings, runner=negative, reasoning_runner=uncertain, ready=lambda: True)
+    app = create_app(settings, runner=uncertain, ready=lambda: True)
     with TestClient(app) as client:
         v2 = submit(client, source)
         assert v2["status"] == "done" and v2["api_version"] == 2
@@ -165,12 +167,8 @@ def test_v2_uncertainty_is_success_and_v1_contract_and_job_namespaces_remain_sep
         assert "error" not in v2 and "verdict" not in v2
         assert client.get("/api/v1/jobs/" + v2["job_id"], headers=HEADERS).status_code == 404
         v1 = submit(client, source, version=1)
-        assert v1 == {
-            "job_id": v1["job_id"],
-            "status": "done",
-            "verdict": "no_violation",
-            "violations": [],
-        }
+        assert v1["status"] == "failed"
+        assert v1["error"]["code"] == "insufficient_evidence"
         assert client.get("/api/v2/jobs/" + v1["job_id"], headers=HEADERS).status_code == 404
         assert client.get("/openapi.json").json() == json.loads(
             Path("contracts/api-contract.json").read_text()
@@ -178,7 +176,7 @@ def test_v2_uncertainty_is_success_and_v1_contract_and_job_namespaces_remain_sep
 
 
 def test_all_private_v2_resources_require_auth_before_validation_or_disclosure(settings):
-    app = create_app(settings, reasoning_runner=uncertain, ready=lambda: True)
+    app = create_app(settings, runner=uncertain, ready=lambda: True)
     with TestClient(app) as client:
         for suffix in ["", "/source", "/evidence/f000000", "/corrections"]:
             assert client.get("/api/v2/jobs/not-a-uuid" + suffix).status_code == 401
@@ -189,7 +187,7 @@ def test_all_private_v2_resources_require_auth_before_validation_or_disclosure(s
 
 def test_authenticated_source_and_source_evidence_match_their_recorded_hashes(settings, tmp_path):
     source = make_mov(tmp_path / "source.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=uncertain, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=uncertain, ready=lambda: True)) as client:
         completed = submit(client, source)
         prefix = "/api/v2/jobs/" + completed["job_id"]
         result = completed["result"]
@@ -213,7 +211,7 @@ def test_authenticated_source_and_source_evidence_match_their_recorded_hashes(se
 
 def test_evidence_symlink_cannot_escape_its_private_revision(settings, tmp_path):
     source = make_mov(tmp_path / "source.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=uncertain, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=uncertain, ready=lambda: True)) as client:
         completed = submit(client, source)
         result = completed["result"]
         item = result["events"][0]["evidence"][0]
@@ -230,7 +228,7 @@ def test_evidence_symlink_cannot_escape_its_private_revision(settings, tmp_path)
 
 def test_changed_original_media_is_never_served_as_the_analyzed_recording(settings, tmp_path):
     source = make_mov(tmp_path / "source.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=uncertain, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=uncertain, ready=lambda: True)) as client:
         completed = submit(client, source)
         original = settings.private_root / completed["job_id"] / "input.mov"
         original.chmod(0o600)
@@ -245,7 +243,7 @@ def test_corrections_preserve_immutable_result_and_reject_wrong_source_target_an
     settings, tmp_path
 ):
     source = make_mov(tmp_path / "source.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=uncertain, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=uncertain, ready=lambda: True)) as client:
         completed = submit(client, source)
         prefix = "/api/v2/jobs/" + completed["job_id"]
         result = completed["result"]
@@ -307,7 +305,11 @@ def test_corrections_preserve_immutable_result_and_reject_wrong_source_target_an
 
 def test_v2_runner_cannot_finish_with_a_v1_binary_result(settings, tmp_path):
     source = make_mov(tmp_path / "source.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=negative, ready=lambda: True)) as client:
+
+    async def wrong_binary(directory, job_id, deadline):
+        return DoneJob(job_id=job_id, verdict="no_violation", violations=[])
+
+    with TestClient(create_app(settings, runner=wrong_binary, ready=lambda: True)) as client:
         completed = submit(client, source)
         assert completed["status"] == "failed"
         assert completed["error"]["code"] == "analysis_failed"
@@ -315,7 +317,7 @@ def test_v2_runner_cannot_finish_with_a_v1_binary_result(settings, tmp_path):
 
 def test_correction_parent_cannot_be_reused_after_immutable_base_result_changes(settings, tmp_path):
     source = make_mov(tmp_path / "source.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=uncertain, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=uncertain, ready=lambda: True)) as client:
         completed = submit(client, source)
         prefix = "/api/v2/jobs/" + completed["job_id"]
         first = client.post(
@@ -348,7 +350,7 @@ def test_v2_contract_rejects_artifact_traversal_mixed_sources_and_outside_source
     settings, tmp_path, field, value
 ):
     source = make_mov(tmp_path / "source.mov").read_bytes()
-    with TestClient(create_app(settings, reasoning_runner=uncertain, ready=lambda: True)) as client:
+    with TestClient(create_app(settings, runner=uncertain, ready=lambda: True)) as client:
         completed = submit(client, source)
     result = completed["result"]
     if field == "revision":

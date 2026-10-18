@@ -22,7 +22,7 @@ from test_video import make_mov
 
 from forte.jury_projection import project_reasoning_to_v1
 from forte.legal_reasoning import LegalEvidenceService
-from forte.reasoning_pipeline import export_event_evidence, load_reasoning_config
+from forte.pipeline import export_event_evidence, load_reasoning_config
 from forte.settings import Settings
 from forte.timeline import merge_observations, source_frame_table, write_private
 from forte.video import decode_video, make_windows
@@ -190,9 +190,7 @@ def _fixture(
             "capacity_limited": False,
         }
         for phase, start, end in (
-            [("overview", 0, registry.duration)]
-            + [("window", start, end) for start, end in make_windows(registry.duration, 16, 12)]
-            + [("reconcile", 0, registry.duration)]
+            [("window", start, end) for start, end in make_windows(registry.duration, 16, 12)]
         )
     ]
     scheduled = [list(interval) for interval in make_windows(registry.duration, 16, 12)]
@@ -225,36 +223,18 @@ def _fixture(
     calls = []
 
     class SyntheticConditions:
-        def request(self, supplied_registry, frames, prompt, schema, pixels, tokens):
-            assert supplied_registry is registry and frames
+        def propose(self, packet, questions, *, deadline):
             index = len(calls)
             calls.append(index)
-            participant = f"p{index % people}"
-            observation = f"obs-{index % people}"
-            used = [registry.frames[2].frame_id, observation]
-            if role:
-                used.append("obs-role")
-            if metadata:
-                used.append("synthetic-metadata")
-            if extra_unbound_support:
-                used.append(registry.frames[1].frame_id)
             return {
-                "plan_id": schema["properties"]["plan_id"]["const"],
-                "source_provision_ids": schema["properties"]["source_provision_ids"]["items"][
-                    "enum"
-                ],
-                "participant_ids": [participant],
-                "conditions": [
-                    {
-                        "condition_id": condition_key,
-                        "result": state,
-                        "participant_ids": [participant],
-                        "supporting_evidence_ids": used if state == "satisfied" else [],
-                        "contradictory_evidence_ids": used if state == "contradicted" else [],
-                        "unresolved_dependencies": [],
-                    }
-                ],
-                "explanation": "Synthetic condition reply; not real model or legal quality.",
+                key: {
+                    "choice": state,
+                    "probabilities": {
+                        label: float(label == state)
+                        for label in ("satisfied", "contradicted", "unknown")
+                    },
+                }
+                for key in questions
             }
 
     legal = service.evaluate_timeline(
@@ -265,7 +245,7 @@ def _fixture(
         time.monotonic() + 30,
         event_date=law.get("event_date"),
         operation_context=law["operation_context"],
-        max_calls=cards if max_calls is None else max_calls,
+        max_calls=cards * people if max_calls is None else max_calls,
         table=table,
         metadata_evidence=law["metadata_evidence"],
     )
@@ -355,7 +335,8 @@ def test_supported_assessment_role_and_action_event_links_do_not_duplicate(tmp_p
 def test_multiple_independent_people_and_findings_are_preserved(tmp_path):
     fixture = _fixture(tmp_path, people=2, cards=2)
     result = _project(fixture)
-    assert [v.type for v in result.violations] == ["synthetic_rule_0", "synthetic_rule_1"]
+    assert len(result.violations) == 4
+    assert {v.type for v in result.violations} == {"synthetic_rule_0", "synthetic_rule_1"}
     assert "participant 0" in result.violations[0].description
     assert "participant 1" in result.violations[1].description
 
@@ -429,7 +410,8 @@ def test_extra_condition_frames_without_bound_observation_cannot_disappear(tmp_p
     assessment = fixture.report["legal"]["assessments"][0]
     assert assessment["assessment"] == "supported_violation"
     assert fixture.registry.frames[1].frame_id in assessment["evidence_frame_ids"]
-    assert "obs-unbound-context" not in assessment["observation_ids"]
+    assert "obs-unbound-context" in assessment["observation_ids"]
+    # Four required source frames exceed the three-JPEG contract.
     with pytest.raises(ValueError, match="^insufficient_evidence$"):
         _project(fixture)
 
@@ -451,7 +433,7 @@ def test_duplicate_legal_assessment_is_integrity_failure(tmp_path):
         "unclear",
         "pending",
         "capacity",
-        "missing_reconcile",
+        "missing_window",
         "role_conflict",
         "identity_gap",
         "question",
@@ -472,7 +454,7 @@ def test_clearance_needs_every_subject_and_actual_complete_schedule(tmp_path, bl
         timeline["coverage"]["pending_reinspections"] = 1
     elif blocker == "capacity":
         timeline["coverage"]["windows"][0]["capacity_limited"] = True
-    elif blocker == "missing_reconcile":
+    elif blocker == "missing_window":
         timeline["coverage"]["windows"].pop()
     elif blocker == "role_conflict":
         timeline["role_conflicts"] = [{"status": "unresolved"}]

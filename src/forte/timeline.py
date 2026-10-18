@@ -117,6 +117,7 @@ class Observation(StrictModel):
     recipient_ids: list[str] = Field(max_length=4)
     evidence_frame_ids: list[str] = Field(min_length=1, max_length=3)
     visibility: Literal["visible_samples", "partly_occluded", "unclear"]
+    contradictory_frame_ids: list[str] = Field(default_factory=list, max_length=3)
     uncertainty: list[ShortNote] = Field(max_length=2)
     continues_before_window: bool
     continues_after_window: bool
@@ -144,7 +145,11 @@ def validate_answer(value, frames, participants, frame_boxes) -> ScanAnswer:
     for item in [*answer.observations, *answer.reinspection_requests]:
         references = {item.start_frame_id, item.end_frame_id}
         if isinstance(item, Observation):
-            references |= {item.decisive_frame_id, *item.evidence_frame_ids}
+            references |= {
+                item.decisive_frame_id,
+                *item.evidence_frame_ids,
+                *item.contradictory_frame_ids,
+            }
             actor_ids = {*item.actor_ids, *item.recipient_ids}
         else:
             actor_ids = set(item.actor_ids)
@@ -582,6 +587,10 @@ def merge_observations(observations):
             matching["evidence_frame_ids"] = sorted(
                 set(matching["evidence_frame_ids"]) | set(obs["evidence_frame_ids"])
             )
+            matching["contradictory_frame_ids"] = sorted(
+                set(matching.get("contradictory_frame_ids", []))
+                | set(obs.get("contradictory_frame_ids", []))
+            )
             matching["uncertainty"] = list(
                 dict.fromkeys([*matching["uncertainty"], *obs["uncertainty"]])
             )
@@ -701,12 +710,11 @@ def scan_recording(registry, participants, backend, output, deadline, bounds=Non
             "when inspecting crops. Use only supplied participant IDs; use empty actor lists "
             "when ownership is unresolved. Preserve earlier observation IDs and evidence in "
             "context; disagreements become uncertainty, never silently override corrections. "
-            "Overview identifies context/boundaries, window observes actions, reinspect answers "
-            "the question, reconcile checks chronology and counterevidence. Return the exact "
+            "Each window observes actions and context; reinspect only the specified ambiguity. "
+            "Preserve counterevidence in contradictory_frame_ids. Return the exact "
             "JSON schema, concisely: at most two observations, each under 25 words; "
             "at most two uncertainty notes under 12 words and one short reinspection request. "
-            "For overview, prefer one scene/operation-context observation; later windows inspect "
-            "detailed actions. Set capacity_limited=true if this pass omits requested observations "
+            "Set capacity_limited=true if this pass omits requested observations "
             "because of the output cap; preserve unresolved candidates in short questions. "
             "Use empty lists when there is nothing supported to report. JSON only; no narrative. "
             "JSON schema. Context: " + json.dumps(context, ensure_ascii=False)
@@ -717,8 +725,9 @@ def scan_recording(registry, participants, backend, output, deadline, bounds=Non
             for key in ("start_frame_id", "end_frame_id", "decisive_frame_id"):
                 if key in props:
                     props[key]["enum"] = ids
-            if "evidence_frame_ids" in props:
-                props["evidence_frame_ids"]["items"]["enum"] = ids
+            for evidence_key in ("evidence_frame_ids", "contradictory_frame_ids"):
+                if evidence_key in props:
+                    props[evidence_key]["items"]["enum"] = ids
             for key in ("actor_ids", "recipient_ids"):
                 if key in props:
                     if supplied:
@@ -736,7 +745,7 @@ def scan_recording(registry, participants, backend, output, deadline, bounds=Non
         bounds.calls += 1
         try:
             value = backend.request(
-                tools, refs, instruction, schema, 393216 if crops else 196608, 1200
+                tools, refs, instruction, schema, 393216 if crops else 196608, 768
             )
             write_private(output / f"reply-{bounds.calls:03d}.json", value)
             answer = validate_answer(value, frames, supplied, boxes)
@@ -804,51 +813,29 @@ def scan_recording(registry, participants, backend, output, deadline, bounds=Non
         return answer
 
     try:
-        overview = tools.get_clip(0, registry.duration, max_frames=16)
-        invoke("overview", 0, registry.duration, overview)
         for start, end in make_windows(registry.duration, 16, 12):
             invoke("window", start, end, tools.get_clip(start, end, fps=1, max_frames=16))
-        # Both requested ambiguity and decisive observations receive bounded denser
-        # inspection. Static/slow scenes are still covered by the complete schedule.
-        for obs in tools.observations.copy():
-            if obs["kind"] in {"action", "interaction"}:
-                center = obs["decisive_sec"]
-                pending.append(
-                    {
-                        "start_sec": max(0, center - 2),
-                        "end_sec": min(registry.duration, center + 2),
-                        "question": "Verify actor, action boundaries and counterevidence.",
-                    }
-                )
-        seen = set()
+        seen = []
         while pending and bounds.reinspections < bounds.max_reinspections:
             request = pending.pop(0)
             start, end = request["start_sec"], request["end_sec"]
-            start, end = max(0, start - 0.5), min(registry.duration, end + 0.5)
-            key = (round(start, 2), round(end, 2))
-            if key in seen:
+            start = max(0, start - 0.5)
+            end = min(registry.duration, end + 0.5, start + 8)
+            if any(max(start, a) < min(end, b) or (start, end) == (a, b) for a, b in seen):
+                questions.append(
+                    "A repeated visual dependency remains unresolved after its bounded recheck."
+                )
                 continue
-            seen.add(key)
+            seen.append((start, end))
             bounds.reinspections += 1
             invoke(
                 "reinspect",
                 start,
                 end,
-                tools.get_clip(start, end, fps=4, max_frames=8),
+                tools.get_clip(start, end, fps=2, max_frames=16),
                 crops=True,
                 question=request["question"],
             )
-        # Final actual visual pass includes overview and decisive source pointers.
-        mandatory = list(dict.fromkeys(o["decisive_frame_id"] for o in tools.observations))[:8]
-        remaining = [f.frame_id for f in overview if f.frame_id not in mandatory]
-        reconcile_frames = tools.get_frames(mandatory + remaining[: 16 - len(mandatory)])
-        invoke(
-            "reconcile",
-            0,
-            registry.duration,
-            reconcile_frames,
-            question="Check chronology, contradictions and operation endpoints.",
-        )
     except TimeoutError:
         status = "budget_exhausted"
     except Exception:

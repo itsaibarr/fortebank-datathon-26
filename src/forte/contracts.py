@@ -12,7 +12,6 @@ from pydantic import (
     ConfigDict,
     Field,
     FiniteFloat,
-    ValidationInfo,
     field_validator,
     model_validator,
 )
@@ -85,57 +84,3 @@ class DoneJob(AcceptedJob):
 class FailedJob(AcceptedJob):
     status: Literal["failed"] = "failed"
     error: ErrorDetail
-
-
-class EventObservation(StrictModel):
-    rule_id: str = Field(min_length=1, max_length=80)
-    start_id: str
-    end_id: str
-    decisive_id: str
-    evidence_ids: list[str] = Field(min_length=1, max_length=3)
-    visible_facts: str = Field(min_length=1, max_length=500)
-    preconditions: list[str] = Field(max_length=12)
-
-
-class WindowObservation(StrictModel):
-    complete: bool
-    events: list[EventObservation] = Field(max_length=12)
-
-    @model_validator(mode="after")
-    def supplied_references(self, info: ValidationInfo) -> Self:
-        if info.context:
-            for event in self.events:
-                ids = {event.start_id, event.end_id, event.decisive_id, *event.evidence_ids}
-                if not ids <= info.context["frame_ids"]:
-                    raise ValueError("Model referenced an unsupplied frame")
-                if event.rule_id not in info.context["rule_ids"]:
-                    raise ValueError("Model referenced an unapproved rule")
-        return self
-
-
-class ActorGrounding(StrictModel):
-    role: Literal["cashier", "customer", "unclear"]
-    role_evidence_ids: list[str] = Field(max_length=3)
-    continuity_supported: bool
-
-    def departure_verdict(
-        self, frame_times: dict[str, float], decisive_id: str
-    ) -> Literal["supported", "unsupported", "unclear"]:
-        ids = set(self.role_evidence_ids)
-        if (
-            self.role == "unclear"
-            or not self.continuity_supported
-            or not ids
-            or not ids <= frame_times.keys()
-            or decisive_id not in frame_times
-            or not any(frame_times[id] < frame_times[decisive_id] for id in ids)
-        ):
-            return "unclear"
-        return "supported" if self.role == "cashier" else "unsupported"
-
-
-class EvidenceCheck(StrictModel):
-    verdict: Literal["supported", "unsupported", "unclear"]
-    evidence_ids: list[str] = Field(max_length=3)
-    preconditions: list[str] = Field(max_length=12)
-    actor: ActorGrounding | None = None

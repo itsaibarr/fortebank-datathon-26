@@ -1,21 +1,8 @@
-# Doc index — generated 2026-10-17, 20 files
-- AGENTS.md — # Agent instructions
-- CLAUDE.md — # ForteBank Datathon 26 orientation
-- README.md — # ForteBank Datathon 26
-- SPEC.md — # ForteBank Datathon 26 product specification
-- docs/backend.md — # Run the backend and verify a private result
-- docs/case-requirements.md — # The plan covers the case but the product still has to pass its checks
-- docs/development-rehearsal.md — # Development rehearsal: mechanics work, detection quality does not pass
-- docs/domain-research.md — # Research: visual grounding, Kazakhstan rules, and the next model experiment
-- docs/gpu-runbook.md — # Verified GPU setup and repeatable model check
-- docs/handoffs/01-visual-labeling-and-person-tracking.md — # Handoff prompt: correct visual labels and person tracking
-- docs/handoffs/02-visual-learning-and-complete-clip-scan.md — # Handoff prompt: visual learning and complete-clip scanning
-- docs/legal-and-annotation.md — # Local law retrieval and two-layer review
-- docs/model-size-diagnostic.md — # Development role diagnostic, 17 October 2026
-- docs/person-tracking.md — # Private person tracking and visual review
-- docs/role-action-training-research.md — # Proposal: train actor-bound facts, then scan the complete recording
-- docs/setup-sources.md — # Setup source checks on 17 October 2026
-- legal/README.md — # Offline official-law releases
-- tasks/plan.md — # Implementation plan for ForteBank Datathon 26
-- tasks/todo.md — # ForteBank Datathon 26 execution checklist
-- web/README.md — # Frontend work starts after the backend works
+# Current document index
+
+Architecture: ../report.md. Runtime: ../docs/backend.md. Acceptance: ../SPEC.md.
+Tasks: ../tasks/todo.md. Annotation: ../docs/person-tracking.md.
+
+Files under verify/ are unchanged historical receipts for their original source,
+models and runs. They do not verify the selected 8B/Laya implementation or grant
+resource/deployment authorization. Superseded active guides are recoverable in Git.
