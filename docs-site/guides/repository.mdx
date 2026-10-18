@@ -1,36 +1,34 @@
 ---
 title: "Repository and evidence index"
-description: "A navigable codebase with historical evidence retained separately from current instructions."
+description: "Current source references and explicitly historical verification receipts."
 ---
+
+This index describes the pinned 8B/Laya source named in [installation](/guides/installation).
+The documentation branch and application runtime release remain separate.
 
 | Location | Purpose |
 | --- | --- |
-| `src/forte/` | API, workers, decoding, tracking, frozen reasoning, legal retrieval and evaluation. |
-| `web/` | Approved Next.js/TypeScript review interface. |
-| `contracts/` | Exact v1/v2, browser session, model asset and historical runtime identities. |
-| `configs/` | Explicit baseline, frozen reasoning and tracking configuration examples. |
-| `legal/` | Public official-source snapshots, coverage and draft rule cards. |
-| `tests/` | Synthetic software/contract/evidence/security checks. |
-| `scripts/` | Runtime checks, public preparation, private rehearsal and docs verification. |
-| `tools/forte-session/` | Existing local account/session gateway implementation. |
-| `deploy/portable/`, `tools/forte-admin/` | Deployment components; newer integration tooling and acceptance are maintained in their designated lane. |
-| `docs-site/` | Mintlify jury guides and API reference. |
-| `docs/` | Engineering runbooks and research history; use its index. |
-| `.context/verify/` | Preserved verification receipts; never presented as accuracy by test count alone. |
-| `tasks/`, `SPEC.md` | Scope and honest implementation/acceptance tracking. |
+| `report.md` | Sole architecture reference and implementation/verification status. |
+| `src/forte/pipeline.py`, `worker.py` | One inference implementation and production dispatch. |
+| `src/forte/timeline.py` | Chronological visual facts and bounded same-model rechecks. |
+| `src/forte/laya.py`, `laya_service.py` | Mandatory text-only CPU choice boundary. |
+| `src/forte/legal_reasoning.py` | Local rules and deterministic condition evaluation. |
+| `web/` | Approved Next.js/TypeScript review interface and generated-data demo. |
+| `contracts/` | Exact API/browser contracts. |
+| `configs/frozen-inference.json` | Selected inference example; no model selector. |
+| `legal/` | Official-source snapshots, scoped coverage and draft rule cards. |
+| `tests/` | Synthetic mechanics, evidence, privacy and security checks. |
+| `Dockerfile`, `scripts/container-entrypoint.sh` | Retained application startup. |
+| `deploy/portable/`, `tools/forte-session/` | Offline bridge and existing ownership/session boundary. |
+| `docs-site/` | Mintlify documentation, contract copies and generated examples. |
+| `docs/README.md` | Focused engineering guide index. |
+| `.context/verify/`, `web/qa/` | Historical receipts with their original source/runtime identities. |
+| `tasks/todo.md`, `SPEC.md` | Remaining work and acceptance requirements. |
 
-## Cleanup policy and actions
+## Cleanup and evidence
 
-The audit found no tracked private datasets, model weights, image dumps, temporary log files or Python cache binaries. Generated `web/out`, `.next`, environments and private runs are ignored. Verification receipts, legal snapshots, smoke scripts, model manifests and active deployment work remain because build/test/reproduction or historical claims depend on them.
+Superseded pipelines, selectors, training infrastructure, dense/reranker paths and redundant provisioning/install frameworks were removed from the active source. Git history preserves tracked rollback. Unique original uncommitted work was preserved outside the checkout before removal; it is not a published artifact. See `docs/cleanup-inventory.md` and `report.md` for counts and scope.
 
-The superseded frontend setup note was moved to `docs/archive/frontend-setup-20261017.md`, with the referring link updated. It has no runtime/build/test import. The old note is historical: the approved UI stack is already implemented. No research or evaluation evidence was discarded because of age.
+Retained historical receipts are unchanged and do not certify the current architecture. Deleted historical narrative and model manifests can be inspected through Git history when needed; they are not current runtime instructions.
 
-## Evidence to inspect
-
-- Current source behavior: code, contracts and synthetic tests at the named application commit.
-- Historical frozen GPU results: `docs/frozen-inference.md` and the immutable runtime manifest.
-- Exploratory failures: `docs/development-rehearsal.md` and matching `.context/verify/` receipts.
-- Legal scope: `legal/README.md`, coverage inventory and draft cards.
-- Review/privacy provenance: `docs/person-tracking.md`, browser-session plan and immutable correction contracts.
-
-Runtime sessions, private review packets, full recordings, credentials and derived sensitive outputs stay outside Git and published Mintlify content.
+Current legal coverage is documented in `legal/README.md`. `docs/person-tracking.md` and the browser-session guide define independent review/privacy boundaries. Private recordings, reviews, credentials and derived sensitive outputs stay outside Git and published documentation.

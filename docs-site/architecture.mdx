@@ -1,46 +1,51 @@
 ---
 title: "Architecture"
-description: "One controlled inference runtime, source-bound evidence and a separate browser access boundary."
+description: "One frozen visual model, mandatory CPU condition proposals and deterministic decisions."
 ---
+
+These guides describe source `491ba6127f663de9cf96281124bbdd5fd2596427` on
+`codex/frozen-inference-completion`, pinned in [installation](/guides/installation).
+Its `report.md` is the sole architecture reference. Documentation publishes from
+`main` separately from the application source; this release deploys no inference
+service. Both API versions adapt one implementation in `src/forte/pipeline.py`; `worker.py` always invokes it.
 
 ```mermaid
 flowchart TD
-  A[Browser reviewer] --> S[HTTPS session gateway]
-  C[Operator or jury API client] --> K[Key-authenticated API surface]
-  S --> F[FastAPI admission and ownership]
-  K --> F
-  F --> J[Atomic private filesystem jobs]
-  J --> W[Bounded worker]
-  W --> V[PyAV: original PTS and source ledger]
-  V --> T[YOLOX / ByteTrack / frozen OSNet proposals]
-  T --> M[Resident loopback vision model]
-  M --> L[Timeline and local legal conditions]
-  L --> E[Original JPEG evidence and explicit assessment]
-  E --> J
-  J --> R[Review and immutable corrections]
+  A[Authenticated API and ownership] --> J[Atomic private jobs]
+  J --> V[Original PTS decoding and source ledger]
+  V --> T[Detector / tracker / frozen ReID proposals]
+  T --> Q[Frozen Qwen3-VL-8B: actor-bound visual facts]
+  Q --> B[Local BM25 / exact official rules]
+  B --> L[Mandatory local CPU Laya: condition proposals]
+  L --> D[Deterministic applicability / evidence / verdicts]
+  D --> E[Original JPEGs / templates / v1 and v2 adapters]
+  D --> R[Specific bounded same-8B visual recheck]
+  R --> Q
 ```
 
-The canonical application uses Python 3.12, FastAPI/Uvicorn, Pydantic, PyAV and a resident vLLM model. The interface is a Next.js 16.4 static export with TypeScript, React, Tailwind, the approved shadcn preset and Lucide. No Redis, Celery or external AI inference endpoint is part of this architecture.
+## Selected models
+
+| Component | Pinned identity | Boundary |
+| --- | --- | --- |
+| Vision | `Qwen/Qwen3-VL-8B-Instruct`, revision `0c351dd01ed87e9c1b53cbc748cba10e6187ff3b` | Frozen BF16, vLLM, 8,192 total tokens; visual facts rather than legal verdicts. |
+| Conditions | `convaiinnovations/laya-multilingual`, revision `1720e3e3357cfe1e281542e223f8273b0890ca34` | Resident local CPU FP32; text-only `satisfied`, `contradicted`, `unknown` choices. |
+
+Laya's runtime is pinned to upstream commit `d74e8be46ef5241e4ba2b16cd25e896f24f71373`. Its tokenizer counts instructions, options and fact state against the shipped 1,024-token limit. Required counterevidence is preserved; packets that cannot fit are refused instead of truncated. Independent questions use batches of at most four rows. Missing or unhealthy Laya fails readiness. Actual checkpoint/runtime compatibility remains unverified.
 
 ## Evidence before conclusions
 
-The decoder preserves original presentation timestamps and time bases. Model responses refer to supplied frame/participant identifiers; application code derives timestamps and checks evidence bindings. A detector box, tracker association, participant identity, role hypothesis and human correction are independent origins. A mirror view does not create another physical person.
+Chronological overlapping 16-second windows start every 12 seconds, using up to sixteen images at approximately 1 FPS. Code merges facts and role history. A specific unresolved visual dependency permits a deduplicated recheck with the same 8B model, within the job-wide bound and absolute deadline. Skipped windows and output overflow remain incomplete work.
 
-## Two contracts, explicit dispatch
+The decoder preserves original PTS, time bases, orientation, frame identity and reversible crops. Actor/recipient references, counterevidence, unknown identity and reflection ownership remain explicit. Detector boxes, tracker associations, ReID proposals, model observations and human corrections have independent origins and review scopes.
 
-V1 preserves the required binary result schema. Default `FORTE_V1_PIPELINE=legacy` retains the original path. Explicit `reasoning`, with a reasoning configuration, projects only source-verified supported outcomes into that same schema. Insufficient evidence becomes a terminal v1 failure. V2 exposes execution and assessment independently; its jobs are not readable through v1.
+Local lexical/exact retrieval provides official clauses and rule cards. Code evaluates polarity, applicability, prerequisites, exceptions, metadata and source evidence. Draft cards remain draft. An omission needs a complete visible opportunity; sparse sampling cannot establish absence. Code constructs explanations and citations from templates and exports one to three original JPEGs per reported event.
 
-## Model profiles
+## Two adapters, one pipeline
 
-| Profile | Pinned model | Context | Precision |
-| --- | --- | --- | --- |
-| `baseline8b` | Qwen/Qwen3-VL-8B-Instruct, revision `0c351dd01ed87e9c1b53cbc748cba10e6187ff3b` | 8,192 | BF16 |
-| `frozen27b` | Qwen/Qwen3.8-27B, revision `1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0` | 16,384 | BF16 |
+V1 keeps the exact jury binary contract. Insufficient evidence becomes terminal failure, never a successful negative. V2 exposes execution, assessment and human-review state separately. A supported event may survive unrelated incomplete work; a clean negative needs adequate scope and coverage.
 
-One selected model is resident. A legacy-pipeline run on the 27B model is not an 8B/27B comparison. No adapter, quantization or weight adaptation is selected.
+## Runtime and access
 
-## Trade-offs
+The application uses Python 3.12, FastAPI, PyAV, one application container, local vLLM and resident CPU Laya. Atomic filesystem jobs require one API process per job root. One visual queue bounds GPU calls. The approved UI remains Next.js/TypeScript, Tailwind, shadcn and Lucide. Its HTTPS gateway preserves principal ownership, protected cookies and CSRF.
 
-Atomic files keep the deployment small but require a single API process per job root. Strict source/ownership checks reject ambiguous history. Bounded sampling and one model sequence constrain throughput and coverage. Local legal retrieval preserves exact clauses but cannot establish unknown historical applicability or approve draft interpretations.
-
-The [Vercel demo](/guides/review) is a separate static build with generated assets and a browser-only simulator. It does not host this inference runtime.
+The [public generated-data demo](/guides/review) does not host this runtime. This Mintlify documentation deployment does not deploy the application. Real-model quality, memory, latency and deployment acceptance remain open.

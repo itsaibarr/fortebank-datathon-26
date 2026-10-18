@@ -17,6 +17,6 @@ description: "Distinguish admission errors, processing failures and semantic abs
 | 502 | Access component cannot safely verify/forward upstream. | Check the actual core/gateway connection and framing. |
 | 503 | Model/configuration/access readiness unavailable. | Restore readiness; never substitute a cached clean result. |
 
-Application errors use `error.code` and `error.message`; a failed job also has a terminal job ID and status. Model timeouts and insufficient evidence are not the same state. In v2, `done` with `insufficient_evidence` is explicitly reviewable abstention. In v1 reasoning projection it cannot be represented as a clean binary negative.
+Application errors use `error.code` and `error.message`; a failed job also has a terminal job ID and status. Model timeouts and insufficient evidence are not the same state. In v2, `done` with `insufficient_evidence` is explicitly reviewable abstention. In v1 it cannot be represented as a clean binary negative.
 
 The Vercel demo's direct network `/api` and `/auth` paths return 503 because no inference/auth server is connected. Its labeled UI simulations happen in the browser and are not evidence of a deployed API.

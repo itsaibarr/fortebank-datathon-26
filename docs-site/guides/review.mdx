@@ -31,3 +31,7 @@ The public generated workflow is browser-checked for seeking, JPEG loading, corr
 ## Troubleshooting
 
 If a real upload is unavailable, recheck readiness and the exact HTTPS origin. If the source or frame fails integrity checks, do not substitute another image. If saving a correction conflicts, reload history and append to the current head.
+
+Correction storage and later inference consumption are separate. Automatic
+reviewed-correction replay remains unimplemented; saving a revision does not
+prove a new analysis used it.

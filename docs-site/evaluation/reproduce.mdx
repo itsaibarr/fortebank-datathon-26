@@ -5,10 +5,10 @@ description: "Separate software reproducibility, generated examples and private 
 
 ## 1. Reproduce software behavior
 
-From the installed checkout:
+From the pinned architecture checkout in [installation](/guides/installation):
 
 ```bash
-uv sync --frozen
+uv sync --frozen --extra inference-tracking
 uv run pytest -q
 uv run ruff check .
 uv run python -m build
@@ -21,9 +21,9 @@ Build and check the frontend with the [installation commands](/guides/installati
 
 ## 2. Pin a real experiment
 
-Record source commit and module hashes; Docker image digest; selected model profile, revision and full asset hashes; effective configuration; legal release/card hashes; input/source hashes and grouping; runtime hardware/driver; resource sampling cadence; request budget; planned cohort and every unrun/failed/abstained case. Do not infer the recording date from a filename or PTS.
+Record source commit and module hashes; Docker image digest; both selected model identities/revisions and full asset hashes; effective configuration; legal release/card hashes; input/source hashes and grouping; runtime hardware/driver; resource sampling cadence; request budget; planned cohort and every unrun/failed/abstained case. Do not infer the recording date from a filename or PTS.
 
-Prepare public assets before mounting private footage. Inference runs in an OS-network-denied environment with a loopback model. Never send private footage, frames or descriptions to external AI services.
+Prepare public assets before mounting private footage. Inference runs in an OS-network-denied environment with loopback 8B and CPU Laya services. Never send private footage, frames or descriptions to external AI services.
 
 ## 3. Reproduce v1 client results
 
