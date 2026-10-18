@@ -13,13 +13,14 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PREFIX = "forte-admin-0.1.0"
+PREFIX = "forte-admin-0.2.0"
 PUBLIC_CONTRACTS = (
     "contracts/frozen-runtime-manifest-v1.json",
     "contracts/frozen-assets-v1.json",
     "contracts/frozen-effective-config-v1.json",
     "contracts/frozen-model-hashes-v1.json",
     "contracts/reasoning-api-contract.json",
+    "contracts/browser-session-contract-v1.json",
 )
 CURRENT_CANDIDATE = "deploy/portable/core-current.candidate.json"
 ACCEPTANCE_FLAGS = ("release", "model_workload", "offline_analysis", "browser_session", "ownership")
@@ -45,19 +46,25 @@ def validate_candidate(entries):
         raise ValueError("Current installation candidate must remain unapproved")
 
 
-def build(output):
+def build(output, *, with_public_resources=False, public_artifacts_root=None, core_commit=None):
     selected = [ROOT / "tools/forte-admin/build.py"]
     selected.extend(sorted((ROOT / "tools/forte-admin/forte_admin").glob("*.py")))
     for name in (
         "__init__.py",
         "README.md",
         "runtime.py",
+        "qualification.py",
+        "host_daemon.py",
         "build_core.py",
         "bridge.py",
         "import_handoff.py",
         "core-current.candidate.json",
     ):
         path = ROOT / "deploy/portable" / name
+        if path.is_file():
+            selected.append(path)
+    for name in ("session_gateway.py", "session_store.py"):
+        path = ROOT / "tools/forte-session" / name
         if path.is_file():
             selected.append(path)
     for name in PUBLIC_CONTRACTS:
@@ -67,6 +74,8 @@ def build(output):
     for name in (
         "README.md",
         "administrator.md",
+        "guided-install.md",
+        "resource-preparation.md",
         "reviewer.md",
         "operations.md",
         "observed-contract.md",
@@ -84,14 +93,33 @@ def build(output):
         raise ValueError("Archive inputs must be regular repository files without symlinks")
     entries = {str(path.relative_to(ROOT)): path.read_bytes() for path in selected}
     validate_candidate(entries)
+    if with_public_resources:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "forte_public_bundle", ROOT / "tools/forte-admin/forte_admin/public_bundle.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        entries.update(module.bundle_entries(ROOT, public_artifacts_root=public_artifacts_root))
+    if core_commit:
+        import sys
+
+        sys.path.insert(0, str(ROOT / "tools/forte-admin"))
+        from forte_admin.source_image import source_entries
+
+        entries.update(source_entries(ROOT, core_commit))
     entries["RELEASE.json"] = (
         json.dumps(
             {
-                "admin_version": "0.1.0",
+                "admin_version": "0.2.0",
                 "source_commit": subprocess.check_output(
                     ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
                 ).strip(),
                 "core_included": False,
+                "core_source_commit": core_commit,
+                "core_source_included": bool(core_commit),
+                "public_resources_included": with_public_resources,
                 "files": {
                     name: hashlib.sha256(data).hexdigest() for name, data in sorted(entries.items())
                 },
@@ -129,6 +157,8 @@ def build(output):
                 "archive": str(output),
                 "sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
                 "core_included": False,
+                "core_source_commit": core_commit,
+                "public_resources_included": with_public_resources,
             }
         )
     )
@@ -137,4 +167,15 @@ def build(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True)
-    build(parser.parse_args().output)
+    parser.add_argument("--with-public-resources", action="store_true")
+    parser.add_argument("--public-artifacts-root")
+    parser.add_argument(
+        "--core-commit", help="Include public build inputs from this full verified Git commit"
+    )
+    args = parser.parse_args()
+    build(
+        args.output,
+        with_public_resources=args.with_public_resources,
+        public_artifacts_root=args.public_artifacts_root,
+        core_commit=args.core_commit,
+    )

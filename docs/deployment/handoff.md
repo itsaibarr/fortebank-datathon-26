@@ -1,63 +1,136 @@
 # Agent B deployment handoff
 
-## Integrator checkpoint
+## Checkpoint and ownership
 
-The deployment source commit `eafc7b8` was cherry-picked as `75a1802` after independent review. The integrated suite passes 320 tests with one optional Docker test skipped and four existing warnings. The tested core/API/UI bytes still match `111234c`; the optional ownership patch remains unapplied. Its formatting-only revision passes its separate 31 tests, lint, format and apply-check.
+- Branch: `codex/guided-private-install`.
+- Worktree: `/Users/itsaibarr/conductor/repos/fortebank-install-v2`.
+- Verified base: `131463f21286c03d12a77f5e73306b7024fa6ee6`.
+- Stable Agent A source consumed: `e55c0773ea74e2745ea33512d19bfaa38b32d7fb`,
+  including `bdf3173` ownership, `5be7d78` session gateway and `7fa153f` UI work.
+- Owned paths: `deploy/portable/`, `tools/forte-admin/`, `docs/deployment/` and
+  focused `tests/deployment/`. Core schemas, model/serving parameters, legal
+  semantics, UI and final live cutover remain Agent A's ownership.
 
-The current canonical inventory contains 51 public assets and explicit container paths. The exact effective configuration and model-hash manifest are committed. `deploy/portable/core-current.candidate.json` binds to those canonical bytes and keeps every installer acceptance flag false, with minimum RAM/disk/driver requirements null. The admin archive includes this candidate and public contracts; it includes no case data, credentials, model weights or application image. Packaging rejects stale candidate hashes and symlinked inputs and writes atomically.
+The final publisher commit and file hashes are recorded in the administrator
+archive's `RELEASE.json`. Stable source integration does not approve an image or
+activate a runtime. No VM/GPU process, driver, firewall, DNS or live ingress was
+changed by this lane. No additional paid machine, GPU workload or heavyweight
+image build was run. Agent A remains the default release integrator.
 
-The previous VM is deleted, with zero VMs/volumes confirmed. No live attach or external URL is available. The earlier source-verified private review packet is preserved, but the final production delta is incomplete; no completed final-run result survived the limited recovery. See [runtime and preservation limits](../frozen-inference.md) and the canonical runtime manifest. No quality, minimum-resource, session or multi-user acceptance is inferred.
+## Implemented independent deliverables
 
-## Ownership and checkpoints
+`forte-admin install` orchestrates capability checks, repeatable configuration,
+pinned public preparation, explicit source-image build/import, local account
+bootstrap, TLS, owned startup and bounded readiness in one invocation. Preview is
+nonmutating. Resumption preserves cases, corrections, account state and existing
+secrets. Installation state is separate from endpoint-bound client profiles.
+The API client streams the existing multipart `file`, polls the existing
+statuses, preserves uncertainty/additive fields and reports the destination
+before submission. It has no remote inference fallback.
 
-- Branch: `codex/deployment-private-cli`.
-- Worktree: `/Users/itsaibarr/conductor/repos/fortebank-deploy-b`.
-- Original verified base: `7d9a1ca2ffda93f6c2dde4eaf8a5ca4c7d247eeb`.
-- Consumed stable Agent A core: `111234c885f0a23d323fe72a81450dfca5aa7e60`, fast-forwarded only in B's worktree.
-- Owned paths: `deploy/portable/`, `tools/forte-admin/`, `docs/deployment/`, `tests/deployment/`.
-- Agent A acknowledged these boundaries at 22:50:26 UTC, single-reviewer-only access at 22:51:51, and no attach/cutover grant at 22:54:23 on October 17, 2026.
-- Agent A's later asset/configuration/resource-envelope addenda were inspected read-only while uncommitted. They do not silently replace the stable release candidate. Consume their next stable commit through another isolated integration.
+Public source export uses a verified full Git commit and the existing build
+allowlist. `SOURCE.json` binds every exported file. The customer-side builder
+verifies the extracted bundle, uses pinned Node/base images, builds in an
+isolated public copy and records the resulting immutable local image ID. It
+mounts no cases and uses no GPU. Explicit online preparation may acquire public
+dependencies; offline build denies outbound network. Existing apt resolution is
+not a hermetic OS snapshot. Public-resource preparation verifies pinned model,
+tracking, configuration and official-law assets without case mounts.
 
-No root/shared manifest, lockfile, Dockerfile, core/API/model/UI source or existing checkout was edited by B. No VM restart, GPU workload, service attach, firewall/DNS/ingress change, additional allocation or payment was performed. A remains the designated integrator and runtime owner. A short health/static-only read window was later offered and closed; B did not use it to activate services or access cases.
+The source now includes the real local account tool, session gateway and UI
+contract from Agent A. Service key and dedicated gateway token stay server-side.
+The gateway authenticates an opaque principal; the core persists it at admission
+and checks every existing job/source/evidence/correction route and fresh range
+request. Ownerless/cross-owner jobs return generic 404 in trusted mode. Browser
+uploads require explicit activation plus a same-connection security capability
+and model readiness. See [the session contract](../../contracts/browser-session-contract-v1.json).
 
-## Delivered components and actual evidence level
+Private profiles own the offline core, fixed application-port bridge, local
+session gateway and TLS ingress. Attach profiles own their gateway and ingress;
+the existing core, bridge, GPU and storage remain with the runtime owner. Host
+helpers verify private process identity/state. Container resume/stop checks
+verify project/service labels, immutable image, GPU allocation, network and
+mount ownership before acting. No shared cache or Docker resources are pruned.
 
-`tools/forte-admin/` supplies the dependency-free `forte-admin` executable, nonmutating setup preview, owner-only repeatable setup, doctor, explicit pinned-image preparation, up/status/stop and sanitized support output. Existing data, service secrets and corrections survive setup and normal shutdown. Installation configuration is separate from connection profiles. First-administrator creation remains the core session layer's job; no administrator account is fabricated.
+## Historical image versus new source build
 
-The client uses the existing v1/v2 multipart `file` and `X-API-Key` contract, streams uploads, polls `processing|done|failed`, preserves additive fields and uncertain results, refuses redirects/automatic POST retries/proxies/fallback, and binds private credentials to the chosen endpoint. Optional administrator-gateway credentials come from a separate private file. Destination appears before submission. Full results are written only when explicitly requested to a new private path outside Git; raw case output is not printed.
+[`core-current.candidate.json`](../../deploy/portable/core-current.candidate.json)
+and the canonical frozen runtime manifest describe historical core `111234c`
+and local image
+`sha256:ee82962c4ee4d9026ef499a0854bcb485c94a18db97e07719800ca6dfe4276dd`.
+The VM that held that image was deleted. No registry image was published; the
+old candidate remains historical and unapproved, with all five installer
+acceptance flags false. It must not be described as the new session-aware image.
 
-`deploy/portable/` supplies two rendered Compose profiles. Attach owns only its TLS ingress and never the existing bridge/core/GPU. Full private owns the canonical single offline core container, a fixed-app-port-only host bridge and supplied-certificate TLS ingress. The canonical host IPC mode is preserved. There is no duplicate model or production mock fallback. The helper `build_core.py` exports a verified Git commit and builds the existing UI/Dockerfile from that public snapshot; only its preview was exercised, not the heavyweight core rebuild. Apt resolution in the existing Dockerfile is not a hermetic OS snapshot; deploy its resulting immutable image ID.
+A release archive can export core `e55c0773ea74e2745ea33512d19bfaa38b32d7fb`.
+`install --build-core` builds that snapshot and derives a separate local manifest
+with its new image ID, source/contract fingerprints and preserved ancestry.
+Release, model-workload, offline-analysis, browser-session and ownership
+acceptance flags remain false. Neither JSON validation nor source-build success
+can approve those checks.
 
-The actual-core client tests run stable FastAPI/Uvicorn, actual generated MOV probing/storage and versioned schemas with a clearly synthetic inference runner. They establish transport compatibility, **not real model inference**. Local cached-Nginx checks establish configuration syntax, constrained container startup and HTTPS auth rejection. Separate synthetic checks cover 32 MiB binary/206 streaming, hostname verification, changed assets, ownership-safe shutdown and persistent setup. None is a clean GPU install, real-case ingress rehearsal or external browser acceptance.
+Explicit `install --qualification` verifies pinned assets and performs a bounded
+local-only model/visual warmup on an authorized free compatible CUDA GPU. It
+uses separate scratch storage, exposes no browser ingress and stops its owned
+core before reporting completion. It returns no application URL and does not
+promote release, security or quality acceptance. A physical host or VM is valid;
+the GPU product name alone is neither a requirement nor proof of suitability.
 
-Administrator/reviewer guides and API examples are in [README.md](README.md), [administrator.md](administrator.md), [reviewer.md](reviewer.md), [api-client.md](api-client.md), [operations.md](operations.md) and [observed-contract.md](observed-contract.md). The real admin archive is built by `python3 tools/forte-admin/build.py --output /outside/git/forte-admin-0.1.0.tar.gz`; it has no model, case data or credentials. Its `RELEASE.json` records its source commit and per-file hashes.
+## Checks completed and limits
 
-## Verified interfaces versus proposed integration
+Focused checks cover zero-mutation preview; repeated setup and credential/case
+preservation; capability-based GPU selection; public asset/source integrity and
+resumption; fake-runner source builds; actual pinned Git export; lifecycle,
+process/container ownership and shutdown boundaries; local TLS; session/account
+integration; endpoint-bound API transport; bootstrap-error redaction; and
+qualification cleanup. Some transport tests run the real FastAPI/session
+components with synthetic inference and synthetic MOV inputs. They establish
+software mechanics, not actual model analysis or legal/detection accuracy.
 
-The source of truth is the stable canonical [core handoff](../../contracts/frozen-runtime-manifest-v1.json) and [observed interface record](observed-contract.md). V1 remains unchanged. V2 is separate, preserving `done` versus assessment uncertainty. Limits are 256 MiB for the complete multipart body, MOV, 180 seconds, a 30-second upload deadline, 270-second overall job target and two admitted jobs with one resident model sequence. UI/API use one origin. Original and evidence routes are authenticated and source-hash checked, but the shared key authorizes every case in the service root. There is no per-principal ownership or secure browser session.
+The root integrator records the final suite totals and receipt in
+[verification.json](verification.json). No fresh clean-host GPU installation,
+new heavy image build, actual case through this ingress, externally reachable
+HTTPS URL or complete disconnected installation bundle has been verified. The
+historical real core rehearsals and incomplete final-backup preservation are
+recorded in [frozen inference](../frozen-inference.md); they are not receipts for
+this new source image or access stack.
 
-The installer schema is deliberately separate from `forte.integration/1`. `import_handoff.py` preserves the canonical provenance in an **unapproved** candidate. It can map the later canonical `forte.public-assets/1` inventory by explicit container paths and verify the exact effective-config hash. All release/workload/offline/browser/ownership acceptance flags remain false. A validator or valid JSON cannot approve itself.
+## Exact remaining integration actions
 
-The prepared [trusted-principal patch](patches/README.md) is an explicit proposal against `111234c`, not an applied change. Its SHA256 and base-file hashes are recorded. It adds an optional dedicated trusted gateway token and persisted opaque case owner across both API versions, all media/correction routes and later byte ranges; default legacy behavior remains unchanged. It passed `git apply --check` and 31 targeted tests only in a disposable patched snapshot. It does not implement browser sessions. Current ingress strips identity/token headers and therefore cannot enable that mode by itself. Agent A must review/apply it, provide the secure session boundary, update the UI and rebuild a new core image before security acceptance.
+1. On an existing authorized customer/VM host, assign one runtime owner and a
+   bounded GPU window. Inspect available capacity, disk, active jobs and budget
+   before changing any runtime. No current GPU host or live hosted URL is
+   available in this handoff, and the old allocation is not a fresh budget.
+2. Build/import the new pinned core image and public resources. Run the local
+   qualification on the actual selected device, retain the new immutable image
+   and model/corpus/configuration fingerprints, and review the host-specific
+   workload requirements. Do not infer compatibility or speed from parameter
+   count or total RAM alone.
+3. Verify and accept the new release/security handoff before enabling browser
+   uploads. Exercise actual accounts, cross-user denial for every existing job,
+   source, evidence and correction route and subsequent ranges. Recheck any new
+   preview/clip/export route before release; it is not automatically covered by
+   the current route inventory. Ownerless historical jobs remain denied rather
+   than automatically assigned.
+4. Supply the intended hostname, matching certificate/key or trusted internal
+   CA, listen scope and approved core/bridge handoff. Private installation owns
+   its core; attach changes only the owned access layer and requires the core
+   owner to configure the matching trusted token. Do not restart Agent A's
+   services or change DNS/firewalls without that coordinated cutover.
+5. Complete an authorized development MOV upload through real inference and the
+   browser. Check original interval/PTS, participant/evidence/provision links,
+   offline IPv4/IPv6 denial, persistence/restart, large uploads, queue limits and
+   unavailable-model states. Private frames remain human-reviewed locally;
+   reserved and jury media are excluded from rehearsals.
+6. For hosted jury access, complete the same workflow from an authorized browser
+   outside the VM's local network over the actual HTTPS origin. Record the URL
+   only after this passes. Rollback stops only owned services, preserves data and
+   restores a compatible pinned release; core migration compatibility remains
+   Agent A's responsibility.
 
-Required UI onboarding contract: hosted/private label; actual destination; real readiness and input limits; manual retention for originals, derivatives, temporary files and backups; training disabled; honest cached-example labeling and no hosted fallback. These changes remain Agent A's ownership. No second dashboard was created.
-
-## VM/resources and exact activation actions
-
-See the dated [read-only VM receipt](operations.md). At 22:52 UTC the existing host had one A10080, driver 570.195.03, no published container ports and a new production image starting offline. Credit was about $25.24394 versus $27.55036 at session start; settlement can lag. This is not a fresh budget. A later reported that its two real jobs completed as partial/insufficient-evidence results and that services were stopped for backup/cleanup. B has not independently rerun or extended them. Historical observed host capacity is not an approved minimum. Core release, workload, RAM/disk minimum and security acceptance remain unset, as directed by A.
-
-The immutable local image ID is `sha256:ee82962c4ee4d9026ef499a0854bcb485c94a18db97e07719800ca6dfe4276dd`; it is not a published registry address. Import an approved saved-image artifact or build from the pinned source snapshot, then verify the resulting ID. The initial installer candidate intentionally has no invented complete asset inventory or resource requirements.
-
-The next integrator must:
-
-1. Commit/accept the canonical public inventory, exact effective configuration and measured resource envelope. Map public resources into the candidate's explicit `/models`, `/legal` and `/resources/config` layout, preserving source hashes and canonical model/serving parameters. Approve target-specific host requirements from actual tests; do not infer minimums from 27B or a container-RAM sample.
-2. Review the proposed ownership patch and implement the agreed secure browser session/UI integration. Verify both principals across every job, original/evidence/correction/export/preview/clip route and independent subsequent ranges. Until then, browser multi-user/private uploads stay disabled; an explicit administrative transport is one trust domain only.
-3. Supply the real hostname, matching certificate/private key (public or internal CA), immutable ingress image, intended bind scope and an authorized runtime test window with a single service owner. Do not assume the prior paid VM remains available after cleanup.
-4. Build/import the exact image and install prepared public assets. Run doctor, profile-scoped startup/readiness, one bounded authorized development upload and actual inference, evidence/marker/provision check, offline analysis, persistence/restart, large MOV and queue/unavailable-model behavior. Use only development media allowlisted for that environment, never reserved or jury footage.
-5. Verify an authorized browser outside the VM's local network over the actual HTTPS origin. Record the reachable URL only after this passes. Rollback is profile-scoped `stop`; preserve data/config/secrets and restore a compatible pinned release. Application migration or rollback compatibility remains A's decision.
-
-No external hosted URL is activated or verified. No clean private GPU installation, complete disconnected bundle, real-case run through this ingress, browser session isolation or final jury workflow is claimed. These precise dependencies do not prevent use/review of the independently completed tooling.
-
-## Verification receipts
-
-[verification.json](verification.json) records the deployment checks, actual-core synthetic transport, local TLS check, archive verification and explicit missing evidence. [patches/verification.json](patches/verification.json) records the separate 31-test proposed-core check. Operational tests are not legal/detection accuracy.
+Administrator instructions are in [guided installation](guided-install.md),
+[administrator](administrator.md), [resource preparation](resource-preparation.md)
+and [operations](operations.md). Reviewers use [the browser quick start](reviewer.md).
+Private data never enters Git, source/image build contexts, external inference
+or diagnostic output. Uploads are not training data; pretrained weights and
+official-source-only local retrieval remain unchanged.

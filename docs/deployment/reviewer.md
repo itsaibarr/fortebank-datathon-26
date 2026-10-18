@@ -1,35 +1,42 @@
 # Reviewer quick start
 
-The intended choices are a hosted HTTPS demonstration, or the browser address
-of your organization's private installation. Reviewers do not install the CLI.
+Reviewers use a browser. For the hosted demonstration, recordings are processed
+on our VM. For a private installation, they are processed and stored on your
+organization's configured GPU workstation, server or VM. The CLI is for the
+administrator; it is not installed on each reviewer's computer.
 
-**Current release boundary:** no externally verified hosted URL or secure
-multi-user browser release is available. The existing core is approved for one
-private reviewer trust domain with administrative API access. Browser sessions
-and job/media ownership enforcement remain required before enabling browser
-uploads through these profiles. Ask the deployment administrator for the actual
-verified address when that integration is completed; do not substitute a sample
-hostname or the reviewer's localhost.
+The source includes secure local accounts, browser sessions and per-principal
+job/media authorization. Deployment verification remains incomplete: no current
+hosted URL, clean customer GPU installation or external browser workflow is
+claimed. Use the actual verified HTTPS address and account supplied by your
+administrator when the installation is activated. An example hostname or another
+computer's `localhost` is not that address.
 
-Once enabled, the application must show:
+1. Sign in with your local application account. The application shows hosted or
+   private mode, the actual destination, readiness, upload limits, manual
+   retention and training disabled. Service credentials stay server-side.
+2. Upload only footage authorized for that environment. Current limits are MOV,
+   video duration at most 180 seconds and a 256 MiB limit for the complete
+   multipart request. The upload has a 30-second bound; a slow connection can
+   fail before reaching the size limit. Jobs run asynchronously, and unavailable
+   service, capacity limits and failed jobs remain explicit.
+3. Open the completed case and inspect an event marker, its original source
+   interval, participant proposal, source frames and official provision.
+   Incomplete coverage and uncertainty remain visible. A completed job with
+   `partial` execution or `insufficient_evidence` does not establish compliance.
+4. Save corrections under the appropriate review scope and sign out on a shared
+   computer. Corrections retain immutable history and authenticated attribution;
+   storage alone does not retrain the frozen model or replay corrections into
+   future inference.
 
-- Hosted or private installation, and the actual processing destination.
-- Readiness, MOV-only input, a 256 MiB total multipart limit and 180-second video limit.
-- A 30-second upload bound, asynchronous progress and explicit unavailable/failed states.
-- Manual retention for original/derived media and backups; uploads are not used for training.
-- Findings with uncertainty, coverage limitations, original source intervals and official provisions.
+An authorized prepared example must be labeled as previously analyzed. A live
+upload executes the real local pipeline. A private failure never changes the
+processing location to our VM. Your account must not access another user's jobs,
+original recording, evidence or corrections, including later range requests.
+Report a denial or playback defect to the administrator without sharing private
+frames or case narratives in public support channels.
 
-Sign in through the installation's secure session. Upload only material
-specifically authorized for that environment. A prepared example must be labeled
-as a previously analyzed example. A live upload must execute the actual local
-pipeline; it must not silently change processing location.
-
-When a job completes, open a marker and check the original interval, participant,
-source frames and exact provision. `insufficient_evidence` is an incomplete
-assessment, not a finding of compliance. Corrections are preserved review
-records; storing them does not imply weight updates or automatic replay.
-
-For failure, retain the job ID and share it with your authorized administrator.
-Do not send source recordings, evidence frames, keys or case narratives in public
-support messages. Administrator shutdown preserves cases; deletion follows the
-installation's actual policy.
+Originals, derivatives, corrections, temporary artifacts and backups currently
+follow administrator-controlled manual retention. Session expiry or ordinary
+shutdown does not delete a case. Uploads are excluded from training; reserved
+and jury recordings are excluded from model selection and deployment rehearsals.

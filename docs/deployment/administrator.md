@@ -1,176 +1,220 @@
 # Administrator installation guide
 
-Initially the runtime targets **Ubuntu 24.04 x86_64 with one NVIDIA A100 80GB,
-Docker Engine and Compose v2**. This is the core's observed hardware target;
-a clean customer-host installation has not been executed. Full workload RAM,
-disk reserve and packaged IPC requirements must be supplied in the accepted
-release manifest. `doctor` rejects unsupported hosts or missing requirements.
-Do not infer suitability from the model's parameter count.
+Run the administrator CLI on the machine that will process recordings. A physical
+workstation, server or VM can host the same application. Reviewers then open its
+HTTPS browser address; they do not install the CLI. A private installation keeps
+processing and case storage on the customer-controlled host. Using our hosted
+address processes uploads on our VM. A client command running on a laptop does
+not change that destination.
 
-## Prepare a pinned release
+`install` provides one resumable invocation for configuration, public preparation,
+local account bootstrap, startup and readiness checks. Preview is the default;
+`--apply` permits changes. The required host runtime and an accepted application
+release must exist or be prepared through the explicit options below. The tool
+does not install drivers, invoke `sudo`, rent a GPU or manufacture a successful
+release/workload receipt. See [guided-install.md](guided-install.md) for phase and
+failure behavior.
 
-Keep installation state outside Git. Use the packaged
-`deploy/portable/core-current.candidate.json` as an **unapproved candidate**.
-It preserves provenance from Agent A's canonical handoff, frozen model identity,
-contract hash and immutable local image ID. It intentionally contains no invented
-resource inventory or successful deployment/security approvals.
+## Supported execution backend
 
-For a later canonical handoff, create a new candidate:
+The packaged model backend is NVIDIA CUDA on Linux x86_64. Ubuntu 24.04 was the
+tested OS; other Linux configurations are candidates with an explicit unvalidated
+notice. Docker Engine, Compose v2 and NVIDIA Container Toolkit must already work
+for the administrator through a local Docker socket. Run the installer on the
+GPU host rather than pointing its local probes at a remote Docker daemon.
+
+There is no required GPU product name or VM provider. The host probe examines
+available VRAM, the pinned model inventory, declared driver/compute requirements,
+free storage and existing GPU allocations. It selects a free compatible device,
+or accepts an explicit `--gpu-index`/`--gpu-uuid`. It does not stop another GPU
+process to make room. This profile uses one GPU; combining several smaller GPUs,
+CPU execution, Apple/AMD backends and CPU offloading are not implemented.
+
+The selected frozen BF16 model has 18 weight shards totaling 55,563,006,776 bytes
+(about 51.75 GiB). Those bytes are a lower bound, not a sufficient VRAM promise:
+vision inputs, the 16,384-token context, KV cache and runtime overhead must also
+fit. System RAM alone does not qualify this CUDA backend. Unknown RAM, disk,
+driver or workload minima remain explicit notices. A bounded real model load and
+visual warmup determine whether the actual workload runs on a candidate host;
+they do not establish detection quality, legal accuracy or a latency guarantee.
+
+## Obtain the administrator artifact and public resources
+
+Use the complete `forte-admin-0.2.0.tar.gz` artifact from this project's release
+handoff, extract it and preserve its directory structure. There is no assumed
+public pip package. From its extracted root, invoke:
 
 ```sh
-python3 deploy/portable/import_handoff.py \
-  --source /approved-release/frozen-runtime-manifest-v1.json \
+./tools/forte-admin/forte-admin --version
+./tools/forte-admin/forte-admin install --help
+```
+
+The resource-inclusive administrator archive contains a small, hash-allowlisted
+`public-resources/` bundle: the official legal snapshot and provenance, rule
+cards, frozen configurations, model hash manifest, and approved ReID ONNX/export
+manifest. The verified current selection has 21 files totaling 3,826,331 bytes.
+It contains no 27B weight shards, recordings, credentials or core container image.
+The publisher can create that variant from the repository with:
+
+```sh
+python3 tools/forte-admin/build.py \
+  --with-public-resources --public-artifacts-root /approved/public-artifacts \
   --core-commit FULL_VERIFIED_CORE_COMMIT \
-  --inventory /approved-release/public-resource-inventory.json \
-  --output /approved-release/install-manifest-v2.json
+  --output /outside-git/forte-admin-0.2.0.tar.gz
 ```
 
-The inventory is a reviewed list of relative `path` and `sha256` pairs. Populate
-it from the core release's public model/tracking/legal/configuration manifests,
-not by treating arbitrary local bytes as approved. Match the exact effective
-configuration and its mounted paths. Record the source image, core commit,
-workload requirements and local acceptance receipt. Do not turn verification
-flags on to bypass missing work. Full schema and profile mechanics are in
-[`deploy/portable/README.md`](../../deploy/portable/README.md).
+The explicit public-artifact directory supplies `reid/osnet.onnx` and
+`reid/manifest.json`; unrelated files are never scanned or copied. Without
+`--with-public-resources`, the build produces the smaller tooling/metadata
+archive and records `public_resources_included: false`. Do not describe that
+variant as containing the legal/ReID resource bundle.
+`--core-commit` independently includes public build inputs from the selected full
+Git commit, under `core-source/`. Replace the placeholder with that verified
+40-character commit. `RELEASE.json` records `core_source_included` and
+`core_source_commit`; a tooling-only archive cannot build missing source.
 
-Resources belong under the selected `resources_root`, for example:
+With `install --online`, missing large public model files and the pinned detector
+are downloaded individually and verified before use. Downloads are resumable.
+Pinned public container images may also be prepared. All case processing remains
+separate from this public acquisition stage. The installer preserves the frozen
+model revision, tracker and legal snapshot; it does not choose alternatives.
+See [resource-preparation.md](resource-preparation.md) for origins, hashes,
+partial-file behavior and disconnected resource layout.
 
-```text
-resources/
-  models/<pinned-model-revision>/  # complete model + processor + hash manifest
-  models/yolox_s.onnx
-  models/reid/                   # accepted ONNX and manifest
-  legal/2026-10-17/              # official-source corpus and provenance
-  legal/rule-cards.json
-  config/frozen-inference.json   # exact accepted effective paths/configuration
-  verification/acceptance.json
-```
+For disconnected preparation, supply `--resource-source /approved/public-bundle`
+(repeatable) with paths matching the integration manifest. Supply an approved
+`docker save` core artifact using `--image-artifact /approved/core-image.tar`;
+its installed image ID must match the selected handoff. The proxy and any build
+images must also be installed locally. A complete disconnected-install artifact
+containing all weights, images and dependencies has not been delivered or tested.
+Online preparation followed by offline case analysis is a separate capability.
 
-Online preparation downloads only public dependencies/resources. Cases must not
-be present in that preparation stage. `prepare --images` pulls explicit registry
-digests without starting services; Docker resumes existing layers. Immutable
-local image IDs must instead be installed from the approved `docker save`
-artifact using `docker load`, then inspected against the expected ID. The tool
-does not independently select/download another model, quantization or tracker.
-Missing resources are reported by hash verification. A complete disconnected
-installation bundle is **not currently supplied**; prepared offline analysis is
-a distinct goal.
+## Select the application image or explicit source rebuild
 
-## Full private installation
+Keep installation state, public resources, case storage and credentials outside
+Git. The packaged `deploy/portable/core-current.candidate.json` preserves the
+canonical core/model/corpus provenance and intentionally keeps its acceptance
+flags false. It is an unapproved installation candidate, not a verified browser
+release. Never turn flags on to bypass missing acceptance work.
 
-Provide your own trusted TLS certificate and private key, including an internal
-CA certificate when public issuance is unsuitable. Install that CA in reviewer
-trust stores. No ACME account, vendor login or certificate issuance is required.
-Choose a proxy image by immutable repository digest, obtained through your
-approved registry process. Examples deliberately do not invent a tested digest.
+An already-installed matching image or `--image-artifact` reproduces the exact
+image identity in a compatible handoff. An alternative is explicit `--build-core`
+public preparation. `--core-source` selects the extracted release directory
+containing both `RELEASE.json` and `core-source/`; its default is the current
+extracted administrator release. `--node-image` selects the pinned Node build
+image. Source preparation uses only the approved source inputs
+and public dependencies, without recordings, private credentials or GPU access.
+
+A rebuilt image has its own image identity and receipt. A successful build is
+**not a verified application release**: the new image still needs actual model
+loading, offline inference, session/ownership and browser acceptance. The source
+build must not inherit those approvals from an older image. Existing pinned
+lockfiles/base inputs also do not make the Dockerfile's apt packages a completely
+hermetic OS snapshot.
+
+## One-command local qualification
+
+The current candidate can be inspected and, on an authorized compatible host,
+explicitly qualified without opening reviewer ingress:
 
 ```sh
-forte-admin setup --mode private --installation /srv/forte/install-1 \
-  --manifest /approved-release/install-manifest-v2.json \
-  --resources-root /srv/forte/resources \
+./tools/forte-admin/forte-admin install \
+  --installation "$HOME/.local/share/forte-admin/installations/qualification" \
+  --mode private --online --build-core --qualification --preview
+```
+
+After reviewing the plan, replace `--preview` with `--apply` and retain the other
+options. For an already-prepared image, omit `--build-core`; if required, provide
+its matching `--image-artifact`. For offline operation, omit `--online` and supply
+the missing resources/images locally. Keep the default loopback origin for this
+qualification. It runs a bounded model load/visual warmup in owned scratch state,
+then stops its temporary services. It does not expose HTTPS, admit reviewer
+uploads, bootstrap browser users, or promote production acceptance flags.
+
+Preview creates no configuration, downloads nothing, builds no image and starts
+no service. An unresolved prerequisite or failed warmup remains a blocker, with
+the selected processing location preserved. The tool never retries the analysis
+on our VM or an external inference provider.
+
+## Private reviewer browser installation
+
+This path requires an accepted image/manifest plus verified browser sessions and
+per-user job/media ownership. Supply a certificate/key trusted by the reviewers,
+including an internal-CA certificate when public issuance is unsuitable. No ACME
+account or external identity provider is required. Configure the customer-hosted
+DNS/IP address and network access separately.
+
+```sh
+./tools/forte-admin/forte-admin install \
+  --installation /srv/forte/install-1 --mode private \
+  --manifest /approved-release/install-manifest.json \
+  --resources-root /srv/forte/resources --online \
   --origin https://review.example.internal:8443 --https-port 8443 \
-  --proxy-image 'nginx@sha256:REPLACE_WITH_VERIFIED_DIGEST' \
   --tls-cert /srv/forte/tls/fullchain.pem --tls-key /srv/forte/tls/privkey.pem \
-  --preview
+  --administrator reviewer-admin --preview
 ```
 
-Preview is also the default. Repeat the reviewed command with `--apply` to write
-owner-only configuration and a new private service key if one does not already
-exist. Invalid/incomplete configuration can be saved for preparation, but cannot
-start services. Setup never creates an imaginary core administrator account.
-The secure first-administrator bootstrap must be supplied by the core's session
-layer before enabling browser access.
+Replace `--preview` with `--apply` for the reviewed installation. An interactive
+password prompt creates the first local account through the real session store.
+For unattended setup, use an owner-only `--admin-password-file`; do not put the
+password or service key in command arguments. Repeated installation preserves
+existing accounts and secrets. Incomplete release or browser acceptance prevents
+activation even if configuration/resource generation succeeded.
+
+Loopback binding is the default. To serve other computers, explicitly select
+`--bind-address 0.0.0.0` as part of the designated integrator's ingress change;
+the installer does not change DNS or firewall rules. For a local browser only,
+`--tls-mode local-self-signed` creates a persistent loopback certificate. Import
+it into the reviewer's trust store; it is not a public HTTPS certificate.
 
 ```sh
-forte-admin doctor --installation /srv/forte/install-1 --json
-forte-admin prepare --installation /srv/forte/install-1 --images
-forte-admin up --installation /srv/forte/install-1
-forte-admin status --installation /srv/forte/install-1
-forte-admin stop --installation /srv/forte/install-1
+./tools/forte-admin/forte-admin doctor --installation /srv/forte/install-1 --json
+./tools/forte-admin/forte-admin status --installation /srv/forte/install-1
+./tools/forte-admin/forte-admin stop --installation /srv/forte/install-1
+./tools/forte-admin/forte-admin up --installation /srv/forte/install-1
 ```
 
-Loopback binding is the default. Set `--bind-address 0.0.0.0` only in a reviewed
-installation change with the designated integrator's ingress authorization.
-This installer does not change DNS/firewall rules. It returns the configured
-origin and actual live/ready state; it does not call a configured URL reachable
-or externally verified merely because it exists in configuration.
+The installer returns a working application URL only after actual model and
+browser-access readiness pass. A configured origin or local probe alone is not
+an externally verified address. Public/multi-user activation remains blocked
+until ownership is enforced for jobs and every original, derivative, frame,
+clip, correction, export and subsequent range request.
 
-The full profile owns its Compose project, offline model/API/UI container,
-app-port-only host bridge and TLS ingress. The core has no network interface.
-The bridge cannot target the model port. Persistent bind mounts keep recordings,
-results and corrections across normal stop/start. Secrets are not included in
-the browser bundle. No raw case logs are exported by `logs`.
+## Attach hosted access to an existing runtime
 
-## Attach to an existing authorized installation
+Use `--mode attach --attach-upstream http://127.0.0.1:18000` only after the runtime
+owner hands off that exact application-only endpoint. Attach owns its access
+services; it does not prepare weights, load another model or manage the existing
+core/API/worker/GPU. Supply the release/security handoff, trusted TLS and actual
+reviewer-facing origin. The designated integrator controls live ingress and
+cutover. Jury members then open the hosted browser address and install nothing.
 
-`--mode attach --attach-upstream http://127.0.0.1:18000` owns **only TLS ingress**.
-It assumes the designated core owner already runs the application-only bridge.
-It never starts, restarts, stops or changes the existing model/API/UI container,
-bridge, database or GPU allocation. Use another free HTTPS port/project name for
-a rehearsal. Current VM permission is read-only; this profile has not been
-activated there. Do not treat generating an attach profile as a cutover grant.
+No hosted address is currently claimed as activated. The historical experimental
+VM was deleted; deployment generation does not recreate it or authorize another
+paid machine. An outside-network browser must complete the hosted workflow before
+external access is reported verified.
 
-## Administrative API access
+## Operations, privacy and verification limits
 
-Connection profiles are separate from installation configuration and bind a
-private key file to one endpoint. Never place a key in a URL or command argument.
-A remote endpoint means hosted processing, even when the command runs locally.
+The model/API processing container has outbound networking denied after resource
+preparation. Case originals and derivatives stay in the selected environment;
+uploads are not training data. The CLI's endpoint-bound `connect`, `analyze` and
+`job` commands use the same application API; see [api-client.md](api-client.md).
+They do not create a separate local inference backend.
 
-```sh
-forte-admin connect --endpoint https://YOUR_AUTHORIZED_ORIGIN:8443 \
-  --key-file /private/credentials/service.key --profile /private/connections/demo.json
-forte-admin analyze --profile /private/connections/demo.json \
-  --file /authorized/development/synthetic-or-allowlisted.mov --submit --wait \
-  --output /private/results/new-result.json
-```
+Repeated setup/install and normal stop/start preserve cases, corrections,
+credentials and persistent volumes. Retention is manual: originals, derivatives,
+temporary application files and backups require administrator/application cleanup
+under the customer's policy. No automatic TTL is claimed. Use consistent image,
+configuration and corpus snapshots with private backups for upgrade/rollback;
+schema compatibility remains a core release requirement. `logs` returns redacted
+operational status rather than raw case-bearing output. See
+[operations.md](operations.md).
 
-Use the direct core endpoint only in its authorized private trust boundary. The
-optional `gateway-single-admin` mode is an administrative transport with supplied
-htpasswd and server-side key injection; it does not make the current UI a
-session-based product or establish user isolation. Browser-session mode remains
-gated until core ownership and secure sessions pass verification.
-
-Destination is printed before submission. Uploads stream through the real
-versioned API; no mock, redirect, retry or hosted failover is used. An unfamiliar
-assessment remains unchanged in a saved result. The terminal prints only safe job
-metadata. Result output must be a new file outside Git. Failed jobs exit 5;
-configuration failures exit 2, transport/protocol failures 3 and timeouts 4.
-`setup` exits 0 when it successfully writes/previews configuration, even if the
-reported prerequisites still block `up`; `doctor` reports those blockers with 2.
-
-## Retention, upgrades and support
-
-Current core retention is manual: originals, derived evidence, corrections,
-temporary application files and backups persist until explicitly removed by the
-administrator under the event/customer policy. No automatic TTL is claimed.
-Normal shutdown preserves all volumes. No upload is used for training.
-
-Repeated setup preserves existing secrets/data/corrections. Changing mode or
-storage roots requires a new installation and an explicit migration. Upgrade and
-rollback must use consistent immutable image/config/corpus snapshots plus a
-private backup; compatibility or migrations remain the core owner's decision.
-See [operations.md](operations.md). `logs` deliberately supplies a redacted status
-explanation rather than model prompts or case-bearing raw service output.
-
-## Rebuild the existing application from source
-
-`deploy/portable/build_core.py` exports only tracked build inputs from the chosen
-full commit using `git archive`. It never builds Agent A's changing checkout.
-Provide an approved immutable Node build image already installed locally:
-
-```sh
-python3 deploy/portable/build_core.py --repository /approved/source/forte26 \
-  --core-commit 111234c885f0a23d323fe72a81450dfca5aa7e60 \
-  --node-image 'node@sha256:YOUR_VERIFIED_BUILD_IMAGE_DIGEST' \
-  --tag forte26-install-1:release-1 \
-  --output /approved-release/build-receipt.json --preview
-```
-
-Remove `--preview` only during the online **public preparation** stage. This
-builds the existing locked Next.js interface and existing core Dockerfile in an
-isolated exported snapshot, then records the image ID and source hash. It does
-not mount cases, keys or private outputs, start a model, publish an image or
-change live services. The real heavyweight build has not been run by Agent B.
-Core lockfiles and the base image are pinned; the existing Dockerfile's apt
-packages are not a fully hermetic OS snapshot. Deploy the resulting immutable
-image ID and revalidate its workload; do not claim bit-identical rebuilds.
+Current evidence includes focused synthetic installer/client/transport checks,
+actual local certificate generation, and exact hash verification of the bundled
+small public resources. Historical core GPU receipts apply to their original
+image/host. They do not establish a clean installation or real inference for a
+newly rebuilt image. The current installation work has not established a clean
+customer GPU installation, end-to-end private upload/review, new-image offline
+analysis, secure external multi-user workflow or externally reachable hosted URL.

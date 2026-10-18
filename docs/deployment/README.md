@@ -1,48 +1,53 @@
 # Deployment and installation
 
-Agent B's deployment tooling packages the existing application. The CLI is
-`forte-admin`; the model/application CLI remains `forte`. Reviewers use the web
-application. No second analysis backend or results dashboard is introduced.
+Reviewers use the same browser application in two environments: our hosted HTTPS
+demonstration or a customer-controlled private installation. Administrators use
+`forte-admin` to install, prepare, diagnose, start and stop that application. The
+core `forte` CLI and API retain their analysis responsibilities; there is no
+second analysis backend or dashboard.
 
-The release candidate consumes core commit
-`111234c885f0a23d323fe72a81450dfca5aa7e60`. Its canonical handoff is
-[`contracts/frozen-runtime-manifest-v1.json`](../../contracts/frozen-runtime-manifest-v1.json).
-The existing image has an immutable local image ID, not a published registry
-reference. [`handoff.md`](handoff.md) records exact evidence and remaining work.
+The deployment branch `codex/guided-private-install` consumes Agent A's stable
+source checkpoint `e55c0773ea74e2745ea33512d19bfaa38b32d7fb`, including principal
+ownership, local browser sessions and session-aware UI. These mechanisms are
+implemented in source. A newly built GPU image, clean-host installation and
+external HTTPS reviewer workflow remain unverified. No live VM or jury URL is
+available. [The handoff](handoff.md) records the exact remaining activation work.
 
-**Current access boundary:** the core uses one shared API key and has no browser
-sessions or per-user ownership. Agent A acknowledged single-reviewer private
-administrative use only. Both deployment profiles gate browser uploads. There is
-no activated or externally verified jury URL. A supplied hostname/certificate,
-accepted runtime handoff, and the core security work are still required.
+## Install the administrator artifact
 
-## Install the actual administrator artifact
-
-Python 3.12+ runs these dependency-free tools. This is a local artifact, not an
-advertised public package. From this checked-out branch:
+Python 3.12+ runs the dependency-free administrator tools. Build the actual local
+artifact, including a pinned public application source snapshot:
 
 ```sh
-python3 tools/forte-admin/build.py --output /tmp/forte-admin-0.1.0.tar.gz
+python3 tools/forte-admin/build.py \
+  --core-commit e55c0773ea74e2745ea33512d19bfaa38b32d7fb \
+  --output /tmp/forte-admin-0.2.0.tar.gz
 mkdir -p "$HOME/.local/lib/forte-admin-release"
-tar -xzf /tmp/forte-admin-0.1.0.tar.gz -C "$HOME/.local/lib/forte-admin-release"
-export PATH="$HOME/.local/lib/forte-admin-release/forte-admin-0.1.0/tools/forte-admin:$PATH"
+tar -xzf /tmp/forte-admin-0.2.0.tar.gz -C "$HOME/.local/lib/forte-admin-release"
+export PATH="$HOME/.local/lib/forte-admin-release/forte-admin-0.2.0/tools/forte-admin:$PATH"
 forte-admin --version
-forte-admin --help
+forte-admin install --help
 ```
 
-The archive contains only administrator/deployment source, public configuration
-examples, source-file hashes and its source commit. It contains no recordings,
-keys, model weights, application image or browser build. Build twice to obtain
-the same bytes from unchanged inputs. Check the printed SHA256 when transferring
-it through your approved software-distribution channel.
+Check the printed SHA256 through your approved distribution channel. `RELEASE.json`
+records the publisher commit, exported core commit and per-file hashes. The
+archive contains no recordings, credentials, model shards or built application
+image. Small pinned public resources may be included explicitly; see
+[resource preparation](resource-preparation.md). There is no assumed public
+package or image registry release.
 
-Read [the administrator guide](administrator.md),
-[reviewer quick start](reviewer.md), [observed API](observed-contract.md), and
-[operations/upgrade/rollback](operations.md).
+[Guided installation](guided-install.md) explains the one-command `install`
+workflow, pure preview, explicit `--build-core`, public preparation and bounded
+local qualification. Hardware qualification evaluates a compatible free CUDA
+GPU and the actual pinned workload on a physical host or VM. An A100 product name
+is not required, and enough system RAM alone does not implement CPU inference.
 
-## Evidence levels
+Use [the administrator guide](administrator.md) for configuration and accounts,
+[the reviewer guide](reviewer.md) for browser use,
+[the observed contracts](observed-contract.md) for API/session interfaces, and
+[operations](operations.md) for ownership, persistence and rollback.
 
-Configuration generation, synthetic transport tests, local TLS checks, real
-single-container inference, clean-host installation and external-browser access
-are separate checks. This lane does not claim that one establishes another.
-The package never switches a private job to hosted processing after a failure.
+Configuration generation, source export/build, synthetic transport, local TLS,
+actual GPU qualification, clean installation and external access are separate
+evidence levels. The package preserves the configured processing destination and
+never sends a private job to a hosted service after local failure.
