@@ -51,5 +51,31 @@
     "Historical GPU results belong to their earlier source/runtime identity.",
     "Public Vercel interface remains a generated-data simulation; private GPU evaluation is separate."
   ],
-  "hosted_deployment": "separate verification required"
+  "hosted_deployment": {
+    "mintlify": {
+      "url": "https://datathon-f289adc4.mintlify.site/introduction",
+      "repository": "itsaibarr/fortebank-datathon-26",
+      "branch": "main",
+      "directory": "docs-site",
+      "pages_verified": 17,
+      "json_downloads_match_source": 3,
+      "browser_search": "authentication returns API authentication and opens the correct page",
+      "mobile_390px": "API authentication renders with no horizontal overflow",
+      "github_app_scope": "Only select repositories: one repository, itsaibarr/fortebank-datathon-26; saved state verified on GitHub"
+    },
+    "vercel": {
+      "url": "https://fortebank-review-demo.vercel.app",
+      "deployment_id": "dpl_Hm2shwVyzCBrqvZ1c7dTDfiNd1qd",
+      "documentation_link": "verified in browser",
+      "generated_sample_review": "loaded with original blob video and two synthetic events",
+      "private_backend_connected": false,
+      "mobile_390px": "Documentation link remains available; no horizontal overflow",
+      "documentation_navigation": "Actual click opens the Mintlify introduction in a new tab"
+    },
+    "fresh_main_clone": {
+      "install": "uv sync --frozen passed",
+      "cli_help": "passed",
+      "documentation_verifier": "passed"
+    }
+  }
 }
