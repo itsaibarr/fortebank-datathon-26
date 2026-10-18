@@ -1,7 +1,11 @@
-# VM 1108722: pending hosted-access plan
+# VM 1108722: closed hosted-access proposal
 
 Status: **prepared plan; no public application, certificate or external workflow is verified**.
 The proposed address is `https://69.19.136.174:18443`. It is not a live-service claim.
+The VM was deleted and zero provider VMs/volumes were recorded at 01:03:11 UTC.
+The old IP is historical; do not assume it still belongs to this project or run
+the commands below. No certificate/ingress step was activated. The canonical
+closure receipt is `.context/verify/mechanic-validation-lifecycle-20261018.json`.
 The separately authorized loopback/SSH transport checks completed with verified
 cleanup at 00:58:57 UTC; see the [transport receipt](vm1108722-transport-verification.json).
 Both temporary listeners are closed. This does not activate the HTTPS proposal.
