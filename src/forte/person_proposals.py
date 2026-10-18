@@ -172,6 +172,13 @@ class YoloxONNX:
 
 
 class LocalByteTrack:
+    """Return detector geometry with upstream associations or negative storage keys.
+
+    ByteTrack uses -1 for unmatched/unconfirmed detections. Unique negative keys
+    retain those boxes in review packets; they are never temporal track IDs or
+    evidence that another physical person exists. Zero is a valid tracker ID.
+    """
+
     def __init__(self, cadence_sec):
         from trackers import ByteTrackTracker
 
